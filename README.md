@@ -37,6 +37,8 @@ npm run preview
 
 The deployment workflow is at `.github/workflows/deploy.yml`. It installs dependencies, runs the tests, builds the Vite app and deploys the `dist/` folder to GitHub Pages on pushes to `main`.
 
+**One-time setup:** open repository **Settings → Pages** and select **GitHub Actions** under Build and deployment. After that setting is enabled, push to `main` or run the deployment workflow manually from the Actions tab.
+
 ## Scope
 
 This is a local single-player browser game. The Unity Lobby/Relay multiplayer implementation from the original project is not part of this browser conversion, so online rooms, cloud saves and server leaderboards are not included.
