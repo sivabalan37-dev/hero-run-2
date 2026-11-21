@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "source-parts/part-15.b64"
+      - "source-parts/part-22.b64"
 permissions:
   contents: write
 jobs:
