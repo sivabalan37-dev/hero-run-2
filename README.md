@@ -10,11 +10,11 @@ Hero Run 2 is a browser-based 3D endless runner built with HTML, CSS, JavaScript
 - Crate and spike obstacles, score, distance, health and saved best distance.
 - 3D environment, scenery, particle effects and synthesized sound.
 
-## Add the game source
+## Project files
 
-The prepared source bundle is attached separately in the ChatGPT conversation as **Hero_Run_2_WebOnly.zip**. Extract the ZIP, then upload the files and folders inside its `hero-run-2` directory to the root of this repository. The ZIP itself is not currently committed here.
+The complete source is uploaded to this repository. The browser app entry point is `index.html`, with modular JavaScript under `src/`. The original Unity C# files are kept under `reference/unity-source/` for reference.
 
-After the source files are uploaded, the project can be run locally.
+A copy of the source archive is also included as `Hero_Run_2_WebOnly.zip`.
 
 ## Run locally
 
@@ -25,7 +25,7 @@ npm install
 npm run dev
 ```
 
-Run the checks and production build with:
+Run the tests and production build with:
 
 ```bash
 npm test
@@ -35,7 +35,7 @@ npm run preview
 
 ## GitHub Pages
 
-The project includes a GitHub Actions workflow under `.github/workflows/deploy.yml`. After the source files are extracted into the repository root, open **Settings → Pages** and select **GitHub Actions** as the deployment source.
+The deployment workflow is at `.github/workflows/deploy.yml`. It installs dependencies, runs the tests, builds the Vite app and deploys the `dist/` folder to GitHub Pages on pushes to `main`.
 
 ## Scope
 
