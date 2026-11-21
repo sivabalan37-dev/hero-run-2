@@ -1,15 +1,20 @@
 # Hero Run 2
 
-A browser-based 3D endless runner built with HTML, CSS, JavaScript, Three.js and Vite. It is not a Unity project and does not require Unity or C# to run.
+Hero Run 2 is a browser-based 3D endless runner built with HTML, CSS, JavaScript, Three.js and Vite. It is designed to run in a browser and does not require Unity or C#.
 
-## Features
+## Game features
 
-- Three-lane auto-running gameplay with keyboard and touch controls.
+- Three-lane auto-running gameplay with keyboard and mobile touch controls.
 - Animated hero movement: run, jump, double-jump, slide, attack and special attack.
 - Enemies, coins, time shards, health pickups, shields and temporary boosts.
 - Crate and spike obstacles, score, distance, health and saved best distance.
-- Procedural 3D environment, lighting, scenery, particle effects and synthesized sound.
-- GitHub Pages deployment workflow.
+- 3D environment, scenery, particle effects and synthesized sound.
+
+## Add the game source
+
+The prepared source bundle is attached separately in the ChatGPT conversation as **Hero_Run_2_WebOnly.zip**. Extract the ZIP, then upload the files and folders inside its `hero-run-2` directory to the root of this repository. The ZIP itself is not currently committed here.
+
+After the source files are uploaded, the project can be run locally.
 
 ## Run locally
 
@@ -20,7 +25,7 @@ npm install
 npm run dev
 ```
 
-For tests and a production build:
+Run the checks and production build with:
 
 ```bash
 npm test
@@ -28,14 +33,10 @@ npm run build
 npm run preview
 ```
 
-## Deploy
+## GitHub Pages
 
-The included GitHub Actions workflow builds the Vite project and deploys the `dist/` folder to GitHub Pages. In repository Settings → Pages, choose **GitHub Actions** as the build and deployment source.
+The project includes a GitHub Actions workflow under `.github/workflows/deploy.yml`. After the source files are extracted into the repository root, open **Settings → Pages** and select **GitHub Actions** as the deployment source.
 
-## Important limitations
+## Scope
 
-This is a local single-player browser game. The supplied Unity Lobby/Relay multiplayer implementation is not included in the browser conversion, so online rooms, cloud saves and server leaderboards are not provided.
-
-## Source bundle
-
-The complete prepared project bundle is stored in this repository as `Hero_Run_2_Web.zip`. Download and extract it to work with the modular source files.
+This is a local single-player browser game. The Unity Lobby/Relay multiplayer implementation from the original project is not part of this browser conversion, so online rooms, cloud saves and server leaderboards are not included.
