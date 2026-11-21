@@ -16,7 +16,7 @@ jobs:
           cat source-parts/part-*.b64 | base64 --decode > Hero_Run_2_WebOnly.zip
           mkdir -p /tmp/hero-run-2
           unzip -oq Hero_Run_2_WebOnly.zip -d /tmp/hero-run-2
-          rsync -a --exclude='README.md' /tmp/hero-run-2/hero-run-2/ ./
+          rsync -a --exclude='README.md' --exclude='.github/workflows/deploy.yml' /tmp/hero-run-2/hero-run-2/ ./
           rm -rf source-parts
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
