@@ -1,6 +1,8 @@
 # Hero Run 2
 
-Hero Run 2 is a browser-based 3D endless runner built with HTML, CSS, JavaScript, Three.js and Vite. It is designed to run in a browser and does not require Unity or C#.
+**Play the game:** https://hero-run-2.sivabalan37.workers.dev/
+
+Hero Run 2 is a browser-based 3D endless runner built with HTML, CSS, JavaScript, Three.js and Vite. It runs in a browser and does not require Unity or C#.
 
 ## Game features
 
@@ -14,7 +16,7 @@ Hero Run 2 is a browser-based 3D endless runner built with HTML, CSS, JavaScript
 
 The complete source is uploaded to this repository. The browser app entry point is `index.html`, with modular JavaScript under `src/`. The original Unity C# files are kept under `reference/unity-source/` for reference.
 
-A copy of the source archive is also included as `Hero_Run_2_WebOnly.zip`.
+The production browser build is exported to the `build-dist` branch. Cloudflare Worker `hero-run-2` serves that build at the live game URL above.
 
 ## Run locally
 
@@ -33,12 +35,10 @@ npm run build
 npm run preview
 ```
 
-## GitHub Pages
+## Deployment
 
-The deployment workflow is at `.github/workflows/deploy.yml`. It installs dependencies, runs the tests, builds the Vite app and deploys the `dist/` folder to GitHub Pages on pushes to `main`.
-
-**One-time setup:** open repository **Settings → Pages** and select **GitHub Actions** under Build and deployment. After that setting is enabled, push to `main` or run the deployment workflow manually from the Actions tab.
+The `.github/workflows/build-dist-export.yml` workflow runs tests, builds the site and updates the `build-dist` branch whenever source files change on `main`. The Cloudflare Worker serves the latest exported build.
 
 ## Scope
 
-This is a local single-player browser game. The Unity Lobby/Relay multiplayer implementation from the original project is not part of this browser conversion, so online rooms, cloud saves and server leaderboards are not included.
+This is a single-player browser game. The Unity Lobby/Relay multiplayer implementation from the original project is not part of this browser conversion, so online rooms, cloud saves and server leaderboards are not included.
