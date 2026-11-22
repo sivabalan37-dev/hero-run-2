@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 const MAX_PROJECTILES = 12;
-const STAR_GEOMETRY = (() => {
+function createStarGeometry() {
   const shape = new THREE.Shape();
   for (let i = 0; i < 10; i++) {
     const radius = i % 2 === 0 ? 0.42 : 0.19;
@@ -13,12 +13,13 @@ const STAR_GEOMETRY = (() => {
   }
   shape.closePath();
   return new THREE.ShapeGeometry(shape);
-})();
+}
 
 /** Fixed-capacity projectile pool; firing never creates new geometry or meshes. */
 export class ToyStarPool {
   constructor(scene) {
     this.scene = scene;
+    this.geometry = createStarGeometry();
     this.material = new THREE.MeshStandardMaterial({
       color: '#ffe36e',
       emissive: '#ff9d32',
@@ -28,7 +29,7 @@ export class ToyStarPool {
       side: THREE.DoubleSide,
     });
     this.items = Array.from({ length: MAX_PROJECTILES }, () => {
-      const mesh = new THREE.Mesh(STAR_GEOMETRY, this.material);
+      const mesh = new THREE.Mesh(this.geometry, this.material);
       mesh.visible = false;
       mesh.position.z = 1.05;
       mesh.castShadow = false;
@@ -120,7 +121,7 @@ export class ToyStarPool {
     for (const item of this.items) {
       this.scene.remove(item.mesh);
     }
-    STAR_GEOMETRY.dispose();
+    this.geometry.dispose();
     this.material.dispose();
   }
 }
