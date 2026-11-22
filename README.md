@@ -57,7 +57,7 @@ npm run dev
 
 ## Validation status
 
-Latest completed GitHub Actions validation for this implementation slice reports **33/33 unit tests passing**, a successful Vite production build, and the PWA service worker and manifest present in the build output. A new run is triggered for each later branch commit. The production bundle emits a non-blocking chunk-size warning.
+Latest completed GitHub Actions validation for this implementation slice reports **36/36 unit tests passing**, a successful Vite production build, and the PWA service worker and manifest present in the build output. A new run is triggered for each later branch commit. The production bundle emits a non-blocking chunk-size warning.
 
 Automated checks do not replace browser playtesting. Actual WebGL gameplay, real-device multitouch, offline restart after PWA installation, mobile performance, and Android packaging remain **NOT TESTED**.
 
