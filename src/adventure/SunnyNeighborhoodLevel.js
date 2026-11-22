@@ -16,15 +16,17 @@ function mesh(geometry, material, x, y, z, parent, castShadow = true) {
 }
 
 export class SunnyNeighborhoodLevel {
-  constructor(scene) {
+  constructor(scene, options = {}) {
     this.scene = scene;
+    this.options = options;
+    this.levelNumber = options.levelNumber === 2 ? 2 : 1;
     this.group = new THREE.Group();
     scene.add(this.group);
     this.platforms = [];
     this.collectibles = [];
     this.enemies = [];
-    this.checkpointX = 22;
-    this.exitX = 40;
+    this.checkpointX = this.levelNumber === 2 ? 24 : 22;
+    this.exitX = this.levelNumber === 2 ? 42 : 40;
     this.buildEnvironment();
     this.buildPlatforms();
     this.buildCollectibles();
@@ -34,12 +36,12 @@ export class SunnyNeighborhoodLevel {
   }
 
   buildEnvironment() {
-    const sky = new THREE.Color('#8bdcff');
+    const sky = new THREE.Color(this.levelNumber === 2 ? '#f6c98b' : '#8bdcff');
     this.scene.background = sky;
-    this.scene.fog = new THREE.Fog('#a6e8ff', 38, 105);
-    const hemi = new THREE.HemisphereLight('#e8faff', '#66834c', 1.8);
+    this.scene.fog = new THREE.Fog(this.levelNumber === 2 ? '#f8dfb4' : '#a6e8ff', 38, 105);
+    const hemi = new THREE.HemisphereLight(this.levelNumber === 2 ? '#fff1dd' : '#e8faff', '#66834c', 1.8);
     this.group.add(hemi);
-    const sun = new THREE.DirectionalLight('#fff1cf', 2.6);
+    const sun = new THREE.DirectionalLight(this.levelNumber === 2 ? '#ffdda5' : '#fff1cf', 2.6);
     sun.position.set(-12, 22, 18);
     sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
@@ -65,7 +67,9 @@ export class SunnyNeighborhoodLevel {
       this.group.add(cloud);
     }
 
-    const houseColors = ['#ffd47a', '#f5a8a0', '#a8d5f5', '#f0c2e7'];
+    const houseColors = this.levelNumber === 2
+      ? ['#f1b86f', '#e78b80', '#86b9dc', '#e3a7cd']
+      : ['#ffd47a', '#f5a8a0', '#a8d5f5', '#f0c2e7'];
     for (let i = 0; i < 5; i++) {
       const x = -12 + i * 12.5;
       const house = new THREE.Group();
@@ -106,11 +110,19 @@ export class SunnyNeighborhoodLevel {
 
   buildPlatforms() {
     // A continuous safe route makes the first level completable while optional raised routes teach jumping.
-    this.addPlatform(16.2, 0, 53, 1, true);
-    this.addPlatform(5.5, 1.7, 3.8, 0.5);
-    this.addPlatform(11.4, 2.45, 3.6, 0.5);
-    this.addPlatform(19.8, 1.65, 3.8, 0.5);
-    this.addPlatform(28.2, 1.95, 4.2, 0.5);
+    this.addPlatform(16.2, 0, 55, 1, true);
+    if (this.levelNumber === 2) {
+      this.addPlatform(4.8, 1.55, 3.8, 0.5);
+      this.addPlatform(10.4, 2.35, 3.8, 0.5);
+      this.addPlatform(17.5, 1.8, 4.0, 0.5);
+      this.addPlatform(25.2, 2.25, 4.0, 0.5);
+      this.addPlatform(33.5, 1.85, 4.2, 0.5);
+    } else {
+      this.addPlatform(5.5, 1.7, 3.8, 0.5);
+      this.addPlatform(11.4, 2.45, 3.6, 0.5);
+      this.addPlatform(19.8, 1.65, 3.8, 0.5);
+      this.addPlatform(28.2, 1.95, 4.2, 0.5);
+    }
 
     const grass = standard('#75c95c');
     const path = mesh(new THREE.BoxGeometry(53, 0.08, 1.72), grass, 16.2, 0.03, 0, this.group);
@@ -140,16 +152,18 @@ export class SunnyNeighborhoodLevel {
   }
 
   buildCollectibles() {
-    for (const [x, y] of [[1, 1.4], [2, 1.5], [3, 1.4], [5.5, 2.8], [11.4, 3.5], [15, 1.45], [20, 2.75], [25, 1.45], [28.2, 3.0], [33, 1.45]]) {
-      this.addCollectible('coin', x, y);
-    }
-    this.addCollectible('heart', 8.8, 1.5);
-    this.addCollectible('shard', 31, 1.8);
+    const route = this.levelNumber === 2
+      ? [[1, 1.4], [2.2, 1.5], [4.8, 2.65], [7.3, 1.4], [10.4, 3.1], [14.3, 1.4], [17.5, 2.7], [22, 1.4], [25.2, 3.0], [29, 1.4], [33.5, 2.6], [38, 1.4]]
+      : [[1, 1.4], [2, 1.5], [3, 1.4], [5.5, 2.8], [11.4, 3.5], [15, 1.45], [20, 2.75], [25, 1.45], [28.2, 3.0], [33, 1.45]];
+    for (const [x, y] of route) this.addCollectible('coin', x, y);
+    this.addCollectible('heart', this.levelNumber === 2 ? 13.2 : 8.8, 1.5);
+    this.addCollectible('shard', this.levelNumber === 2 ? 36 : 31, 1.8);
   }
 
   buildEnemies() {
     const enemyMat = standard('#6373a6', 0.34, 0.22);
-    for (const startX of [16.2, 34.2]) {
+    const enemySpawns = this.levelNumber === 2 ? [13.5, 29.5, 38.5] : [16.2, 34.2];
+    for (const startX of enemySpawns) {
       const group = new THREE.Group();
       mesh(new THREE.SphereGeometry(0.55, 14, 10), enemyMat, 0, 0.62, 0, group);
       const indicator = mesh(new THREE.BoxGeometry(0.72, 0.15, 0.16), glow('#ff766b'), 0, 0.72, 0.44, group, false);
@@ -159,7 +173,8 @@ export class SunnyNeighborhoodLevel {
       }
       group.position.set(startX, 0, 0.55);
       this.group.add(group);
-      this.enemies.push({ ...createEnemyState(startX, startX - 2.3, startX + 2.3, 1.5), group, indicator });
+      const routeHalfWidth = this.levelNumber === 2 ? 1.7 : 2.3;
+      this.enemies.push({ ...createEnemyState(startX, startX - routeHalfWidth, startX + routeHalfWidth, this.levelNumber === 2 ? 1.7 : 1.5), group, indicator });
     }
   }
 
