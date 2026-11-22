@@ -16,8 +16,10 @@
 - Benji's Normal, Blaze, Shock and Titan forms, cycled with T / FORM. Blaze has faster movement and a forward flame strike; Shock has a stronger jump and radial pulse; Titan moves more slowly, performs a grounded stomp and takes 50% less damage.
 - Shin Toy Star projectile and seven-shot Star Burst; fixed-capacity pooled projectile entities.
 - Robo Bug patrol, alert, chase and cooldown-based attack AI; two-hit enemy health.
-- Seven distinct playable Sunny Neighborhood stages, levels 1–7, with separate platform layouts, dusk lighting in level 3, a festival-themed level 4, riverfront park level 5, Clocktower Climb level 6 and Rooftop Relay level 7, collectible routes, checkpoints, portal exits and increasing Robo Bug pressure.
-- 40-level, five-world campaign catalog with boss/world boundaries matching the product specification. Levels 1–7 are currently playable; level 8 and later stages are not yet built.
+- Seven authored Sunny Neighborhood stages, levels 1–7, with separate platform layouts, dusk lighting in level 3, a festival-themed level 4, riverfront park level 5, Clocktower Climb level 6 and Rooftop Relay level 7.
+- Levels 8–40 are now playable procedural stages, distributed across School Playground, Forest of Forgotten Toys, Alien Tech City and Time-Travel Castle. Each receives a world-specific palette/landmark set, extended ground route, generated raised platforms, coin route, heart, hidden coin, Time Shard, checkpoint, enemies and exit.
+- Five boss-gated stages are implemented at levels 8, 16, 24, 32 and 40. Each boss has a larger visual model, 12 health, an enlarged projectile hitbox and blocks the exit until defeated.
+- Full 40-level campaign catalog is playable in the browser game. Levels 1–7 have authored stage layouts; levels 8–40 currently use procedural layouts and world themes. Five boss gates are active at the end of each world.
 - Versioned campaign save for completed levels, selected character and total coins; malformed save data is rejected before writing.
 - Per-level checkpoint save and safe fallback if storage is unavailable/corrupt.
 - HUD, menu, pause/resume, character controls, basic damage/respawn and level-completion progression.
@@ -27,10 +29,10 @@
 ## Automated validation
 
 Latest completed validation run:
-- **PASS:** 46 of 46 Node unit tests, including Benji form abilities, character-specific physics tuning, campaign progression and all seven Sunny Neighborhood stage layouts.
+- **PASS:** 47 of 47 Node unit tests, including campaign catalog, all 40 stage constructors, all five boss gates, Benji form abilities, character-specific physics tuning and progression.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
-- **Verified run:** [GitHub Actions · run 45043894718](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45043894718).
+- **Verified run:** [GitHub Actions · run 45044219040](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45044219040).
 
 The production build may emit a non-blocking bundle-size warning.
 
@@ -45,8 +47,8 @@ The production build may emit a non-blocking bundle-size warning.
 
 ## Remaining implementation
 
-- Sunny Neighborhood level 8, including the Neighborhood Guardian boss, and School Playground levels 9–16, followed by the remaining three worlds (levels 17–40).
-- Remaining enemy families, advanced enemy AI and five boss encounters.
+- Hand-authored, individually designed level layouts for levels 8–40; the current versions are procedural variants.
+- Remaining enemy families (the current generated campaign uses Robo Bugs); multi-phase boss patterns and boss-specific attacks.
 - Full combat feedback, effects/audio, checkpoints and three-star level ratings.
 - Nobi's complete aerial kit; Benji ability balancing and visual effects.
 - Full achievements, settings, leaderboard, tutorial, cinematics/dialogue and final victory flow.
