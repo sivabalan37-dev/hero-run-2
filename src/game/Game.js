@@ -15,18 +15,19 @@ export class Game {
     this.totalCoins = loadNumber('hero-run-2-total-coins', 0);
     this.totalShards = loadNumber('hero-run-2-total-shards', 0);
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('#9ac9d4');
-    this.scene.fog = new THREE.Fog('#9ac9d4', 28, 125);
-    this.camera = new THREE.PerspectiveCamera(57, 1, 0.1, 250);
-    this.camera.position.set(0, 6.5, 11.5);
+    this.scene.background = new THREE.Color('#efb18f');
+    this.scene.fog = new THREE.Fog('#efb18f', 42, 178);
+    this.camera = new THREE.PerspectiveCamera(55, 1, 0.1, 380);
+    this.camera.position.set(0, 6.8, 12.2);
     this.camera.lookAt(0, 1.25, -10);
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.7));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8));
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.08;
+    this.renderer.toneMappingExposure = 1.18;
+    this.renderer.setClearColor('#efb18f', 1);
     this.mount.appendChild(this.renderer.domElement);
     this.addLights();
     this.world = new World(this.scene);
@@ -47,12 +48,28 @@ export class Game {
   }
 
   addLights() {
-    const hemi = new THREE.HemisphereLight('#e6f6ff', '#34445d', 2.0); this.scene.add(hemi);
-    const sun = new THREE.DirectionalLight('#fff0c4', 3.0);
-    sun.position.set(-8, 17, 8); sun.castShadow = true;
-    sun.shadow.mapSize.set(1024, 1024);
-    sun.shadow.camera.left = -16; sun.shadow.camera.right = 16; sun.shadow.camera.top = 20; sun.shadow.camera.bottom = -10;
+    const hemi = new THREE.HemisphereLight('#dff5ff', '#24384b', 1.75);
+    this.scene.add(hemi);
+
+    const sun = new THREE.DirectionalLight('#fff0d6', 3.7);
+    sun.position.set(-15, 23, 13);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.camera.left = -19; sun.shadow.camera.right = 19;
+    sun.shadow.camera.top = 24; sun.shadow.camera.bottom = -15;
+    sun.shadow.camera.near = 1; sun.shadow.camera.far = 70;
+    sun.shadow.bias = -0.00018;
+    sun.shadow.normalBias = 0.035;
+    sun.shadow.radius = 4;
     this.scene.add(sun);
+
+    const coolFill = new THREE.DirectionalLight('#65dfff', 0.7);
+    coolFill.position.set(11, 8, -16);
+    this.scene.add(coolFill);
+
+    const sunsetRim = new THREE.DirectionalLight('#ff936e', 0.95);
+    sunsetRim.position.set(-7, 8, -22);
+    this.scene.add(sunsetRim);
   }
 
   resize() {
