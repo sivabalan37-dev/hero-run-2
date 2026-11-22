@@ -31,8 +31,12 @@ function overlapsX(body, platform) {
 }
 
 /** Fixed-step AABB platform physics. Body y is the character's feet. */
-export function stepBody(body, input, platforms, dt, bounds = null) {
+export function stepBody(body, input, platforms, dt, bounds = null, tuning = null) {
   if (!(dt > 0) || dt > 0.05) throw new RangeError('Physics dt must be between 0 and 0.05 seconds');
+
+  const moveSpeed = Number.isFinite(tuning?.moveSpeed) ? Math.max(0, Math.min(20, tuning.moveSpeed)) : PHYSICS.moveSpeed;
+  const acceleration = Number.isFinite(tuning?.acceleration) ? Math.max(0, Math.min(200, tuning.acceleration)) : PHYSICS.acceleration;
+  const jumpSpeed = Number.isFinite(tuning?.jumpSpeed) ? Math.max(0, Math.min(20, tuning.jumpSpeed)) : PHYSICS.jumpSpeed;
 
   if (input.jumpPressed) body.jumpBuffer = PHYSICS.jumpBufferSeconds;
   else body.jumpBuffer = Math.max(0, body.jumpBuffer - dt);
@@ -42,8 +46,8 @@ export function stepBody(body, input, platforms, dt, bounds = null) {
 
   const move = Math.max(-1, Math.min(1, input.move || 0));
   if (move) body.facing = Math.sign(move);
-  const targetSpeed = move * PHYSICS.moveSpeed;
-  body.vx = approach(body.vx, targetSpeed, (move ? PHYSICS.acceleration : PHYSICS.friction) * dt);
+  const targetSpeed = move * moveSpeed;
+  body.vx = approach(body.vx, targetSpeed, (move ? acceleration : PHYSICS.friction) * dt);
 
   // Only solid-sided blocks stop horizontal motion; raised platforms are one-way ledges.
   const oldLeft = body.x - body.width / 2;
@@ -99,7 +103,7 @@ export function stepBody(body, input, platforms, dt, bounds = null) {
   }
 
   if (body.jumpBuffer > 0 && (body.grounded || body.coyoteTimer > 0)) {
-    body.vy = PHYSICS.jumpSpeed;
+    body.vy = jumpSpeed;
     body.grounded = false;
     body.coyoteTimer = 0;
     body.jumpBuffer = 0;
