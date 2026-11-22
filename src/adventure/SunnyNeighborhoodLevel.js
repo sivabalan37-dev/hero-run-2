@@ -103,7 +103,7 @@ export class SunnyNeighborhoodLevel {
 
     if (this.levelNumber === 4) {
       const poleMat = standard('#76506b');
-      const bannerMats = ['#ef476f', '#ffd166', '#06d6a0', '#118ab2'].map(standard);
+      const bannerMats = ['#ef476f', '#ffd166', '#06d6a0', '#118ab2'].map(color => standard(color));
       for (let i = 0; i < 6; i++) {
         const x = -1 + i * 8.4;
         mesh(new THREE.CylinderGeometry(0.07, 0.1, 4.3, 7), poleMat, x, 2.15, -2.1, this.group);
