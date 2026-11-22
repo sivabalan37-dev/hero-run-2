@@ -30,7 +30,7 @@ export class SunnyNeighborhoodLevel {
     this.collectibles = [];
     this.enemies = [];
     this.exitX = this.levelNumber <= 7 ? [0,40,42,44,46,50,54,58][this.levelNumber] : 58 + (this.levelNumber - 7) * 4;
-    this.checkpointX = this.exitX - (this.isBossLevel ? 12 : 16);
+    this.checkpointX = this.levelNumber <= 7 ? [0,22,24,26,30,34,38,42][this.levelNumber] : this.exitX - (this.isBossLevel ? 12 : 16);
     this.buildEnvironment();
     this.buildPlatforms();
     this.buildCollectibles();
@@ -262,7 +262,7 @@ export class SunnyNeighborhoodLevel {
         this.addPlatform(x, height, 3.2 + (i % 2) * 0.5, 0.5);
       }
     }
-    const grass = standard(this.worldIndex === 0 ? '#75c95c' : worldTheme.ground);
+    const grass = standard(this.worldIndex === 0 ? '#75c95c' : ['#75c95c','#68b8a0','#6f9d52','#4166a8','#7d638d'][this.worldIndex]);
     const pathWidth = this.levelNumber >= 8 ? this.exitX + 12 : this.levelNumber === 7 ? 84 : this.levelNumber === 6 ? 76 : this.levelNumber === 5 ? 70 : this.levelNumber === 4 ? 62 : this.levelNumber === 3 ? 58 : 53;
     const path = mesh(new THREE.BoxGeometry(pathWidth, 0.08, 1.72), grass, this.levelNumber >= 8 ? this.exitX / 2 : this.levelNumber === 7 ? 22 : this.levelNumber === 6 ? 20 : this.levelNumber === 5 ? 18.5 : 16.2, 0.03, 0, this.group);
     path.receiveShadow = true;
