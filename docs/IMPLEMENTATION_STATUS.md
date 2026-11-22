@@ -27,7 +27,7 @@
 ## Automated validation
 
 Latest completed validation run:
-- **PASS:** 33 of 33 Node unit tests, covering physics/glide, combat/projectile pooling, Robo Bug AI, character models/forms, progression/unlocks/save validation, level catalog and first two stage layouts/hidden items.
+- **PASS:** 36 of 36 Node unit tests, covering physics/glide, combat/projectile pooling, Robo Bug AI, character models/forms, progression/unlocks/save validation, level catalog and first two stage layouts/hidden items.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
 
