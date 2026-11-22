@@ -11,7 +11,7 @@ export function createEnemyState(x, minX, maxX, speed = 1.45) {
   };
 }
 
-/** Small deterministic AI state machine for a ground Robo Bug. */
+/** Deterministic ground-enemy AI. Hero y is the feet position. */
 export function stepEnemy(enemy, hero, dt) {
   enemy.attackPulse = false;
   if (!enemy.alive) {
@@ -23,10 +23,10 @@ export function stepEnemy(enemy, hero, dt) {
   enemy.hurtTimer = Math.max(0, enemy.hurtTimer - dt);
 
   const dx = hero.x - enemy.x;
-  const dy = Math.abs((hero.y || 0) - 0);
+  const heroHeight = Math.max(0, hero.y || 0);
   const distance = Math.abs(dx);
 
-  if (dy > 3.2 || distance > 7.5) {
+  if (heroHeight > 3.2 || distance > 7.5) {
     enemy.state = 'patrol';
     enemy.x += enemy.direction * enemy.speed * dt;
     if (enemy.x >= enemy.maxX) {
@@ -40,7 +40,7 @@ export function stepEnemy(enemy, hero, dt) {
   }
 
   enemy.direction = dx < 0 ? -1 : 1;
-  if (distance <= 1.35) {
+  if (distance <= 1.35 && heroHeight <= 1.05) {
     enemy.state = 'attack';
     if (enemy.attackCooldown <= 0) {
       enemy.attackPulse = true;
