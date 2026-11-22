@@ -1,13 +1,24 @@
 import '../styles.css';
-import { Game } from './game/Game.js';
-import { HUD } from './ui/HUD.js';
+import { AdventureGame } from './adventure/AdventureGame.js';
 
-const hud = new HUD();
-const game = new Game({ mount: document.querySelector('#game-canvas'), hud });
+const mount = document.querySelector('#game-canvas');
+try {
+  new AdventureGame({ mount });
+} catch (error) {
+  console.error('Hero Run failed to initialize:', error);
+  document.querySelector('#overlay-title').textContent = 'UNABLE TO START';
+  document.querySelector('#overlay-message').textContent = error instanceof Error
+    ? error.message
+    : 'The 3D game could not initialize on this browser.';
+  document.querySelector('#start-button').disabled = true;
+  document.querySelector('#overlay').classList.remove('hidden');
+  document.querySelector('#hud').classList.add('hidden');
+}
 
-hud.el.start.addEventListener('click', async () => {
-  if (game.state === 'paused') game.resume();
-  else await game.start();
-});
-hud.el.pause.addEventListener('click', () => game.state === 'paused' ? game.resume() : game.pause());
-window.addEventListener('beforeunload', () => game.destroy(), { once: true });
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(error => {
+      console.warn('Offline cache could not be registered:', error);
+    });
+  }, { once: true });
+}
