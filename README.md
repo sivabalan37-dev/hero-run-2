@@ -5,7 +5,7 @@
 
 This branch begins the conversion of Hero Run into the approved 3D side-scrolling platform adventure. The older endless-runner implementation remains under `src/game/` for reference; the current browser entry point now loads the new adventure modules under `src/adventure/`.
 
-## Current playable slice
+## Implemented first-level slice (browser playtesting pending)
 
 - Sunny Neighborhood level 1 scene with a side camera and procedural low-poly scenery.
 - Shin procedural hero with walk animation.
@@ -37,6 +37,10 @@ npm test
 npm run build
 npm run dev
 ```
+
+## Validation status
+
+The branch CI currently reports **8/8 unit tests passing** and a successful Vite production build. Automated checks do not replace browser playtesting: WebGL rendering, touch interaction, installed-PWA offline startup and Android-device behavior are still **not tested**. The build currently emits a non-blocking bundle-size warning (about 558 KB minified, 141 KB gzip).
 
 ## Planned campaign work
 
