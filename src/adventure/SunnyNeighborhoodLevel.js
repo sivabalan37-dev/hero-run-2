@@ -29,7 +29,7 @@ export class SunnyNeighborhoodLevel {
     this.platforms = [];
     this.collectibles = [];
     this.enemies = [];
-    this.exitX = this.levelNumber <= 7 ? [0,40,42,44,46,50,54,58][this.levelNumber] : 40 + (this.levelNumber - 8) * 2;
+    this.exitX = this.levelNumber <= 7 ? [0,40,42,44,46,50,54,58][this.levelNumber] : 58 + (this.levelNumber - 7) * 4;
     this.checkpointX = this.exitX - (this.isBossLevel ? 12 : 16);
     this.buildEnvironment();
     this.buildPlatforms();
@@ -205,7 +205,7 @@ export class SunnyNeighborhoodLevel {
 
   buildPlatforms() {
     // A continuous safe route makes the first level completable while optional raised routes teach jumping.
-    this.addPlatform(this.levelNumber === 6 ? 20 : this.levelNumber === 5 ? 18.5 : 16.2, 0, this.levelNumber === 6 ? 78 : this.levelNumber === 5 ? 72 : this.levelNumber === 4 ? 64 : this.levelNumber === 3 ? 60 : 55, 1, true);
+    this.addPlatform(this.levelNumber >= 8 ? this.exitX / 2 : this.levelNumber === 7 ? 22 : this.levelNumber === 6 ? 20 : this.levelNumber === 5 ? 18.5 : 16.2, 0, this.levelNumber >= 8 ? this.exitX + 14 : this.levelNumber === 7 ? 86 : this.levelNumber === 6 ? 78 : this.levelNumber === 5 ? 72 : this.levelNumber === 4 ? 64 : this.levelNumber === 3 ? 60 : 55, 1, true);
     if (this.levelNumber === 6) {
       this.addPlatform(5.5, 1.65, 3.8, 0.5);
       this.addPlatform(12.4, 2.4, 3.8, 0.5);
@@ -263,8 +263,8 @@ export class SunnyNeighborhoodLevel {
       }
     }
     const grass = standard(this.worldIndex === 0 ? '#75c95c' : worldTheme.ground);
-    const pathWidth = this.levelNumber === 7 ? 84 : this.levelNumber === 6 ? 76 : this.levelNumber === 5 ? 70 : this.levelNumber === 4 ? 62 : this.levelNumber === 3 ? 58 : 53;
-    const path = mesh(new THREE.BoxGeometry(pathWidth, 0.08, 1.72), grass, this.levelNumber === 7 ? 22 : this.levelNumber === 6 ? 20 : this.levelNumber === 5 ? 18.5 : 16.2, 0.03, 0, this.group);
+    const pathWidth = this.levelNumber >= 8 ? this.exitX + 12 : this.levelNumber === 7 ? 84 : this.levelNumber === 6 ? 76 : this.levelNumber === 5 ? 70 : this.levelNumber === 4 ? 62 : this.levelNumber === 3 ? 58 : 53;
+    const path = mesh(new THREE.BoxGeometry(pathWidth, 0.08, 1.72), grass, this.levelNumber >= 8 ? this.exitX / 2 : this.levelNumber === 7 ? 22 : this.levelNumber === 6 ? 20 : this.levelNumber === 5 ? 18.5 : 16.2, 0.03, 0, this.group);
     path.receiveShadow = true;
   }
 
@@ -336,7 +336,7 @@ export class SunnyNeighborhoodLevel {
       const bodyMat = isBoss ? standard(this.worldIndex === 0 ? '#d95c56' : this.worldIndex === 1 ? '#5e6f96' : this.worldIndex === 2 ? '#6d9a52' : this.worldIndex === 3 ? '#6c59c4' : '#b58ad5', 0.38, 0.35) : enemyMat;
       mesh(new THREE.SphereGeometry(isBoss ? 1.15 : 0.55, 16, 12), bodyMat, 0, isBoss ? 1.1 : 0.62, 0, group);
       if (isBoss) {
-        mesh(new THREE.TorusGeometry(1.05, 0.13, 8, 24), standard(worldTheme?.accent || '#ffd166', 0.3, 0.55), 0, 1.1, 0.12, group, false);
+        mesh(new THREE.TorusGeometry(1.05, 0.13, 8, 24), standard(['#ffd166','#ffe08a','#e9c46a','#55e6ff','#f4d58d'][this.worldIndex], 0.3, 0.55), 0, 1.1, 0.12, group, false);
         group.scale.setScalar(1.65);
       }
       const indicator = mesh(new THREE.BoxGeometry(0.72, 0.15, 0.16), glow('#ff766b'), 0, 0.72, 0.44, group, false);
