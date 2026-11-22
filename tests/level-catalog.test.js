@@ -12,7 +12,7 @@ test('campaign maps eight levels to each of its five worlds', () => {
 });
 
 test('only implemented levels are advertised as playable', () => {
-  assert.deepEqual(PLAYABLE_LEVELS, [1, 2, 3, 4, 5, 6]);
+  assert.deepEqual(PLAYABLE_LEVELS, [1, 2, 3, 4, 5, 6, 7]);
   assert.equal(getLevelInfo(2).playable, true);
   assert.equal(getLevelInfo(3).playable, true);
   assert.equal(getLevelInfo(4).playable, true);
@@ -20,7 +20,9 @@ test('only implemented levels are advertised as playable', () => {
   assert.equal(getLevelInfo(5).title, 'Sunny Neighborhood · Riverside Park');
   assert.equal(getLevelInfo(6).playable, true);
   assert.equal(getLevelInfo(6).title, 'Sunny Neighborhood · Clocktower Climb');
-  assert.equal(getLevelInfo(7).playable, false);
+  assert.equal(getLevelInfo(7).playable, true);
+  assert.equal(getLevelInfo(7).title, 'Sunny Neighborhood · Rooftop Relay');
+  assert.equal(getLevelInfo(8).playable, false);
 });
 
 test('level catalog rejects invalid level numbers', () => {
