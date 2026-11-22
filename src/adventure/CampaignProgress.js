@@ -17,7 +17,7 @@ function nextSequentialLevel(completedLevels) {
   const completed = new Set(completedLevels);
   let next = 1;
   while (completed.has(next) && next <= CAMPAIGN_LEVEL_COUNT) next++;
-  return Math.min(next, CAMPAIGN_LEVEL_COUNT);
+  return Math.min(next, CAMPAIGN_LEVEL_COUNT + 1);
 }
 
 export function createProgressState(raw = null) {
@@ -85,7 +85,12 @@ export function saveCampaignProgress(progress, storage, key = 'hero-run-campaign
   try {
     const target = storage === undefined ? globalThis.localStorage : storage;
     if (!target || typeof target.setItem !== 'function') return false;
+    if (!progress || progress.version !== 1 || !Array.isArray(progress.completedLevels)) return false;
+    if (!Number.isFinite(progress.totalCoins)) return false;
+    const normalizedLevels = cleanCompletedLevels(progress.completedLevels);
+    if (normalizedLevels.length !== progress.completedLevels.length) return false;
     const safe = createProgressState(progress);
+    if (safe.selectedCharacter !== progress.selectedCharacter) return false;
     target.setItem(key, JSON.stringify(safe));
     return true;
   } catch {
