@@ -4,7 +4,7 @@
 
 Hero Run 2 is a browser-based 3D endless runner built with HTML, CSS, JavaScript, Three.js and Vite. It runs in a browser and does not require Unity or C#.
 
-## Game features
+## Latest graphics update\n\nThe fantasy-kingdom visual pass adds a bright blue daytime sky, floating grassy islands, waterfall ribbons, lush trees, distant castle towers, and a red cape detail on the hero. Existing Three.js gameplay and touch/keyboard controls are preserved.\n\nUnity source findings and conversion gaps are documented in [`docs/UNITY_TO_THREEJS_AUDIT.md`](docs/UNITY_TO_THREEJS_AUDIT.md).\n\n## Game features
 
 - Three-lane auto-running gameplay with keyboard and mobile touch controls.
 - Animated hero movement: run, jump, double-jump, slide, attack and special attack.
