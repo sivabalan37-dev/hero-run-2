@@ -129,7 +129,7 @@ export class SunnyNeighborhoodLevel {
     path.receiveShadow = true;
   }
 
-  addCollectible(type, x, y) {
+  addCollectible(type, x, y, { hidden = false } = {}) {
     const group = new THREE.Group();
     const color = type === 'coin' ? '#ffd44f' : type === 'heart' ? '#ff647b' : '#61eaff';
     const material = new THREE.MeshStandardMaterial({
@@ -147,8 +147,9 @@ export class SunnyNeighborhoodLevel {
       }
     }
     group.position.set(x, y, 0.45);
+    group.visible = !hidden;
     this.group.add(group);
-    this.collectibles.push({ type, x, y, group, collected: false });
+    this.collectibles.push({ type, x, y, group, collected: false, hidden });
   }
 
   buildCollectibles() {
@@ -158,6 +159,7 @@ export class SunnyNeighborhoodLevel {
     for (const [x, y] of route) this.addCollectible('coin', x, y);
     this.addCollectible('heart', this.levelNumber === 2 ? 13.2 : 8.8, 1.5);
     this.addCollectible('shard', this.levelNumber === 2 ? 36 : 31, 1.8);
+    this.addCollectible('coin', this.levelNumber === 2 ? 21.5 : 9.5, 2.9, { hidden: true });
   }
 
   buildEnemies() {
@@ -199,6 +201,17 @@ export class SunnyNeighborhoodLevel {
     mesh(new THREE.PlaneGeometry(1.55, 3.45), portal, 0, 1.9, -0.05, this.exit, false);
     this.exit.position.set(this.exitX, 0, 0.8);
     this.group.add(this.exit);
+  }
+
+  revealHidden() {
+    let revealed = 0;
+    for (const item of this.collectibles) {
+      if (!item.hidden || item.collected) continue;
+      item.hidden = false;
+      item.group.visible = true;
+      revealed++;
+    }
+    return revealed;
   }
 
   update(dt, heroBody = { x: -100, y: 0 }) {
