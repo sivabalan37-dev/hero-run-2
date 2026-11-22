@@ -46,7 +46,7 @@ export class World {
     this.clock = 0;
     this.materials = {
       asphalt: standard('#ffffff', 0.92, 0.02),
-      trim: glowing('#25d9ef', 1.55),
+      trim: glowing('#63d94c', 0.7),
       gold: glowing('#ffc85a', 1.15),
       darkMetal: standard('#26394b', 0.42, 0.58),
       pine: standard('#176b67', 0.86),
@@ -55,11 +55,12 @@ export class World {
       enemy: standard('#b93750', 0.48, 0.16)
     };
     this.makeEnvironment();
+    this.makeFloatingKingdom();
     for (let i = 0; i < 8; i++) this.spawnSection();
   }
 
   makeEnvironment() {
-    const ground = new THREE.Mesh(new THREE.BoxGeometry(46, 0.8, 280), standard('#172d3d', 1));
+    const ground = new THREE.Mesh(new THREE.BoxGeometry(46, 0.8, 280), standard('#416c45', 1));
     ground.position.set(0, -0.55, -105);
     ground.receiveShadow = true;
     this.group.add(ground);
@@ -73,8 +74,8 @@ export class World {
     road.receiveShadow = true;
     this.group.add(road);
 
-    const shoulderMat = standard('#536b78', 0.55, 0.25);
-    const curbMat = standard('#d6e4df', 0.45, 0.1);
+    const shoulderMat = standard('#806a43', 0.75, 0.05);
+    const curbMat = standard('#7cc84b', 0.65, 0.02);
     for (const side of [-1, 1]) {
       const shoulder = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.28, 280), shoulderMat);
       shoulder.position.set(side * 5.02, -0.04, -105);
@@ -132,6 +133,74 @@ export class World {
       }
       cloud.position.set(-25 + i * 6.2, 19 + (i % 3) * 2.4, -75 - i * 10);
       this.group.add(cloud);
+    }
+  }
+
+
+  makeFloatingKingdom() {
+    const grass = standard('#42b83c', 0.9);
+    const grassLight = standard('#79df45', 0.86);
+    const soil = standard('#8b5733', 1);
+    const stone = standard('#a9b4ae', 0.92);
+    const water = new THREE.MeshBasicMaterial({ color: '#55e8ff', transparent: true, opacity: 0.68, side: THREE.DoubleSide });
+    const cloudMat = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 1, transparent: true, opacity: 0.86 });
+    const addIsland = (x, y, z, scale = 1) => {
+      const island = new THREE.Group();
+      const top = new THREE.Mesh(new THREE.CylinderGeometry(5.2 * scale, 3.6 * scale, 1.15 * scale, 9), grass);
+      top.position.y = 0; top.castShadow = true; top.receiveShadow = true; island.add(top);
+      const rock = new THREE.Mesh(new THREE.ConeGeometry(4.3 * scale, 4.8 * scale, 8), soil);
+      rock.position.y = -2.65 * scale; rock.rotation.y = 0.25; rock.castShadow = true; island.add(rock);
+      for (let i = 0; i < 16; i++) {
+        const tuft = new THREE.Mesh(new THREE.ConeGeometry(.13 * scale, .42 * scale, 5), i % 2 ? grassLight : grass);
+        const a = i / 16 * Math.PI * 2;
+        tuft.position.set(Math.cos(a) * 4.5 * scale, .62 * scale, Math.sin(a) * 4.5 * scale);
+        island.add(tuft);
+      }
+      for (let i = 0; i < 3; i++) {
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.16 * scale, .22 * scale, 1.5 * scale, 7), soil);
+        trunk.position.set((i - 1) * 1.1 * scale, 1.25 * scale, -1.4 * scale);
+        island.add(trunk);
+        const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(.95 * scale, 1), grassLight);
+        crown.position.copy(trunk.position).y += 1.15 * scale; crown.castShadow = true; island.add(crown);
+      }
+      const fall = new THREE.Mesh(new THREE.PlaneGeometry(2.5 * scale, 8 * scale), water);
+      fall.position.set(0, -5.3 * scale, 0); island.add(fall);
+      island.position.set(x, y, z); this.group.add(island);
+      this.decor.push(island);
+      return island;
+    };
+    addIsland(-15, 5, -38, 1.05);
+    addIsland(16, 8, -56, .85);
+    addIsland(-24, 10, -83, .72);
+    addIsland(25, 6, -104, .9);
+    addIsland(-9, 13, -128, .72);
+
+    // Distant fantasy castle silhouette with red roofs, kept low-detail for mobile GPUs.
+    const castle = new THREE.Group();
+    const wallMat = standard('#e9e2d2', .88);
+    const roofMat = standard('#b72e52', .66);
+    const keep = new THREE.Mesh(new THREE.BoxGeometry(10, 5.2, 4), wallMat);
+    keep.position.y = 2.6; castle.add(keep);
+    for (let i = 0; i < 5; i++) {
+      const x = (i - 2) * 2.15;
+      const tower = new THREE.Mesh(new THREE.CylinderGeometry(.72, .86, 7, 8), wallMat);
+      tower.position.set(x, 4.3, i % 2 ? -1.7 : 1.5); castle.add(tower);
+      const roof = new THREE.Mesh(new THREE.ConeGeometry(1.05, 2.3, 8), roofMat);
+      roof.position.set(x, 8.9, i % 2 ? -1.7 : 1.5); castle.add(roof);
+    }
+    castle.position.set(0, 2, -151);
+    this.group.add(castle); this.decor.push(castle);
+
+    // Bright soft clouds and a blue sky layer behind the running course.
+    for (let i = 0; i < 22; i++) {
+      const cloud = new THREE.Group();
+      for (let j = 0; j < 5; j++) {
+        const puff = new THREE.Mesh(new THREE.SphereGeometry(1.25 + (j % 2) * .35, 10, 8), cloudMat);
+        puff.position.set(j * 1.35, Math.sin(j * 1.7) * .22, 0);
+        puff.scale.y = .58; cloud.add(puff);
+      }
+      cloud.position.set(-37 + (i % 8) * 10.5, 12 + (i % 4) * 2.6, -35 - Math.floor(i / 8) * 42);
+      this.group.add(cloud); this.decor.push(cloud);
     }
   }
 
