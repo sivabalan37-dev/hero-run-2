@@ -9,11 +9,11 @@
 
 - Three.js WebGL 2 renderer, landscape-aware orthographic side camera and responsive resize handling.
 - Fixed 60 Hz AABB platform movement with gravity, horizontal bounds, landing and underside collision, coyote time and jump buffering.
-- Procedural Shin character and basic walk/attack animation.
+- Procedural Shin character with basic movement and attack animation.
 - Pooled Toy Star projectiles and a seven-shot Star Burst special attack.
 - Robo Bug patrol, alert, chase and cooldown-based attack AI; two-hit enemy health.
 - Sunny Neighborhood level foundation: static platforms, low-poly scenery, coins, health pickup, Time Shard, patrolling Robo Bugs, checkpoint and portal.
-- Keyboard and pointer-based touch controls with independent pointer IDs.
+- Keyboard and pointer-based touch controls with independent pointer IDs; one-shot pointer actions are covered by the corrected input handler.
 - HUD, menu, pause/resume, basic damage/respawn and level-completion flow.
 - Versioned local checkpoint save with safe fallback if browser storage is unavailable or corrupt.
 - Production service worker and PWA manifest stored in Vite's public directory.
