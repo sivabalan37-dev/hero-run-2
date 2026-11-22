@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createEnemyState, stepEnemy } from './EnemyAI.js';
+import { getLevelInfo, WORLDS } from './LevelCatalog.js';
 
 const standard = (color, roughness = 0.78, metalness = 0) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -19,14 +20,17 @@ export class SunnyNeighborhoodLevel {
   constructor(scene, options = {}) {
     this.scene = scene;
     this.options = options;
-    this.levelNumber = [1, 2, 3, 4, 5, 6, 7].includes(options.levelNumber) ? options.levelNumber : 1;
+    this.levelNumber = Number.isInteger(options.levelNumber) && options.levelNumber >= 1 && options.levelNumber <= 40 ? options.levelNumber : 1;
+    this.info = getLevelInfo(this.levelNumber);
+    this.worldIndex = WORLDS.findIndex(world => this.levelNumber >= world.firstLevel && this.levelNumber <= world.lastLevel);
+    this.isBossLevel = this.info.isBossLevel;
     this.group = new THREE.Group();
     scene.add(this.group);
     this.platforms = [];
     this.collectibles = [];
     this.enemies = [];
-    this.checkpointX = this.levelNumber === 7 ? 42 : this.levelNumber === 6 ? 38 : this.levelNumber === 5 ? 34 : this.levelNumber === 4 ? 30 : this.levelNumber === 3 ? 26 : this.levelNumber === 2 ? 24 : 22;
-    this.exitX = this.levelNumber === 7 ? 58 : this.levelNumber === 6 ? 54 : this.levelNumber === 5 ? 50 : this.levelNumber === 4 ? 46 : this.levelNumber === 3 ? 44 : this.levelNumber === 2 ? 42 : 40;
+    this.exitX = this.levelNumber <= 7 ? [0,40,42,44,46,50,54,58][this.levelNumber] : 40 + (this.levelNumber - 8) * 2;
+    this.checkpointX = this.exitX - (this.isBossLevel ? 12 : 16);
     this.buildEnvironment();
     this.buildPlatforms();
     this.buildCollectibles();
@@ -42,9 +46,17 @@ export class SunnyNeighborhoodLevel {
     const festival = this.levelNumber === 4;
     const dusk = this.levelNumber === 3;
     const warm = this.levelNumber === 2;
-    const sky = new THREE.Color(rooftop ? '#e4a56f' : clocktower ? '#7c8fbd' : riverside ? '#8aaec8' : festival ? '#efa9a0' : dusk ? '#9e9bd8' : warm ? '#f6c98b' : '#8bdcff');
+    const worldPalettes = [null,
+      { sky: '#8bdcff', fog: '#a6e8ff', ground: '#75c95c', enemy: '#6373a6', accent: '#ffd166' },
+      { sky: '#9fc8f2', fog: '#c5d9ed', ground: '#68b8a0', enemy: '#557b9c', accent: '#ffe08a' },
+      { sky: '#8b9b79', fog: '#b5c49a', ground: '#6f9d52', enemy: '#596b48', accent: '#e9c46a' },
+      { sky: '#263b78', fog: '#6174a8', ground: '#4166a8', enemy: '#8d74d6', accent: '#55e6ff' },
+      { sky: '#51436f', fog: '#8c79a7', ground: '#7d638d', enemy: '#a56fbc', accent: '#f4d58d' },
+    ];
+    const worldTheme = worldPalettes[this.worldIndex];
+    const sky = new THREE.Color(this.worldIndex === 0 ? (rooftop ? '#e4a56f' : clocktower ? '#7c8fbd' : riverside ? '#8aaec8' : festival ? '#efa9a0' : dusk ? '#9e9bd8' : warm ? '#f6c98b' : '#8bdcff') : worldTheme.sky);
     this.scene.background = sky;
-    this.scene.fog = new THREE.Fog(rooftop ? '#f2c49a' : clocktower ? '#aeb4d0' : riverside ? '#b6d3d7' : festival ? '#f4c0a8' : dusk ? '#c6b4e2' : warm ? '#f8dfb4' : '#a6e8ff', 38, 105);
+    this.scene.fog = new THREE.Fog(this.worldIndex === 0 ? (rooftop ? '#f2c49a' : clocktower ? '#aeb4d0' : riverside ? '#b6d3d7' : festival ? '#f4c0a8' : dusk ? '#c6b4e2' : warm ? '#f8dfb4' : '#a6e8ff') : worldTheme.fog, 38, 105);
     const hemi = new THREE.HemisphereLight(rooftop ? '#ffe8c8' : clocktower ? '#e3e5ff' : riverside ? '#dff7ef' : festival ? '#ffe4cf' : dusk ? '#eadcff' : warm ? '#fff1dd' : '#e8faff', '#52627e', 1.8);
     this.group.add(hemi);
     const sun = new THREE.DirectionalLight(rooftop ? '#ffbd83' : clocktower ? '#d9d0ff' : riverside ? '#ffe0b0' : festival ? '#ffd18b' : dusk ? '#ffc7a4' : warm ? '#ffdda5' : '#fff1cf', 2.6);
@@ -101,7 +113,9 @@ export class SunnyNeighborhoodLevel {
       this.group.add(house);
     }
 
-    const treeTrunk = standard('#87553b');
+    if (this.worldIndex > 0) this.buildWorldLandmarks(worldTheme);
+
+    const treeTrunk = standard(this.worldIndex === 0 ? '#87553b' : worldTheme.accent);
     const treeLeaves = [standard('#42a65e'), standard('#78bd58'), standard('#2f8f5a')];
     for (let i = 0; i < 18; i++) {
       const x = -13 + i * 3.1;
@@ -152,6 +166,26 @@ export class SunnyNeighborhoodLevel {
         const banner = mesh(new THREE.BoxGeometry(1.25, 0.62, 0.08), bannerMats[i % bannerMats.length],
           x + 0.8, 3.55, -2.1, this.group, false);
         banner.rotation.z = -0.12;
+      }
+    }
+  }
+
+  buildWorldLandmarks(theme) {
+    const materials = [theme.accent, theme.ground, theme.enemy].map(color => standard(color, 0.55, 0.25));
+    for (let i = 0; i < 7; i++) {
+      const x = -8 + i * 11.5;
+      if (this.worldIndex === 1) {
+        const pillar = mesh(new THREE.BoxGeometry(2.2, 5.5 + (i % 3), 1.2), materials[i % 3], x, 2.7, -8, this.group);
+        mesh(new THREE.BoxGeometry(2.8, 0.35, 1.5), materials[(i + 1) % 3], x, 5.5 + (i % 3), -8, this.group);
+      } else if (this.worldIndex === 2) {
+        mesh(new THREE.CylinderGeometry(0.28, 0.5, 5.5, 7), standard('#76533b'), x, 2.75, -8, this.group);
+        mesh(new THREE.IcosahedronGeometry(2.2, 1), materials[i % 3], x, 6, -8, this.group);
+      } else if (this.worldIndex === 3) {
+        mesh(new THREE.BoxGeometry(2.2, 4.5, 1.2), materials[i % 3], x, 2.25, -8, this.group);
+        mesh(new THREE.TorusGeometry(1.15, 0.12, 8, 24), materials[(i + 1) % 3], x, 5.2, -8, this.group, false);
+      } else {
+        mesh(new THREE.ConeGeometry(2.2, 6 + (i % 2), 4), materials[i % 3], x, 3, -8, this.group);
+        mesh(new THREE.TorusGeometry(1.4, 0.12, 8, 24), materials[(i + 1) % 3], x, 5.4, -7.2, this.group, false);
       }
     }
   }
@@ -220,8 +254,15 @@ export class SunnyNeighborhoodLevel {
       for (const [x, y] of [[5.5,1.7],[12.5,2.5],[19.5,3.2],[26.5,2.4],[33.5,3.15],[40.5,2.5],[47.5,3.2],[54,2.2]]) this.addPlatform(x,y,4,0.5);
       const rooftopMat = standard('#5f647c');
       for (const x of [-2, 12, 27, 42, 55]) mesh(new THREE.BoxGeometry(7.5,0.35,4.8), rooftopMat, x, 3.8, -7.8, this.group);
+    } else if (this.levelNumber >= 8) {
+      const count = this.isBossLevel ? 9 : 6 + (this.levelNumber % 3);
+      for (let i = 0; i < count; i++) {
+        const x = 5 + i * ((this.exitX - 10) / Math.max(1, count - 1));
+        const height = 1.5 + ((i + this.levelNumber) % 4) * 0.42;
+        this.addPlatform(x, height, 3.2 + (i % 2) * 0.5, 0.5);
+      }
     }
-    const grass = standard('#75c95c');
+    const grass = standard(this.worldIndex === 0 ? '#75c95c' : worldTheme.ground);
     const pathWidth = this.levelNumber === 7 ? 84 : this.levelNumber === 6 ? 76 : this.levelNumber === 5 ? 70 : this.levelNumber === 4 ? 62 : this.levelNumber === 3 ? 58 : 53;
     const path = mesh(new THREE.BoxGeometry(pathWidth, 0.08, 1.72), grass, this.levelNumber === 7 ? 22 : this.levelNumber === 6 ? 20 : this.levelNumber === 5 ? 18.5 : 16.2, 0.03, 0, this.group);
     path.receiveShadow = true;
@@ -264,18 +305,40 @@ export class SunnyNeighborhoodLevel {
         : this.levelNumber === 3
           ? [[1, 1.4], [3.2, 1.4], [6.4, 2.7], [9.7, 1.4], [12.6, 3.5], [16.5, 1.4], [20.2, 2.8], [24, 1.4], [27.8, 3.75], [31.5, 1.4], [35.2, 3.0], [40.5, 2.6]]
           : [[1, 1.4], [2, 1.5], [3, 1.4], [5.5, 2.8], [11.4, 3.5], [15, 1.45], [20, 2.75], [25, 1.45], [28.2, 3.0], [33, 1.45]];
+    if (this.levelNumber >= 8) {
+      route.length = 0;
+      const count = 16 + (this.levelNumber % 4);
+      for (let i = 0; i < count; i++) {
+        const x = 1.5 + i * ((this.exitX - 6) / (count - 1));
+        const y = i % 3 === 1 ? 2.65 + ((i + this.levelNumber) % 2) * 0.45 : 1.4;
+        route.push([x, y]);
+      }
+    }
     for (const [x, y] of route) this.addCollectible('coin', x, y);
-    this.addCollectible('heart', this.levelNumber === 7 ? 35 : this.levelNumber === 6 ? 28 : this.levelNumber === 5 ? 22.5 : this.levelNumber === 4 ? 20.5 : this.levelNumber === 2 ? 13.2 : this.levelNumber === 3 ? 18.4 : 8.8, 1.5);
-    this.addCollectible('shard', this.levelNumber === 7 ? 55.2 : this.levelNumber === 6 ? 51.2 : this.levelNumber === 5 ? 47.2 : this.levelNumber === 4 ? 42.2 : this.levelNumber === 2 ? 36 : this.levelNumber === 3 ? 40 : 31, 1.8);
-    this.addCollectible('coin', this.levelNumber === 7 ? 48.5 : this.levelNumber === 6 ? 42.5 : this.levelNumber === 5 ? 37.5 : this.levelNumber === 4 ? 34.5 : this.levelNumber === 2 ? 21.5 : this.levelNumber === 3 ? 29.4 : 9.5, 2.9, { hidden: true });
+    const specialX = this.levelNumber >= 8 ? this.exitX - 9 : this.levelNumber === 7 ? 35 : this.levelNumber === 6 ? 28 : this.levelNumber === 5 ? 22.5 : this.levelNumber === 4 ? 20.5 : this.levelNumber === 2 ? 13.2 : this.levelNumber === 3 ? 18.4 : 8.8;
+    const shardX = this.levelNumber >= 8 ? this.exitX - (this.isBossLevel ? 2.4 : 4.8) : this.levelNumber === 7 ? 55.2 : this.levelNumber === 6 ? 51.2 : this.levelNumber === 5 ? 47.2 : this.levelNumber === 4 ? 42.2 : this.levelNumber === 2 ? 36 : this.levelNumber === 3 ? 40 : 31;
+    const hiddenX = this.levelNumber >= 8 ? this.exitX - 12 : this.levelNumber === 7 ? 48.5 : this.levelNumber === 6 ? 42.5 : this.levelNumber === 5 ? 37.5 : this.levelNumber === 4 ? 34.5 : this.levelNumber === 2 ? 21.5 : this.levelNumber === 3 ? 29.4 : 9.5;
+    this.addCollectible('heart', specialX, 1.5);
+    this.addCollectible('shard', shardX, 1.8);
+    this.addCollectible('coin', hiddenX, 2.9, { hidden: true });
   }
 
   buildEnemies() {
     const enemyMat = standard('#6373a6', 0.34, 0.22);
     const enemySpawns = this.levelNumber === 7 ? [9.5,16.8,23.8,30.8,37.8,44.8,50.5,55] : this.levelNumber === 6 ? [10.5, 18.5, 25.8, 33.8, 40.7, 46.8, 50.5] : this.levelNumber === 5 ? [9.8, 17.2, 25.8, 34.8, 41.2, 46.5] : this.levelNumber === 4 ? [10.5, 19.2, 28.3, 36.2, 42.1] : this.levelNumber === 2 ? [13.5, 29.5, 38.5] : this.levelNumber === 3 ? [12.8, 23.7, 33.8, 40.5] : [16.2, 34.2];
-    for (const startX of enemySpawns) {
+    const activeSpawns = this.levelNumber >= 8
+      ? (this.isBossLevel ? [this.exitX - 5.5] : Array.from({ length: 5 + (this.levelNumber % 4) }, (_, i) => 7 + i * ((this.exitX - 14) / (4 + (this.levelNumber % 4)))))
+      : enemySpawns;
+    for (const startX of activeSpawns) {
       const group = new THREE.Group();
-      mesh(new THREE.SphereGeometry(0.55, 14, 10), enemyMat, 0, 0.62, 0, group);
+      const bossNames = { 8: 'Neighborhood Guardian', 16: 'Mechanical Headmaster', 24: 'Toy Forest Guardian', 32: 'Supreme Machine', 40: 'Ultimate Time Guardian' };
+      const isBoss = this.isBossLevel;
+      const bodyMat = isBoss ? standard(this.worldIndex === 0 ? '#d95c56' : this.worldIndex === 1 ? '#5e6f96' : this.worldIndex === 2 ? '#6d9a52' : this.worldIndex === 3 ? '#6c59c4' : '#b58ad5', 0.38, 0.35) : enemyMat;
+      mesh(new THREE.SphereGeometry(isBoss ? 1.15 : 0.55, 16, 12), bodyMat, 0, isBoss ? 1.1 : 0.62, 0, group);
+      if (isBoss) {
+        mesh(new THREE.TorusGeometry(1.05, 0.13, 8, 24), standard(worldTheme?.accent || '#ffd166', 0.3, 0.55), 0, 1.1, 0.12, group, false);
+        group.scale.setScalar(1.65);
+      }
       const indicator = mesh(new THREE.BoxGeometry(0.72, 0.15, 0.16), glow('#ff766b'), 0, 0.72, 0.44, group, false);
       for (const side of [-1, 1]) {
         const leg = mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.45, 7), enemyMat, side * 0.42, 0.2, 0, group);
@@ -285,7 +348,13 @@ export class SunnyNeighborhoodLevel {
       this.group.add(group);
       const routeHalfWidth = this.levelNumber === 7 ? 0.95 : this.levelNumber === 6 ? 1.05 : this.levelNumber === 5 ? 1.1 : this.levelNumber === 4 ? 1.25 : this.levelNumber === 2 ? 1.7 : this.levelNumber === 3 ? 1.35 : 2.3;
       const speed = this.levelNumber === 7 ? 2.45 : this.levelNumber === 6 ? 2.35 : this.levelNumber === 5 ? 2.25 : this.levelNumber === 4 ? 2.1 : this.levelNumber === 2 ? 1.7 : this.levelNumber === 3 ? 1.9 : 1.5;
-      this.enemies.push({ ...createEnemyState(startX, startX - routeHalfWidth, startX + routeHalfWidth, speed), group, indicator });
+      const enemy = createEnemyState(startX, startX - routeHalfWidth, startX + routeHalfWidth, speed);
+      enemy.isBoss = isBoss;
+      enemy.bossName = isBoss ? this.info.boss : null;
+      enemy.health = isBoss ? 12 : 2;
+      enemy.maxHealth = enemy.health;
+      enemy.hitRadius = isBoss ? 1.9 : 0.88;
+      this.enemies.push({ ...enemy, group, indicator });
     }
   }
 
