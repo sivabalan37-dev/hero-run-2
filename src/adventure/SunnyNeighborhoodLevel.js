@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createEnemyState, stepEnemy } from './EnemyAI.js';
 
 const standard = (color, roughness = 0.78, metalness = 0) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -148,18 +149,17 @@ export class SunnyNeighborhoodLevel {
 
   buildEnemies() {
     const enemyMat = standard('#6373a6', 0.34, 0.22);
-    const glowMat = glow('#ff766b');
     for (const startX of [16.2, 34.2]) {
       const group = new THREE.Group();
       mesh(new THREE.SphereGeometry(0.55, 14, 10), enemyMat, 0, 0.62, 0, group);
-      mesh(new THREE.BoxGeometry(0.72, 0.15, 0.16), glowMat, 0, 0.72, 0.44, group, false);
+      const indicator = mesh(new THREE.BoxGeometry(0.72, 0.15, 0.16), glow('#ff766b'), 0, 0.72, 0.44, group, false);
       for (const side of [-1, 1]) {
         const leg = mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.45, 7), enemyMat, side * 0.42, 0.2, 0, group);
         leg.rotation.z = side * -0.35;
       }
       group.position.set(startX, 0, 0.55);
       this.group.add(group);
-      this.enemies.push({ group, x: startX, minX: startX - 2.3, maxX: startX + 2.3, direction: 1, speed: 1.5, alive: true });
+      this.enemies.push({ ...createEnemyState(startX, startX - 2.3, startX + 2.3, 1.5), group, indicator });
     }
   }
 
@@ -186,13 +186,16 @@ export class SunnyNeighborhoodLevel {
     this.group.add(this.exit);
   }
 
-  update(dt) {
+  update(dt, heroBody = { x: -100, y: 0 }) {
     for (const enemy of this.enemies) {
+      stepEnemy(enemy, heroBody, dt);
       if (!enemy.alive) continue;
-      enemy.x += enemy.direction * enemy.speed * dt;
-      if (enemy.x > enemy.maxX) { enemy.x = enemy.maxX; enemy.direction = -1; }
-      if (enemy.x < enemy.minX) { enemy.x = enemy.minX; enemy.direction = 1; }
       enemy.group.position.x = enemy.x;
+      enemy.group.scale.x = enemy.direction;
+      enemy.group.position.y = enemy.state === 'attack' ? 0.06 : 0;
+      if (enemy.state === 'attack') enemy.indicator.material.color.set('#fff15e');
+      else if (enemy.state === 'chase') enemy.indicator.material.color.set('#ffad55');
+      else enemy.indicator.material.color.set('#ff766b');
     }
   }
 
