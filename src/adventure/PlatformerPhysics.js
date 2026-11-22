@@ -75,7 +75,10 @@ export function stepBody(body, input, platforms, dt, bounds = null) {
 
   const previousBottom = body.y;
   const previousTop = body.y + body.height;
-  body.vy = Math.max(-PHYSICS.maxFallSpeed, body.vy - PHYSICS.gravity * dt);
+  const gliding = Boolean(input.glide && !body.grounded && body.vy < 0);
+  const gravity = gliding ? PHYSICS.gravity * 0.32 : PHYSICS.gravity;
+  const fallLimit = gliding ? 5.2 : PHYSICS.maxFallSpeed;
+  body.vy = Math.max(-fallLimit, body.vy - gravity * dt);
   body.y += body.vy * dt;
   body.grounded = false;
 
