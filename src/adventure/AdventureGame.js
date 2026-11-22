@@ -99,6 +99,7 @@ export class AdventureGame {
       status: document.querySelector('#status-note'),
       touch: document.querySelector('#touch-controls'),
       transform: document.querySelector('[data-action="transform"]'),
+      special: document.querySelector('[data-action="special"]'),
     };
 
     this.onResize = () => this.resize();
@@ -233,6 +234,7 @@ export class AdventureGame {
       ? 'linear-gradient(90deg,#ff4d66,#ffad51)'
       : 'linear-gradient(90deg,#42e49a,#f6d95a)';
     this.ui.transform.classList.toggle('hidden', this.hero.characterId !== 'benji');
+    this.ui.special.textContent = this.hero.characterId === 'nobi' ? 'GADGET' : 'BURST';
   }
 
   switchCharacter() {
@@ -351,10 +353,17 @@ export class AdventureGame {
       }
     }
     if (specialPressed && this.specialTimer <= 0) {
-      const fired = this.projectiles.fireStarBurst(body.x, body.y + 1.18, body.facing);
-      if (fired > 0) {
+      if (this.hero.characterId === 'nobi') {
+        const revealed = this.level.revealHidden();
+        this.hero.gadgetVision = true;
         this.specialTimer = 4.2;
-        this.toast('STAR BURST!');
+        this.toast(revealed ? `GADGET VISION · ${revealed} SECRET REVEALED` : 'GADGET VISION · AREA SCANNED');
+      } else {
+        const fired = this.projectiles.fireStarBurst(body.x, body.y + 1.18, body.facing);
+        if (fired > 0) {
+          this.specialTimer = 4.2;
+          this.toast('STAR BURST!');
+        }
       }
     }
 
