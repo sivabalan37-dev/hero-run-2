@@ -72,18 +72,21 @@ export function recordLevelCompletion(progress, levelNumber, coinsEarned = 0) {
   });
 }
 
-export function loadCampaignProgress(storage = globalThis.localStorage, key = 'hero-run-campaign-progress-v1') {
+export function loadCampaignProgress(storage, key = 'hero-run-campaign-progress-v1') {
   try {
-    return createProgressState(JSON.parse(storage?.getItem(key) || 'null'));
+    const target = storage === undefined ? globalThis.localStorage : storage;
+    return createProgressState(JSON.parse(target?.getItem(key) || 'null'));
   } catch {
     return createProgressState();
   }
 }
 
-export function saveCampaignProgress(progress, storage = globalThis.localStorage, key = 'hero-run-campaign-progress-v1') {
+export function saveCampaignProgress(progress, storage, key = 'hero-run-campaign-progress-v1') {
   try {
+    const target = storage === undefined ? globalThis.localStorage : storage;
+    if (!target || typeof target.setItem !== 'function') return false;
     const safe = createProgressState(progress);
-    storage?.setItem(key, JSON.stringify(safe));
+    target.setItem(key, JSON.stringify(safe));
     return true;
   } catch {
     return false;
