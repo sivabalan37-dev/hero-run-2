@@ -22,3 +22,7 @@ jobs:
         run: npm test
       - name: Build production bundle
         run: npm run build
+      - name: Verify PWA files are copied into the build
+        run: |
+          test -f dist/service-worker.js
+          test -f dist/manifest.webmanifest
