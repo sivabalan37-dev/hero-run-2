@@ -16,7 +16,7 @@
 
       <section id="hud" class="hud hidden" aria-label="Game status">
         <div class="hud-card health-card">
-          <div class="stat-line"><span>SHIN · HEALTH</span><strong id="health-value">100</strong></div>
+          <div class="stat-line"><span id="health-label">HERO · HEALTH</span><strong id="health-value">100</strong></div>
           <div class="health-track"><div id="health-fill"></div></div>
           <div class="collect-row">
             <span>🪙 <b id="coins-value">0</b></span>
@@ -39,7 +39,7 @@
           <h1 id="overlay-title">HERO <em>RUN</em></h1>
           <p id="overlay-message">Help Shin recover the Time Shard in Sunny Neighborhood.</p>
           <button id="start-button" class="primary-button" type="button">START LEVEL</button>
-          <div class="controls-note">Move: A / D · Jump: Space · Toy Star: J · Star Burst: K · Switch hero: C · Benji form: T</div>
+          <div class="controls-note">Move: A / D · Jump: Space · Attack: J · Special: K · Switch hero: C · Benji form: T</div>
           <div id="status-note" class="status-note">LEVEL 1 · SUNNY NEIGHBORHOOD</div>
         </div>
       </section>
@@ -51,7 +51,7 @@
         </div>
         <div class="touch-cluster right-cluster">
           <button type="button" data-action="attack" aria-label="Throw Toy Star">STAR</button>
-          <button type="button" data-action="special" aria-label="Star Burst">BURST</button>
+          <button type="button" data-action="special" aria-label="Special ability">BURST</button>
           <button type="button" data-action="jump" aria-label="Jump">JUMP</button>
           <button type="button" data-action="switch" aria-label="Switch hero">HERO</button>
           <button type="button" data-action="transform" aria-label="Change Benji form" class="hidden">FORM</button>
