@@ -6,7 +6,15 @@ export const WORLDS = Object.freeze([
   { name: 'Time-Travel Castle', firstLevel: 33, lastLevel: 40, boss: 'Ultimate Time Guardian' },
 ]);
 
-export const PLAYABLE_LEVELS = Object.freeze([1, 2, 3, 4]);
+export const PLAYABLE_LEVELS = Object.freeze([1, 2, 3, 4, 5]);
+
+export const LEVEL_NAMES = Object.freeze({
+  1: 'First Steps',
+  2: 'Market Lane',
+  3: 'Evening Crossing',
+  4: 'Neighborhood Festival',
+  5: 'Riverside Park',
+});
 
 export function getLevelInfo(levelNumber) {
   if (!Number.isInteger(levelNumber) || levelNumber < 1 || levelNumber > 40) {
@@ -18,7 +26,7 @@ export function getLevelInfo(levelNumber) {
   return Object.freeze({
     number: levelNumber,
     world: world.name,
-    title: `${world.name} · Level ${levelNumber}`,
+    title: `${world.name} · ${LEVEL_NAMES[levelNumber] || `Level ${levelNumber}`}`,
     isBossLevel: levelNumber === world.lastLevel,
     boss: levelNumber === world.lastLevel ? world.boss : null,
     playable: PLAYABLE_LEVELS.includes(levelNumber),
