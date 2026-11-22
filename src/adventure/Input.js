@@ -3,6 +3,7 @@ const KEY_ACTIONS = new Map([
   ['ArrowRight', 'right'], ['KeyD', 'right'],
   ['Space', 'jump'], ['ArrowUp', 'jump'], ['KeyW', 'jump'],
   ['KeyJ', 'attack'], ['KeyK', 'special'],
+  ['KeyC', 'switch'], ['KeyT', 'transform'],
 ]);
 
 export class AdventureInput {
