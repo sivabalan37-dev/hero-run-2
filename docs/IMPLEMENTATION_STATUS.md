@@ -10,6 +10,8 @@
 - Three.js WebGL 2 renderer, landscape-aware orthographic side camera and responsive resize handling.
 - Fixed 60 Hz AABB platform movement with gravity, horizontal bounds, landing and underside collision, coyote time and jump buffering.
 - Procedural Shin character and basic walk/attack animation.
+- Pooled Toy Star projectiles and a seven-shot Star Burst special attack.
+- Robo Bug patrol, alert, chase and cooldown-based attack AI; two-hit enemy health.
 - Sunny Neighborhood level foundation: static platforms, low-poly scenery, coins, health pickup, Time Shard, patrolling Robo Bugs, checkpoint and portal.
 - Keyboard and pointer-based touch controls with independent pointer IDs.
 - HUD, menu, pause/resume, basic damage/respawn and level-completion flow.
@@ -20,7 +22,7 @@
 ## Automated validation
 
 At the last verified code commit, GitHub Actions reported:
-- **PASS:** 8 of 8 Node unit tests.
+- **PASS:** 8 of 8 Node unit tests at the previous verified code commit; the new combat and AI tests are included in the current CI run.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest exist in the production output.
 
@@ -36,7 +38,7 @@ The production build emits a non-blocking chunk-size warning: approximately 558 
 
 ## Remaining implementation
 
-- Full combat system and projectiles; complete enemy AI states and six enemy types.
+- Further combat polish and remaining enemy types/AI variations.
 - Nobi and Benji, Benji transformations and character unlock progression.
 - Levels 2–40, remaining world themes, level reachability validation and five bosses.
 - Full save/progression, stars, achievements, settings, leaderboard and tutorial.
