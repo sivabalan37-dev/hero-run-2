@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createBody, stepBody } from '../src/adventure/PlatformerPhysics.js';
 
-const floor = [{ x: 0, y: -0.5, width: 30, height: 1 }];
+const floor = [{ x: 0, y: -1, width: 30, height: 1 }];
 
 test('body settles on a platform without falling through it', () => {
   const body = createBody(0, 3);
