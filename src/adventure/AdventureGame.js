@@ -5,7 +5,6 @@ import { SunnyNeighborhoodLevel } from './SunnyNeighborhoodLevel.js';
 import { stepBody } from './PlatformerPhysics.js';
 import { ToyStarPool } from './Combat.js';
 import {
-  createProgressState,
   getUnlockedCharacters,
   loadCampaignProgress,
   recordLevelCompletion,
