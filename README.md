@@ -10,7 +10,8 @@ This branch begins the conversion of Hero Run into the approved 3D side-scrollin
 - Sunny Neighborhood level 1 scene with a side camera and procedural low-poly scenery.
 - Shin procedural hero with walk animation.
 - Fixed 60 Hz AABB movement, gravity, jumping, coyote-time and jump buffering.
-- Keyboard and multitouch movement, jump and attack controls.
+- Keyboard and multitouch movement, jump, Toy Star projectile and Star Burst attacks.
+- Robo Bug patrol, alert, chase and timed attack states; pooled projectiles support damage and defeat.
 - Collectible coins, one heart, a Time Shard, two patrolling Robo Bugs, a checkpoint and a portal exit.
 - Local checkpoint save with version checking and safe fallback for unavailable or invalid storage.
 - Responsive HUD/menu, pause/resume, basic level-complete and game-over flows.
@@ -20,7 +21,8 @@ This branch begins the conversion of Hero Run into the approved 3D side-scrollin
 
 - Move: `A/D` or `←/→`
 - Jump: `Space`, `W` or `↑`
-- Attack: `J`
+- Toy Star: `J`  
+Star Burst: `K` (7-shot spread, 4.2-second cooldown)
 - Pause: top-right pause button
 
 On touch devices, use the on-screen left/right, jump and attack controls. Multiple pointers can control different buttons simultaneously.
