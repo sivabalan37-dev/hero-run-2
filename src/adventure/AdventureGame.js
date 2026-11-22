@@ -4,6 +4,7 @@ import { createHero } from './Hero.js';
 import { SunnyNeighborhoodLevel } from './SunnyNeighborhoodLevel.js';
 import { stepBody } from './PlatformerPhysics.js';
 import { ToyStarPool } from './Combat.js';
+import { applyBenjiSpecial, getBenjiFormStats } from './BenjiAbilities.js';
 import {
   getUnlockedCharacters,
   loadCampaignProgress,
@@ -228,13 +229,16 @@ export class AdventureGame {
     this.ui.coins.textContent = String(this.coins);
     this.ui.shards.textContent = String(this.shards);
     this.ui.levelName.textContent = `${info.world.toUpperCase()} · LEVEL ${this.levelNumber} / 40`;
-    this.ui.heroName.textContent = this.hero.characterId.toUpperCase();
+    const benjiForm = this.hero.characterId === 'benji' ? this.hero.forms[this.hero.formIndex] : null;
+    this.ui.heroName.textContent = benjiForm ? `BENJI · ${benjiForm.toUpperCase()}` : this.hero.characterId.toUpperCase();
     this.ui.heroSwitch.textContent = `HERO: ${this.hero.characterId.toUpperCase()}`;
     this.ui.healthFill.style.background = this.hero.health <= 30
       ? 'linear-gradient(90deg,#ff4d66,#ffad51)'
       : 'linear-gradient(90deg,#42e49a,#f6d95a)';
     this.ui.transform.classList.toggle('hidden', this.hero.characterId !== 'benji');
-    this.ui.special.textContent = this.hero.characterId === 'nobi' ? 'GADGET' : 'BURST';
+    this.ui.special.textContent = this.hero.characterId === 'nobi'
+      ? 'GADGET'
+      : benjiForm && benjiForm !== 'normal' ? getBenjiFormStats(benjiForm).specialLabel : 'BURST';
   }
 
   switchCharacter() {
@@ -313,14 +317,16 @@ export class AdventureGame {
 
   damageHero() {
     if (this.hero.invulnerable > 0) return;
-    this.hero.health = Math.max(0, this.hero.health - 25);
+    const benjiForm = this.hero.characterId === 'benji' ? this.hero.forms[this.hero.formIndex] : null;
+    const damageMultiplier = benjiForm ? getBenjiFormStats(benjiForm).damageMultiplier : 1;
+    this.hero.health = Math.max(0, this.hero.health - Math.round(25 * damageMultiplier));
     this.hero.invulnerable = 1.1;
     this.toast('ROBO BUG HIT!');
     this.updateHud();
     if (this.hero.health <= 0) {
       this.state = 'gameover';
       this.input.clear();
-      this.showOverlay('TRY AGAIN', 'Checkpoint ready', 'Shin ran out of health. Restart from the most recently activated checkpoint.', 'RESPAWN');
+      this.showOverlay('TRY AGAIN', 'Checkpoint ready', `${this.hero.characterId[0].toUpperCase() + this.hero.characterId.slice(1)} ran out of health. Restart from the most recently activated checkpoint.`, 'RESPAWN');
     }
   }
 
@@ -341,8 +347,10 @@ export class AdventureGame {
     }
 
     const body = this.hero.body;
+    const benjiForm = this.hero.characterId === 'benji' ? this.hero.forms[this.hero.formIndex] : null;
+    const movementTuning = benjiForm ? getBenjiFormStats(benjiForm).movement : null;
     const glide = this.hero.characterId === 'nobi' && !body.grounded && this.input.isDown('jump');
-    stepBody(body, { move, jumpPressed, glide }, this.level.platforms, dt, { minX: -9, maxX: 45 });
+    stepBody(body, { move, jumpPressed, glide }, this.level.platforms, dt, { minX: -9, maxX: 45 }, movementTuning);
     this.level.update(dt, body);
     this.attackTimer = Math.max(0, this.attackTimer - dt);
     this.specialTimer = Math.max(0, this.specialTimer - dt);
@@ -358,6 +366,16 @@ export class AdventureGame {
         this.hero.gadgetVision = true;
         this.specialTimer = 4.2;
         this.toast(revealed ? `GADGET VISION · ${revealed} SECRET REVEALED` : 'GADGET VISION · AREA SCANNED');
+      } else if (benjiForm && benjiForm !== 'normal') {
+        const result = applyBenjiSpecial(benjiForm, body, this.level.enemies);
+        if (!result.ready) {
+          this.toast('TITAN STOMP REQUIRES THE GROUND');
+        } else {
+          this.specialTimer = getBenjiFormStats(benjiForm).specialCooldown;
+          if (result.defeated > 0) this.coins += result.defeated * 2;
+          const labels = { flame: 'BLAZE STRIKE', shock: 'SHOCK PULSE', stomp: 'TITAN STOMP' };
+          this.toast(result.hits > 0 ? `${labels[result.ability]} · ${result.hits} HIT(S)` : `${labels[result.ability]} · NO TARGET`);
+        }
       } else {
         const fired = this.projectiles.fireStarBurst(body.x, body.y + 1.18, body.facing);
         if (fired > 0) {
