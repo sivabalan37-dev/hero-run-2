@@ -15,8 +15,8 @@ export class Game {
     this.totalCoins = loadNumber('hero-run-2-total-coins', 0);
     this.totalShards = loadNumber('hero-run-2-total-shards', 0);
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('#efb18f');
-    this.scene.fog = new THREE.Fog('#efb18f', 42, 178);
+    this.scene.background = new THREE.Color('#55baf5');
+    this.scene.fog = new THREE.Fog('#79cfff', 68, 205);
     this.camera = new THREE.PerspectiveCamera(55, 1, 0.1, 380);
     this.camera.position.set(0, 6.8, 12.2);
     this.camera.lookAt(0, 1.25, -10);
@@ -27,7 +27,7 @@ export class Game {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.18;
-    this.renderer.setClearColor('#efb18f', 1);
+    this.renderer.setClearColor('#55baf5', 1);
     this.mount.appendChild(this.renderer.domElement);
     this.addLights();
     this.world = new World(this.scene);
@@ -67,7 +67,7 @@ export class Game {
     coolFill.position.set(11, 8, -16);
     this.scene.add(coolFill);
 
-    const sunsetRim = new THREE.DirectionalLight('#ff936e', 0.95);
+    const sunsetRim = new THREE.DirectionalLight('#ffe2a0', 0.55);
     sunsetRim.position.set(-7, 8, -22);
     this.scene.add(sunsetRim);
   }
