@@ -1,6 +1,6 @@
 export const BENJI_FORM_CONFIG = Object.freeze({
   normal: Object.freeze({
-    movement: Object.freeze({}),
+    movement: Object.freeze({ moveSpeed: 7.2, acceleration: 42, jumpSpeed: 10.8 }),
     damageMultiplier: 1,
     specialCooldown: 4.2,
     specialLabel: 'BURST',
