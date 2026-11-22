@@ -22,7 +22,7 @@ function readCheckpoint(levelNumber) {
     const value = JSON.parse(localStorage.getItem(CHECKPOINT_KEY) || 'null');
     const savedLevel = Number.isInteger(value?.levelNumber) ? value.levelNumber : 1;
     if (value?.version === 1 && savedLevel === levelNumber && Number.isFinite(value.checkpointX)) {
-      return Math.max(-5, Math.min(26, value.checkpointX));
+      return Math.max(-5, Math.min(44, value.checkpointX));
     }
   } catch { /* Treat corrupt or blocked checkpoint storage as a fresh checkpoint. */ }
   return -5;
@@ -352,7 +352,7 @@ export class AdventureGame {
     const benjiForm = this.hero.characterId === 'benji' ? this.hero.forms[this.hero.formIndex] : null;
     const movementTuning = benjiForm ? getBenjiFormStats(benjiForm).movement : null;
     const glide = this.hero.characterId === 'nobi' && !body.grounded && this.input.isDown('jump');
-    stepBody(body, { move, jumpPressed, glide }, this.level.platforms, dt, { minX: -9, maxX: 45 }, movementTuning);
+    stepBody(body, { move, jumpPressed, glide }, this.level.platforms, dt, { minX: -9, maxX: this.level.exitX + 2 }, movementTuning);
     this.level.update(dt, body);
     this.attackTimer = Math.max(0, this.attackTimer - dt);
     this.specialTimer = Math.max(0, this.specialTimer - dt);
@@ -450,7 +450,8 @@ export class AdventureGame {
       this.accumulator = 0;
     }
 
-    const targetX = Math.max(-4, Math.min(34, this.hero.body.x + 1.5));
+    const cameraMaxX = Math.max(34, this.level.exitX - 6);
+    const targetX = Math.max(-4, Math.min(cameraMaxX, this.hero.body.x + 1.5));
     this.camera.position.x += (targetX - this.camera.position.x) * 0.09;
     this.camera.lookAt(this.camera.position.x, 3, 0);
     this.renderer.render(this.scene, this.camera);
