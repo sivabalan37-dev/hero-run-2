@@ -92,7 +92,8 @@ export class ToyStarPool {
         const radius = Number.isFinite(enemy.hitRadius) ? enemy.hitRadius : 0.88;
         if (dx * dx + dy * dy > radius * radius) continue;
         enemy.health = Math.max(0, enemy.health - item.damage);
-        enemy.hurtTimer = 0.16;
+        enemy.hurtTimer = enemy.isBoss ? 0.24 : 0.16;
+        if (enemy.isBoss) enemy.group.scale.setScalar(1.65 + (enemy.health % 2) * 0.035);
         hits++;
         if (enemy.health <= 0) {
           enemy.alive = false;
