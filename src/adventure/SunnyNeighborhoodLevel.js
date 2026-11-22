@@ -90,8 +90,8 @@ export class SunnyNeighborhoodLevel {
     }
   }
 
-  addPlatform(x, top, width, height = 0.6) {
-    const platform = { x, y: top - height, width, height };
+  addPlatform(x, top, width, height = 0.6, solidSides = false) {
+    const platform = { x, y: top - height, width, height, solidSides };
     this.platforms.push(platform);
     const topMat = standard('#61bd62');
     const sideMat = standard('#96613d');
@@ -105,7 +105,7 @@ export class SunnyNeighborhoodLevel {
 
   buildPlatforms() {
     // A continuous safe route makes the first level completable while optional raised routes teach jumping.
-    this.addPlatform(16.2, 0, 53, 1);
+    this.addPlatform(16.2, 0, 53, 1, true);
     this.addPlatform(5.5, 1.7, 3.8, 0.5);
     this.addPlatform(11.4, 2.45, 3.6, 0.5);
     this.addPlatform(19.8, 1.65, 3.8, 0.5);
