@@ -66,3 +66,18 @@ test('fourth level is a festival-themed longer stage with a checkpoint, shard an
   assert.ok(scene.background instanceof THREE.Color);
   level.destroy();
 });
+
+test('fifth level is Riverside Park with a long route, checkpoint, shard and six enemies', () => {
+  const scene = new THREE.Scene();
+  const level = new SunnyNeighborhoodLevel(scene, { levelNumber: 5 });
+  assert.equal(level.levelNumber, 5);
+  assert.ok(level.platforms.length >= 8);
+  assert.equal(level.enemies.length, 6);
+  assert.equal(level.checkpointX, 34);
+  assert.equal(level.exitX, 50);
+  assert.ok(level.collectibles.some(item => item.type === 'shard' && item.x === 47.2));
+  assert.ok(level.collectibles.some(item => item.type === 'heart'));
+  assert.ok(scene.background instanceof THREE.Color);
+  level.destroy();
+});
+
