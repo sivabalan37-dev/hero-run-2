@@ -22,7 +22,7 @@ function readCheckpoint(levelNumber) {
     const value = JSON.parse(localStorage.getItem(CHECKPOINT_KEY) || 'null');
     const savedLevel = Number.isInteger(value?.levelNumber) ? value.levelNumber : 1;
     if (value?.version === 1 && savedLevel === levelNumber && Number.isFinite(value.checkpointX)) {
-      return Math.max(-5, Math.min(58, value.checkpointX));
+      return Math.max(-5, Math.min(220, value.checkpointX));
     }
   } catch { /* Treat corrupt or blocked checkpoint storage as a fresh checkpoint. */ }
   return -5;
@@ -423,7 +423,11 @@ export class AdventureGame {
     }
 
     if (body.x >= this.level.exitX) {
-      if (this.shards > 0) this.completeLevel();
+      const livingBoss = this.level.enemies.find(enemy => enemy.isBoss && enemy.alive);
+      if (livingBoss) {
+        body.x = this.level.exitX - 1.2;
+        this.toast(`${livingBoss.bossName.toUpperCase()} MUST BE DEFEATED`);
+      } else if (this.shards > 0) this.completeLevel();
       else {
         body.x = this.level.exitX - 1.2;
         this.toast('FIND THE TIME SHARD FIRST');
