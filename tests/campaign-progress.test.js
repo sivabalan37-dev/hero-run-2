@@ -67,3 +67,37 @@ test('storage load and save safely handle blocked storage', () => {
   assert.equal(loadCampaignProgress(storage).currentLevel, 1);
   assert.equal(saveCampaignProgress(createProgressState(), storage), false);
 });
+
+test('campaign progress can be saved and loaded with completed levels and selection', () => {
+  const values = new Map();
+  const storage = {
+    getItem(key) { return values.get(key) ?? null; },
+    setItem(key, value) { values.set(key, value); },
+  };
+  let progress = createProgressState();
+  for (const level of [1, 2, 3]) progress = recordLevelCompletion(progress, level, 4);
+  progress = selectCharacter(progress, 'nobi');
+  assert.equal(saveCampaignProgress(progress, storage), true);
+  const loaded = loadCampaignProgress(storage);
+  assert.deepEqual(loaded.completedLevels, [1, 2, 3]);
+  assert.equal(loaded.selectedCharacter, 'nobi');
+  assert.equal(loaded.totalCoins, 12);
+});
+
+test('invalid campaign data is not written over an existing valid save', () => {
+  const values = new Map([['hero-run-campaign-progress-v1', '{"version":1,"completedLevels":[1],"totalCoins":0,"selectedCharacter":"shin"}']]);
+  const storage = {
+    getItem(key) { return values.get(key) ?? null; },
+    setItem(key, value) { values.set(key, value); },
+  };
+  assert.equal(saveCampaignProgress({ version: 2, completedLevels: [], totalCoins: 0 }, storage), false);
+  assert.match(values.get('hero-run-campaign-progress-v1'), /"completedLevels":\[1\]/);
+});
+
+test('a fully completed campaign advances to terminal level 41', () => {
+  const progress = createProgressState({
+    version: 1,
+    completedLevels: Array.from({ length: 40 }, (_, index) => index + 1),
+  });
+  assert.equal(progress.currentLevel, 41);
+});
