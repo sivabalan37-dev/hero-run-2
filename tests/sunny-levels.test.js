@@ -81,3 +81,17 @@ test('fifth level is Riverside Park with a long route, checkpoint, shard and six
   level.destroy();
 });
 
+test('sixth level is Clocktower Climb with a tall route, checkpoint, shard and seven enemies', () => {
+  const scene = new THREE.Scene();
+  const level = new SunnyNeighborhoodLevel(scene, { levelNumber: 6 });
+  assert.equal(level.levelNumber, 6);
+  assert.ok(level.platforms.length >= 8);
+  assert.equal(level.enemies.length, 7);
+  assert.equal(level.checkpointX, 38);
+  assert.equal(level.exitX, 54);
+  assert.ok(level.collectibles.some(item => item.type === 'shard' && item.x === 51.2));
+  assert.ok(level.collectibles.some(item => item.type === 'heart'));
+  assert.ok(scene.background instanceof THREE.Color);
+  level.destroy();
+});
+
