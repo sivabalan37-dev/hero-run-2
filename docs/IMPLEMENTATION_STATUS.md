@@ -16,8 +16,8 @@
 - Benji's Normal, Blaze, Shock and Titan forms, cycled with T / FORM. Blaze has faster movement and a forward flame strike; Shock has a stronger jump and radial pulse; Titan moves more slowly, performs a grounded stomp and takes 50% less damage.
 - Shin Toy Star projectile and seven-shot Star Burst; fixed-capacity pooled projectile entities.
 - Robo Bug patrol, alert, chase and cooldown-based attack AI; two-hit enemy health.
-- Six distinct playable Sunny Neighborhood stages, levels 1–6, with separate platform layouts, dusk lighting in level 3, a festival-themed level 4, a riverfront park level 5, Clocktower Climb level 6, collectible routes, checkpoints, portal exits and increasing Robo Bug pressure.
-- 40-level, five-world campaign catalog with boss/world boundaries matching the product specification. Levels 1–6 are currently playable; level 7 and later stages are not yet built.
+- Seven distinct playable Sunny Neighborhood stages, levels 1–7, with separate platform layouts, dusk lighting in level 3, a festival-themed level 4, riverfront park level 5, Clocktower Climb level 6 and Rooftop Relay level 7, collectible routes, checkpoints, portal exits and increasing Robo Bug pressure.
+- 40-level, five-world campaign catalog with boss/world boundaries matching the product specification. Levels 1–7 are currently playable; level 8 and later stages are not yet built.
 - Versioned campaign save for completed levels, selected character and total coins; malformed save data is rejected before writing.
 - Per-level checkpoint save and safe fallback if storage is unavailable/corrupt.
 - HUD, menu, pause/resume, character controls, basic damage/respawn and level-completion progression.
@@ -27,10 +27,10 @@
 ## Automated validation
 
 Latest completed validation run:
-- **PASS:** 45 of 45 Node unit tests, including Benji form abilities, character-specific physics tuning, campaign progression and all six Sunny Neighborhood stage layouts.
+- **PASS:** 46 of 46 Node unit tests, including Benji form abilities, character-specific physics tuning, campaign progression and all seven Sunny Neighborhood stage layouts.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
-- **Verified run:** [GitHub Actions · run 45043530634](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45043530634).
+- **Verified run:** [GitHub Actions · run 45043894718](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45043894718).
 
 The production build may emit a non-blocking bundle-size warning.
 
@@ -45,7 +45,7 @@ The production build may emit a non-blocking bundle-size warning.
 
 ## Remaining implementation
 
-- Sunny Neighborhood levels 7–8, including the Neighborhood Guardian boss, and School Playground levels 9–16, followed by the remaining three worlds (levels 17–40).
+- Sunny Neighborhood level 8, including the Neighborhood Guardian boss, and School Playground levels 9–16, followed by the remaining three worlds (levels 17–40).
 - Remaining enemy families, advanced enemy AI and five boss encounters.
 - Full combat feedback, effects/audio, checkpoints and three-star level ratings.
 - Nobi's complete aerial kit; Benji ability balancing and visual effects.
