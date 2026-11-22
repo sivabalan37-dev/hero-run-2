@@ -45,10 +45,12 @@ export function stepBody(body, input, platforms, dt, bounds = null) {
   const targetSpeed = move * PHYSICS.moveSpeed;
   body.vx = approach(body.vx, targetSpeed, (move ? PHYSICS.acceleration : PHYSICS.friction) * dt);
 
+  // Only solid-sided blocks stop horizontal motion; raised platforms are one-way ledges.
   const oldLeft = body.x - body.width / 2;
   const oldRight = body.x + body.width / 2;
   body.x += body.vx * dt;
   for (const platform of platforms) {
+    if (!platform.solidSides) continue;
     const verticalOverlap = body.y < platform.y + platform.height &&
       body.y + body.height > platform.y;
     if (!verticalOverlap) continue;
