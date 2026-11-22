@@ -91,6 +91,7 @@ export class AdventureGame {
       pause: document.querySelector('#pause-button'),
       heroSwitch: document.querySelector('#hero-switch'),
       health: document.querySelector('#health-value'),
+      healthLabel: document.querySelector('#health-label'),
       healthFill: document.querySelector('#health-fill'),
       coins: document.querySelector('#coins-value'),
       shards: document.querySelector('#shards-value'),
@@ -224,6 +225,7 @@ export class AdventureGame {
 
   updateHud() {
     const info = getLevelInfo(this.levelNumber);
+    this.ui.healthLabel.textContent = `${this.hero.characterId.toUpperCase()} · HEALTH`;
     this.ui.health.textContent = String(Math.max(0, Math.ceil(this.hero.health)));
     this.ui.healthFill.style.width = `${Math.max(0, this.hero.health)}%`;
     this.ui.coins.textContent = String(this.coins);
