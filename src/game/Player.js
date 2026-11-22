@@ -82,6 +82,21 @@ export class Player {
     hair.position.set(0, 2.23, -0.025); hair.castShadow = true; this.model.add(hair);
     const hairPeak = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.32, 6), dark);
     hairPeak.position.set(0.08, 2.52, -0.015); hairPeak.rotation.z = -0.25; this.model.add(hairPeak);
+
+    // Red cloth cape to match the colourful fantasy hero reference.
+    const capeShape = new THREE.Shape();
+    capeShape.moveTo(-0.3, 1.95); capeShape.quadraticCurveTo(-0.62, 1.35, -0.78, 0.48);
+    capeShape.quadraticCurveTo(0, 0.7, 0.78, 0.48); capeShape.quadraticCurveTo(0.62, 1.35, 0.3, 1.95);
+    capeShape.closePath();
+    const heroCape = new THREE.Mesh(new THREE.ShapeGeometry(capeShape), new THREE.MeshStandardMaterial({ color: '#e52e3b', roughness: .72, side: THREE.DoubleSide }));
+    heroCape.position.set(0, .03, .39); heroCape.rotation.y = Math.PI; heroCape.castShadow = true;
+    this.model.add(heroCape);
+    for (let i = 0; i < 4; i++) {
+      const spike = new THREE.Mesh(new THREE.ConeGeometry(.12, .28 + (i % 2) * .1, 6), dark);
+      spike.position.set((i - 1.5) * .16, 2.43 + (i % 2) * .03, -.08);
+      spike.rotation.z = (i - 1.5) * -.18; this.model.add(spike);
+    }
+
     const visorFrame = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.16, 0.15), dark);
     visorFrame.position.set(0, 2.14, 0.31); this.model.add(visorFrame);
     const visor = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.075, 0.055), cyan);
