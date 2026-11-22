@@ -12,7 +12,7 @@ test('campaign maps eight levels to each of its five worlds', () => {
 });
 
 test('only implemented levels are advertised as playable', () => {
-  assert.deepEqual(PLAYABLE_LEVELS, [1, 2, 3, 4, 5, 6, 7]);
+  assert.deepEqual(PLAYABLE_LEVELS, Array.from({ length: 40 }, (_, index) => index + 1));
   assert.equal(getLevelInfo(2).playable, true);
   assert.equal(getLevelInfo(3).playable, true);
   assert.equal(getLevelInfo(4).playable, true);
@@ -22,7 +22,12 @@ test('only implemented levels are advertised as playable', () => {
   assert.equal(getLevelInfo(6).title, 'Sunny Neighborhood · Clocktower Climb');
   assert.equal(getLevelInfo(7).playable, true);
   assert.equal(getLevelInfo(7).title, 'Sunny Neighborhood · Rooftop Relay');
-  assert.equal(getLevelInfo(8).playable, false);
+  assert.equal(getLevelInfo(8).playable, true);
+  assert.equal(getLevelInfo(16).playable, true);
+  assert.equal(getLevelInfo(24).playable, true);
+  assert.equal(getLevelInfo(32).playable, true);
+  assert.equal(getLevelInfo(40).playable, true);
+  assert.equal(getLevelInfo(40).title, 'Time-Travel Castle · Ultimate Time Showdown');
 });
 
 test('level catalog rejects invalid level numbers', () => {
