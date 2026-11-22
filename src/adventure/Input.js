@@ -26,8 +26,9 @@ export class AdventureInput {
       if (!action) return;
       event.preventDefault();
       button.setPointerCapture?.(event.pointerId);
+      const wasDown = this.isDown(action);
       this.pointers.set(event.pointerId, { action, button });
-      if (!this.isDown(action)) this.pressed.add(action);
+      if (!wasDown) this.pressed.add(action);
       button.classList.add('pressed');
     };
     this.onPointerEnd = (event) => {
