@@ -22,7 +22,7 @@ function readCheckpoint(levelNumber) {
     const value = JSON.parse(localStorage.getItem(CHECKPOINT_KEY) || 'null');
     const savedLevel = Number.isInteger(value?.levelNumber) ? value.levelNumber : 1;
     if (value?.version === 1 && savedLevel === levelNumber && Number.isFinite(value.checkpointX)) {
-      return Math.max(-5, Math.min(44, value.checkpointX));
+      return Math.max(-5, Math.min(50, value.checkpointX));
     }
   } catch { /* Treat corrupt or blocked checkpoint storage as a fresh checkpoint. */ }
   return -5;
