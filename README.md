@@ -3,33 +3,48 @@
 **Engine:** Three.js 0.187.0 · JavaScript ES modules · Vite  
 **Unity:** Not used by the runtime or build.
 
-This branch begins the conversion of Hero Run into the approved 3D side-scrolling platform adventure. The older endless-runner implementation remains under `src/game/` for reference; the current browser entry point now loads the new adventure modules under `src/adventure/`.
+The active browser entry point launches the Three.js side-scrolling platform adventure under `src/adventure/`. The older endless-runner modules remain under `src/game/` as reference material and are not loaded by the new entry point.
 
-## Implemented first-level slice (browser playtesting pending)
+## Implemented gameplay slice
 
-- Sunny Neighborhood level 1 scene with a side camera and procedural low-poly scenery.
-- Shin procedural hero with walk animation.
-- Fixed 60 Hz AABB movement, gravity, jumping, coyote-time and jump buffering.
-- Keyboard and multitouch movement, jump, Toy Star projectile and Star Burst attacks.
-- Robo Bug patrol, alert, chase and timed attack states; pooled projectiles support damage and defeat.
-- Collectible coins, one heart, a Time Shard, two patrolling Robo Bugs, a checkpoint and a portal exit.
-- Local checkpoint save with version checking and safe fallback for unavailable or invalid storage.
-- Responsive HUD/menu, pause/resume, basic level-complete and game-over flows.
-- WebGL 2 renderer and a same-origin service-worker cache for the production app shell.
+- Two distinct playable Sunny Neighborhood stages (levels 1 and 2), with a side camera, low-poly scenery, platforms, enemies, checkpoints, collectible coins/hearts, a Time Shard and portal exits.
+- Three procedural character models: Shin, Nobi and Benji.
+- Shin: Toy Star projectile and seven-shot Star Burst.
+- Nobi: held-jump glide while falling and Gadget Vision that reveals a hidden coin.
+- Benji: Normal, Blaze, Shock and Titan visual forms, cycled with the transform control.
+- Character unlock rules: Nobi after 3 completed levels; Benji after 6 completed levels.
+- Character selection with the C key or HERO touch/HUD control; selected character is saved.
+- Robo Bug patrol, alert, chase and timed attack states; pooled projectiles and two-hit enemy health.
+- Versioned campaign progress saves completed levels, total coins and selected character; invalid data is rejected before writing.
+- Fixed 60 Hz AABB platform movement, gravity, jump buffering, coyote time and one-way raised platforms.
+- Responsive HUD, pause/resume, level completion and respawn flows.
+- WebGL 2 renderer, PWA manifest and same-origin offline app-shell service worker.
 
 ## Controls
 
 - Move: `A/D` or `←/→`
 - Jump: `Space`, `W` or `↑`
-- Toy Star: `J`  
-Star Burst: `K` (7-shot spread, 4.2-second cooldown)
+- Toy Star: `J`
+- Special: `K` — Shin/Benji Star Burst; Nobi Gadget Vision
+- Switch character: `C` or HERO button (after unlock)
+- Benji form: `T` or FORM touch control
+- Nobi glide: hold jump while falling
 - Pause: top-right pause button
 
-On touch devices, use the on-screen left/right, jump and attack controls. Multiple pointers can control different buttons simultaneously.
+Touch controls support independent pointers for simultaneous actions.
+
+## Campaign map
+
+The catalog records the five worlds and all 40 level numbers:
+1. Sunny Neighborhood — levels 1–8; Neighborhood Guardian.
+2. School Playground — levels 9–16; Mechanical Headmaster.
+3. Forest of Forgotten Toys — levels 17–24; Toy Forest Guardian.
+4. Alien Tech City — levels 25–32; Supreme Machine.
+5. Time-Travel Castle — levels 33–40; Ultimate Time Guardian.
+
+**Playable now:** levels 1 and 2 in Sunny Neighborhood. Levels 3–40 are catalogued but not yet built as playable stages. The School Playground world correctly begins at level 9.
 
 ## Run locally
-
-A branch CI workflow runs the unit tests and Vite production build on pushes to this development branch.
 
 Requires Node.js 20.19+ or 22.12+.
 
@@ -42,10 +57,10 @@ npm run dev
 
 ## Validation status
 
-The branch CI currently reports **15/15 unit tests passing**, a successful Vite production build and the PWA service worker and manifest present in the build output. Automated checks do not replace browser playtesting: WebGL rendering, touch interaction, installed-PWA offline startup and Android-device behavior are still **not tested**. The build currently emits a non-blocking bundle-size warning (about 558 KB minified, 141 KB gzip).
+Latest completed GitHub Actions validation for this implementation slice reports **33/33 unit tests passing**, a successful Vite production build, and the PWA service worker and manifest present in the build output. A new run is triggered for each later branch commit. The production bundle emits a non-blocking chunk-size warning.
 
-## Planned campaign work
+Automated checks do not replace browser playtesting. Actual WebGL gameplay, real-device multitouch, offline restart after PWA installation, mobile performance, and Android packaging remain **NOT TESTED**.
 
-The approved campaign contains five worlds, 40 levels, three playable heroes (Shin, Nobi and Benji), six enemy types and five bosses. These are **not yet implemented**. This branch is being built in tested vertical slices, starting with the first level. Capacitor packaging and physical-device verification are also pending.
+See [the feature specification](docs/TIME_TRAVEL_ADVENTURE_SPEC.md), [implementation roadmap](docs/IMPLEMENTATION_ROADMAP.md), and [implementation status](docs/IMPLEMENTATION_STATUS.md).
 
-See [the feature specification](docs/TIME_TRAVEL_ADVENTURE_SPEC.md) and [implementation roadmap](docs/IMPLEMENTATION_ROADMAP.md).
+No changes have been merged into `main`.
