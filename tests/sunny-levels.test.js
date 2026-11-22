@@ -95,3 +95,16 @@ test('sixth level is Clocktower Climb with a tall route, checkpoint, shard and s
   level.destroy();
 });
 
+test('seventh level is Rooftop Relay with raised platforms, checkpoint, shard and eight enemies', () => {
+  const scene = new THREE.Scene();
+  const level = new SunnyNeighborhoodLevel(scene, { levelNumber: 7 });
+  assert.equal(level.levelNumber, 7);
+  assert.ok(level.platforms.length >= 9);
+  assert.equal(level.enemies.length, 8);
+  assert.equal(level.checkpointX, 42);
+  assert.equal(level.exitX, 58);
+  assert.ok(level.collectibles.some(item => item.type === 'shard' && item.x === 55.2));
+  assert.ok(level.collectibles.some(item => item.type === 'heart'));
+  level.destroy();
+});
+
