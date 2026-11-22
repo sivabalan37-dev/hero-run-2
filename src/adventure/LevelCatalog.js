@@ -6,7 +6,7 @@ export const WORLDS = Object.freeze([
   { name: 'Time-Travel Castle', firstLevel: 33, lastLevel: 40, boss: 'Ultimate Time Guardian' },
 ]);
 
-export const PLAYABLE_LEVELS = Object.freeze([1, 2, 3, 4, 5, 6]);
+export const PLAYABLE_LEVELS = Object.freeze([1, 2, 3, 4, 5, 6, 7]);
 
 export const LEVEL_NAMES = Object.freeze({
   1: 'First Steps',
@@ -15,6 +15,7 @@ export const LEVEL_NAMES = Object.freeze({
   4: 'Neighborhood Festival',
   5: 'Riverside Park',
   6: 'Clocktower Climb',
+  7: 'Rooftop Relay',
 });
 
 export function getLevelInfo(levelNumber) {
