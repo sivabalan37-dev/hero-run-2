@@ -26,3 +26,15 @@ test('second level has a distinct layout and its own checkpoint and exit', () =>
   assert.ok(level.collectibles.some(item => item.type === 'shard' && item.x === 36));
   level.destroy();
 });
+
+test('hidden collectibles stay hidden until Gadget Vision reveals them', () => {
+  const scene = new THREE.Scene();
+  const level = new SunnyNeighborhoodLevel(scene, { levelNumber: 1 });
+  const hidden = level.collectibles.filter(item => item.hidden);
+  assert.equal(hidden.length, 1);
+  assert.equal(hidden[0].group.visible, false);
+  assert.equal(level.revealHidden(), 1);
+  assert.equal(hidden[0].group.visible, true);
+  assert.equal(level.revealHidden(), 0);
+  level.destroy();
+});
