@@ -42,7 +42,7 @@ npm run dev
 
 ## Validation status
 
-The branch CI currently reports **8/8 unit tests passing** and a successful Vite production build. Automated checks do not replace browser playtesting: WebGL rendering, touch interaction, installed-PWA offline startup and Android-device behavior are still **not tested**. The build currently emits a non-blocking bundle-size warning (about 558 KB minified, 141 KB gzip).
+The branch CI currently reports **15/15 unit tests passing**, a successful Vite production build and the PWA service worker and manifest present in the build output. Automated checks do not replace browser playtesting: WebGL rendering, touch interaction, installed-PWA offline startup and Android-device behavior are still **not tested**. The build currently emits a non-blocking bundle-size warning (about 558 KB minified, 141 KB gzip).
 
 ## Planned campaign work
 
