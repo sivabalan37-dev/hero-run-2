@@ -37,8 +37,8 @@ export class AdventureGame {
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.OrthographicCamera(-12, 12, 7, -7, 0.1, 140);
-    this.camera.position.set(0, 3, 30);
-    this.camera.lookAt(0, 3, 0);
+    this.camera.position.set(-3.5, 3, 30);
+    this.camera.lookAt(-3.5, 3, 0);
 
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -59,7 +59,7 @@ export class AdventureGame {
     mount.appendChild(this.renderer.domElement);
 
     this.level = new SunnyNeighborhoodLevel(this.scene);
-    this.hero = new ShinHero(this.scene, -5);
+    this.hero = new ShinHero(this.scene, this.checkpointX);
     this.input = new AdventureInput(document);
     this.clock = new THREE.Clock();
 
@@ -301,7 +301,7 @@ export class AdventureGame {
       this.accumulator = 0;
     }
 
-    const targetX = Math.max(0, Math.min(28, this.hero.body.x + 4));
+    const targetX = Math.max(-4, Math.min(28, this.hero.body.x + 1.5));
     this.camera.position.x += (targetX - this.camera.position.x) * 0.09;
     this.camera.lookAt(this.camera.position.x, 3, 0);
     this.renderer.render(this.scene, this.camera);
