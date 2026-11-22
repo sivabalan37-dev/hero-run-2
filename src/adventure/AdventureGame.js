@@ -3,6 +3,7 @@ import { AdventureInput } from './Input.js';
 import { ShinHero } from './Hero.js';
 import { SunnyNeighborhoodLevel } from './SunnyNeighborhoodLevel.js';
 import { stepBody } from './PlatformerPhysics.js';
+import { ToyStarPool } from './Combat.js';
 
 const FIXED_STEP = 1 / 60;
 const SAVE_KEY = 'hero-run-time-travel-save-v1';
@@ -34,6 +35,7 @@ export class AdventureGame {
     this.shards = 0;
     this.checkpointX = readSave().checkpointX;
     this.attackTimer = 0;
+    this.specialTimer = 0;
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.OrthographicCamera(-12, 12, 7, -7, 0.1, 140);
@@ -60,6 +62,7 @@ export class AdventureGame {
 
     this.level = new SunnyNeighborhoodLevel(this.scene);
     this.hero = new ShinHero(this.scene, this.checkpointX);
+    this.projectiles = new ToyStarPool(this.scene);
     this.input = new AdventureInput(document);
     this.clock = new THREE.Clock();
 
@@ -148,6 +151,8 @@ export class AdventureGame {
     this.coins = 0;
     this.shards = 0;
     this.attackTimer = 0;
+    this.specialTimer = 0;
+    this.projectiles.clear();
   }
 
   pause() {
@@ -218,28 +223,32 @@ export class AdventureGame {
     const move = this.input.movement();
     const jumpPressed = this.input.consumePressed('jump');
     const attackPressed = this.input.consumePressed('attack');
+    const specialPressed = this.input.consumePressed('special');
 
     stepBody(this.hero.body, { move, jumpPressed }, this.level.platforms, dt, { minX: -9, maxX: 43 });
-    this.level.update(dt);
+    const body = this.hero.body;
+    this.level.update(dt, body);
     this.attackTimer = Math.max(0, this.attackTimer - dt);
+    this.specialTimer = Math.max(0, this.specialTimer - dt);
 
     if (attackPressed && this.attackTimer <= 0) {
-      this.attackTimer = 0.38;
-      const body = this.hero.body;
-      for (const enemy of this.level.enemies) {
-        if (!enemy.alive) continue;
-        const dx = enemy.x - body.x;
-        if (Math.abs(dx) < 2.15 && Math.sign(dx || body.facing) === body.facing && Math.abs(body.y - 0) < 1.2) {
-          enemy.alive = false;
-          enemy.group.visible = false;
-          this.coins += 2;
-          this.toast('ROBO BUG DEFEATED · +2');
-          break;
-        }
+      if (this.projectiles.fireToyStar(body.x, body.y + 1.28, body.facing)) {
+        this.attackTimer = 0.34;
+      }
+    }
+    if (specialPressed && this.specialTimer <= 0) {
+      const fired = this.projectiles.fireStarBurst(body.x, body.y + 1.18, body.facing);
+      if (fired > 0) {
+        this.specialTimer = 4.2;
+        this.toast('STAR BURST!');
       }
     }
 
-    const body = this.hero.body;
+    const combatResult = this.projectiles.update(dt, this.level.enemies);
+    if (combatResult.defeated > 0) {
+      this.coins += combatResult.defeated * 2;
+      this.toast(`ROBO BUG DEFEATED · +${combatResult.defeated * 2}`);
+    }
     for (const item of this.level.collectibles) {
       if (item.collected) continue;
       const dx = Math.abs(body.x - item.x);
@@ -248,8 +257,8 @@ export class AdventureGame {
     }
 
     for (const enemy of this.level.enemies) {
-      if (!enemy.alive) continue;
-      if (Math.abs(body.x - enemy.x) < 0.88 && body.y < 1.05 && this.hero.invulnerable <= 0) {
+      if (!enemy.alive || !enemy.attackPulse) continue;
+      if (Math.abs(body.x - enemy.x) < 1.5 && body.y < 1.05) {
         this.damageHero();
       }
     }
@@ -315,6 +324,7 @@ export class AdventureGame {
     this.ui.pause.removeEventListener('click', this.onPause);
     window.removeEventListener('resize', this.onResize);
     document.removeEventListener('visibilitychange', this.onVisibility);
+    this.projectiles.destroy();
     this.level.destroy();
     this.renderer.dispose();
     this.mount.replaceChildren();
