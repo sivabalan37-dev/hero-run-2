@@ -16,7 +16,7 @@ export default [
     rules: {
       'no-undef': 'error', 'no-unreachable': 'error', 'no-constant-condition': 'error',
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      eqeqeq: ['error', 'always'], curly: ['error', 'all'],
+      eqeqeq: ['error', 'always'], curly: ['error', 'multi-line'],
     },
   },
 ];
