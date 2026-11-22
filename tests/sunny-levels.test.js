@@ -108,3 +108,24 @@ test('seventh level is Rooftop Relay with raised platforms, checkpoint, shard an
   level.destroy();
 });
 
+test('all forty campaign stages build with unique world layouts, shards and five boss gates', () => {
+  const bossLevels = [8, 16, 24, 32, 40];
+  for (let levelNumber = 1; levelNumber <= 40; levelNumber++) {
+    const scene = new THREE.Scene();
+    const level = new SunnyNeighborhoodLevel(scene, { levelNumber });
+    assert.equal(level.levelNumber, levelNumber);
+    assert.ok(level.platforms.length >= 5, `level ${levelNumber} needs platforms`);
+    assert.ok(level.collectibles.some(item => item.type === 'shard'), `level ${levelNumber} needs a shard`);
+    assert.ok(level.enemies.length >= 1, `level ${levelNumber} needs enemies`);
+    assert.ok(level.exitX > level.checkpointX, `level ${levelNumber} needs a reachable checkpoint`);
+    assert.equal(level.isBossLevel, bossLevels.includes(levelNumber));
+    if (level.isBossLevel) {
+      assert.equal(level.enemies.length, 1);
+      assert.equal(level.enemies[0].isBoss, true);
+      assert.equal(level.enemies[0].health, 12);
+      assert.equal(level.enemies[0].bossName, level.info.boss);
+    }
+    level.destroy();
+  }
+});
+
