@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#087de0">
+  <meta name="description" content="Hero Run — leap through a colorful floating kingdom in this 3D endless runner.">
+  <title>Hero Run — Floating Kingdom</title>
+</head>
+<body>
+<main id="game-root">
+  <div id="game-canvas" aria-label="3D fantasy endless runner"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <header id="hud" class="hud hidden">
+    <div class="profile-pill"><div class="avatar" id="hero-avatar">🧒🏻</div><div id="health-hearts" class="hearts"><span>♥</span><span>♥</span><span>♥</span><span>♥</span></div></div>
+    <div class="counter-pill"><span class="coin-medal">◉</span><strong id="coins-value">0</strong></div>
+    <div class="counter-pill timer-pill"><span class="clock-medal">◷</span><strong id="time-value">0</strong></div>
+    <div class="top-actions">
+      <button id="pause-button" aria-label="Pause">Ⅱ</button><button id="resume-button" class="green" aria-label="Resume">▶</button>
+      <button id="restart-button" aria-label="Restart">↻</button><button id="settings-button" aria-label="Settings">⚙</button>
+      <button id="sound-button" aria-label="Sound">♫</button><button id="fullscreen-button" aria-label="Fullscreen">⛶</button>
+    </div>
+  </header>
+  <div id="score-chip" class="score-chip hidden"><small>DISTANCE</small><strong id="distance-value">0 m</strong><span id="score-value">SCORE 0</span></div>
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <section id="menu-overlay" class="overlay">
+    <div class="panel">
+      <div class="eyebrow">A MAGICAL ENDLESS ADVENTURE</div>
+      <h1>HERO <em>RUN</em></h1>
+      <p id="menu-description">Leap across floating islands, collect golden coins and crystals, and explore the kingdom in the clouds.</p>
+      <div class="best-row"><span>BEST DISTANCE</span><strong id="best-value">0 m</strong></div>
+      <div class="hero-picker">
+        <button class="hero-choice selected" data-hero="shin"><span>🧒🏻</span><b>SHIN</b></button>
+        <button class="hero-choice" data-hero="nobi"><span>🧑🏽</span><b>NOBI</b></button>
+        <button class="hero-choice" data-hero="benji"><span>🧑🏼‍🦱</span><b>BENJI</b></button>
+      </div>
+      <button id="start-button" class="primary">START ADVENTURE <span>➜</span></button>
+      <div class="controls-note">MOVE A / D OR ← → · JUMP SPACE · SLIDE S · MAGIC J · SPECIAL K</div>
+      <div class="footer-note"><span>3D FANTASY WORLD</span><span>TOUCH + KEYBOARD READY</span></div>
+    </div>
+  </section>
+
+  <section id="pause-overlay" class="overlay hidden">
+    <div class="panel compact"><div class="eyebrow">TAKE A BREATHER</div><h2>GAME PAUSED</h2><p>Your adventure is waiting.</p>
+      <button id="continue-button" class="primary">CONTINUE RUN</button><button id="pause-restart-button" class="secondary">RESTART ADVENTURE</button>
+    </div>
+  </section>
+  <section id="settings-overlay" class="overlay hidden">
+    <div class="panel compact"><div class="eyebrow">MAKE IT YOURS</div><h2>SETTINGS</h2>
+      <label class="setting">Sound effects <input id="sound-toggle" type="checkbox" checked></label>
+      <label class="setting">Background music <input id="music-toggle" type="checkbox" checked></label>
+      <label class="setting">High graphics <input id="quality-toggle" type="checkbox" checked></label>
+      <button id="settings-close" class="primary">DONE</button>
+    </div>
+  </section>
+  <section id="gameover-overlay" class="overlay hidden">
+    <div class="panel compact"><div class="eyebrow">THE JOURNEY ENDS… FOR NOW</div><h2>RUN COMPLETE</h2>
+      <p id="gameover-summary">You made it through the kingdom!</p>
+      <div class="result-grid"><div><small>DISTANCE</small><strong id="result-distance">0 m</strong></div><div><small>SCORE</small><strong id="result-score">0</strong></div><div><small>COINS</small><strong id="result-coins">0</strong></div></div>
+      <button id="again-button" class="primary">RUN AGAIN <span>➜</span></button><button id="home-button" class="secondary">MAIN MENU</button>
+    </div>
+  </section>
+
+  <div id="touch-controls" class="touch-controls hidden">
+    <div class="touch-left"><button data-action="left" aria-label="Move left">◀</button><button data-action="right" aria-label="Move right">▶</button></div>
+    <div class="touch-right"><button data-action="attack" aria-label="Magic">✦</button><button data-action="special" aria-label="Special">⚡</button><button data-action="jump" aria-label="Jump">⬆</button><button data-action="slide" aria-label="Slide">▼</button></div>
+  </div>
+  <div id="loading" class="loading"><div class="loading-seal">HR</div><strong>BUILDING THE KINGDOM</strong><div class="loading-track"><span></span></div></div>
+</main>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
