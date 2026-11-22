@@ -33,6 +33,15 @@ button { font: inherit; }
 .collect-row { display: flex; gap: 18px; font-size: 13px; color: #f2f8ff; }
 .collect-row b { margin-left: 2px; }
 .level-label { padding: 12px 16px; color: #e9f6ff; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.hud-actions { display: flex; align-items: center; gap: 8px; pointer-events: auto; }
+.hero-switch {
+  min-height: 44px; padding: 0 12px; border-radius: 14px;
+  border: 1px solid rgba(213,242,255,.48); color: #fff;
+  background: linear-gradient(145deg,rgba(17,37,59,.92),rgba(10,24,41,.8));
+  box-shadow: 0 8px 24px rgba(10,35,59,.24); font-size: 10px; font-weight: 900;
+}
+.hero-name-line { margin-top: 7px; color: #a9bfd5; font-size: 9px; font-weight: 800; letter-spacing: .11em; }
+.hero-name-line b { color: #ffd875; margin-left: 4px; }
 .icon-button {
   pointer-events: auto; width: 44px; height: 44px; border-radius: 14px;
   border: 1px solid rgba(213,242,255,.48); color: #fff;
@@ -97,6 +106,8 @@ h1 em { color: #ffd45a; font-style: normal; }
   .hud-card { width: 148px; padding: 8px 9px; border-radius: 12px; }
   .level-label { max-width: 44vw; padding: 9px 8px; font-size: 8px; text-align: center; }
   .icon-button { width: 40px; height: 40px; }
+  .hero-switch { min-height: 40px; padding: 0 8px; font-size: 9px; }
+  .hud-actions { gap: 5px; }
   .touch-cluster button { min-width: 52px; min-height: 52px; border-radius: 16px; }
 }
 @media (max-height: 560px) {
