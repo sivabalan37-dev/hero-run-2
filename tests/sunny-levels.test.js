@@ -38,3 +38,17 @@ test('hidden collectibles stay hidden until Gadget Vision reveals them', () => {
   assert.equal(level.revealHidden(), 0);
   level.destroy();
 });
+
+
+test('third level is a distinct dusk stage with a longer route and four enemies', () => {
+  const scene = new THREE.Scene();
+  const level = new SunnyNeighborhoodLevel(scene, { levelNumber: 3 });
+  assert.equal(level.levelNumber, 3);
+  assert.ok(level.platforms.length >= 7);
+  assert.equal(level.enemies.length, 4);
+  assert.equal(level.checkpointX, 26);
+  assert.equal(level.exitX, 44);
+  assert.ok(level.collectibles.some(item => item.type === 'shard' && item.x === 40));
+  assert.ok(scene.background instanceof THREE.Color);
+  level.destroy();
+});
