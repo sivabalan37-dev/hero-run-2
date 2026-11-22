@@ -37,7 +37,8 @@ test('Benji unlocks after six distinct completed levels', () => {
 test('locked characters cannot be selected and unlocked characters can', () => {
   const fresh = createProgressState();
   assert.equal(selectCharacter(fresh, 'nobi'), null);
-  const afterThree = [1, 2, 3].reduce(recordLevelCompletion, fresh);
+  let afterThree = fresh;
+  for (const level of [1, 2, 3]) afterThree = recordLevelCompletion(afterThree, level);
   assert.equal(selectCharacter(afterThree, 'nobi').selectedCharacter, 'nobi');
 });
 
