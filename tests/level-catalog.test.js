@@ -12,9 +12,10 @@ test('campaign maps eight levels to each of its five worlds', () => {
 });
 
 test('only implemented levels are advertised as playable', () => {
-  assert.deepEqual(PLAYABLE_LEVELS, [1, 2]);
+  assert.deepEqual(PLAYABLE_LEVELS, [1, 2, 3]);
   assert.equal(getLevelInfo(2).playable, true);
-  assert.equal(getLevelInfo(3).playable, false);
+  assert.equal(getLevelInfo(3).playable, true);
+  assert.equal(getLevelInfo(4).playable, false);
 });
 
 test('level catalog rejects invalid level numbers', () => {
