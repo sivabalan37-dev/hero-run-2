@@ -22,9 +22,13 @@
             <span>🪙 <b id="coins-value">0</b></span>
             <span>💎 <b id="shards-value">0</b></span>
           </div>
+          <div class="hero-name-line">PLAYING AS <b id="hero-name">SHIN</b></div>
         </div>
         <div class="level-label" id="level-name">SUNNY NEIGHBORHOOD · LEVEL 1 / 40</div>
-        <button id="pause-button" class="icon-button" type="button" aria-label="Pause game">Ⅱ</button>
+        <div class="hud-actions">
+          <button id="hero-switch" class="hero-switch" type="button" aria-label="Switch character">HERO: SHIN</button>
+          <button id="pause-button" class="icon-button" type="button" aria-label="Pause game">Ⅱ</button>
+        </div>
       </section>
 
       <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
@@ -35,7 +39,7 @@
           <h1 id="overlay-title">HERO <em>RUN</em></h1>
           <p id="overlay-message">Help Shin recover the Time Shard in Sunny Neighborhood.</p>
           <button id="start-button" class="primary-button" type="button">START LEVEL</button>
-          <div class="controls-note">Move: A / D or ◀ / ▶ · Jump: Space / W · Toy Star: J · Star Burst: K</div>
+          <div class="controls-note">Move: A / D · Jump: Space · Toy Star: J · Star Burst: K · Switch hero: C · Benji form: T</div>
           <div id="status-note" class="status-note">LEVEL 1 · SUNNY NEIGHBORHOOD</div>
         </div>
       </section>
@@ -49,6 +53,8 @@
           <button type="button" data-action="attack" aria-label="Throw Toy Star">STAR</button>
           <button type="button" data-action="special" aria-label="Star Burst">BURST</button>
           <button type="button" data-action="jump" aria-label="Jump">JUMP</button>
+          <button type="button" data-action="switch" aria-label="Switch hero">HERO</button>
+          <button type="button" data-action="transform" aria-label="Change Benji form" class="hidden">FORM</button>
         </div>
       </nav>
     </main>
