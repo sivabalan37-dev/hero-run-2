@@ -448,7 +448,7 @@ export class AdventureGame {
       this.accumulator = 0;
     }
 
-    const targetX = Math.max(-4, Math.min(30, this.hero.body.x + 1.5));
+    const targetX = Math.max(-4, Math.min(34, this.hero.body.x + 1.5));
     this.camera.position.x += (targetX - this.camera.position.x) * 0.09;
     this.camera.lookAt(this.camera.position.x, 3, 0);
     this.renderer.render(this.scene, this.camera);
