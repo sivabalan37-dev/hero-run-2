@@ -1,9 +1,12 @@
 {
-  "name": "Hero Run 2",
-  "short_name": "Hero Run 2",
+  "name": "Hero Run: Time-Travel Adventure",
+  "short_name": "Hero Run",
+  "description": "A Three.js 3D side-scrolling platform adventure.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#101a31",
-  "theme_color": "#101a31",
+  "orientation": "landscape",
+  "background_color": "#10243a",
+  "theme_color": "#10243a",
   "icons": []
 }
