@@ -19,14 +19,14 @@ export class SunnyNeighborhoodLevel {
   constructor(scene, options = {}) {
     this.scene = scene;
     this.options = options;
-    this.levelNumber = [1, 2, 3, 4, 5, 6].includes(options.levelNumber) ? options.levelNumber : 1;
+    this.levelNumber = [1, 2, 3, 4, 5, 6, 7].includes(options.levelNumber) ? options.levelNumber : 1;
     this.group = new THREE.Group();
     scene.add(this.group);
     this.platforms = [];
     this.collectibles = [];
     this.enemies = [];
-    this.checkpointX = this.levelNumber === 6 ? 38 : this.levelNumber === 5 ? 34 : this.levelNumber === 4 ? 30 : this.levelNumber === 3 ? 26 : this.levelNumber === 2 ? 24 : 22;
-    this.exitX = this.levelNumber === 6 ? 54 : this.levelNumber === 5 ? 50 : this.levelNumber === 4 ? 46 : this.levelNumber === 3 ? 44 : this.levelNumber === 2 ? 42 : 40;
+    this.checkpointX = this.levelNumber === 7 ? 42 : this.levelNumber === 6 ? 38 : this.levelNumber === 5 ? 34 : this.levelNumber === 4 ? 30 : this.levelNumber === 3 ? 26 : this.levelNumber === 2 ? 24 : 22;
+    this.exitX = this.levelNumber === 7 ? 58 : this.levelNumber === 6 ? 54 : this.levelNumber === 5 ? 50 : this.levelNumber === 4 ? 46 : this.levelNumber === 3 ? 44 : this.levelNumber === 2 ? 42 : 40;
     this.buildEnvironment();
     this.buildPlatforms();
     this.buildCollectibles();
@@ -36,17 +36,18 @@ export class SunnyNeighborhoodLevel {
   }
 
   buildEnvironment() {
+    const rooftop = this.levelNumber === 7;
     const clocktower = this.levelNumber === 6;
     const riverside = this.levelNumber === 5;
     const festival = this.levelNumber === 4;
     const dusk = this.levelNumber === 3;
     const warm = this.levelNumber === 2;
-    const sky = new THREE.Color(clocktower ? '#7c8fbd' : riverside ? '#8aaec8' : festival ? '#efa9a0' : dusk ? '#9e9bd8' : warm ? '#f6c98b' : '#8bdcff');
+    const sky = new THREE.Color(rooftop ? '#e4a56f' : clocktower ? '#7c8fbd' : riverside ? '#8aaec8' : festival ? '#efa9a0' : dusk ? '#9e9bd8' : warm ? '#f6c98b' : '#8bdcff');
     this.scene.background = sky;
-    this.scene.fog = new THREE.Fog(clocktower ? '#aeb4d0' : riverside ? '#b6d3d7' : festival ? '#f4c0a8' : dusk ? '#c6b4e2' : warm ? '#f8dfb4' : '#a6e8ff', 38, 105);
-    const hemi = new THREE.HemisphereLight(clocktower ? '#e3e5ff' : riverside ? '#dff7ef' : festival ? '#ffe4cf' : dusk ? '#eadcff' : warm ? '#fff1dd' : '#e8faff', '#52627e', 1.8);
+    this.scene.fog = new THREE.Fog(rooftop ? '#f2c49a' : clocktower ? '#aeb4d0' : riverside ? '#b6d3d7' : festival ? '#f4c0a8' : dusk ? '#c6b4e2' : warm ? '#f8dfb4' : '#a6e8ff', 38, 105);
+    const hemi = new THREE.HemisphereLight(rooftop ? '#ffe8c8' : clocktower ? '#e3e5ff' : riverside ? '#dff7ef' : festival ? '#ffe4cf' : dusk ? '#eadcff' : warm ? '#fff1dd' : '#e8faff', '#52627e', 1.8);
     this.group.add(hemi);
-    const sun = new THREE.DirectionalLight(clocktower ? '#d9d0ff' : riverside ? '#ffe0b0' : festival ? '#ffd18b' : dusk ? '#ffc7a4' : warm ? '#ffdda5' : '#fff1cf', 2.6);
+    const sun = new THREE.DirectionalLight(rooftop ? '#ffbd83' : clocktower ? '#d9d0ff' : riverside ? '#ffe0b0' : festival ? '#ffd18b' : dusk ? '#ffc7a4' : warm ? '#ffdda5' : '#fff1cf', 2.6);
     sun.position.set(-12, 22, 18);
     sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
@@ -72,7 +73,9 @@ export class SunnyNeighborhoodLevel {
       this.group.add(cloud);
     }
 
-    const houseColors = this.levelNumber === 6
+    const houseColors = this.levelNumber === 7
+      ? ['#d98c72', '#d6b06f', '#9b9fc8', '#7ca8a1']
+      : this.levelNumber === 6
       ? ['#7b87aa', '#a4a2c8', '#647da4', '#c1a6bb']
       : this.levelNumber === 5
         ? ['#8ab17d', '#b7a6d8', '#7db6b1', '#e6c27a']
@@ -213,9 +216,14 @@ export class SunnyNeighborhoodLevel {
       this.addPlatform(28.2, 1.95, 4.2, 0.5);
     }
 
+    if (this.levelNumber === 7) {
+      for (const [x, y] of [[5.5,1.7],[12.5,2.5],[19.5,3.2],[26.5,2.4],[33.5,3.15],[40.5,2.5],[47.5,3.2],[54,2.2]]) this.addPlatform(x,y,4,0.5);
+      const rooftopMat = standard('#5f647c');
+      for (const x of [-2, 12, 27, 42, 55]) mesh(new THREE.BoxGeometry(7.5,0.35,4.8), rooftopMat, x, 3.8, -7.8, this.group);
+    }
     const grass = standard('#75c95c');
-    const pathWidth = this.levelNumber === 6 ? 76 : this.levelNumber === 5 ? 70 : this.levelNumber === 4 ? 62 : this.levelNumber === 3 ? 58 : 53;
-    const path = mesh(new THREE.BoxGeometry(pathWidth, 0.08, 1.72), grass, this.levelNumber === 6 ? 20 : this.levelNumber === 5 ? 18.5 : 16.2, 0.03, 0, this.group);
+    const pathWidth = this.levelNumber === 7 ? 84 : this.levelNumber === 6 ? 76 : this.levelNumber === 5 ? 70 : this.levelNumber === 4 ? 62 : this.levelNumber === 3 ? 58 : 53;
+    const path = mesh(new THREE.BoxGeometry(pathWidth, 0.08, 1.72), grass, this.levelNumber === 7 ? 22 : this.levelNumber === 6 ? 20 : this.levelNumber === 5 ? 18.5 : 16.2, 0.03, 0, this.group);
     path.receiveShadow = true;
   }
 
@@ -243,7 +251,9 @@ export class SunnyNeighborhoodLevel {
   }
 
   buildCollectibles() {
-    const route = this.levelNumber === 6
+    const route = this.levelNumber === 7
+      ? [[1,1.4],[3.2,1.4],[5.5,2.7],[9,1.4],[12.5,3.2],[16,1.4],[19.5,3.9],[23,1.4],[26.5,3.1],[30,1.4],[33.5,3.85],[37,1.4],[40.5,3.2],[44,1.4],[47.5,3.9],[51,1.4],[54,2.8]]
+      : this.levelNumber === 6
       ? [[1, 1.4], [3.2, 1.4], [5.5, 2.6], [8.8, 1.4], [12.4, 3.1], [16, 1.4], [19.3, 3.8], [22.5, 1.4], [26.5, 3.2], [30, 1.4], [33.4, 3.9], [37, 1.4], [40.5, 3.25], [44, 1.4], [47.2, 2.75], [50, 1.4]]
       : this.levelNumber === 5
         ? [[1, 1.4], [3.1, 1.4], [5.4, 2.65], [8.5, 1.4], [12.2, 3.05], [16, 1.4], [19.4, 2.65], [23, 1.4], [26.5, 3.2], [30, 1.4], [33.4, 2.6], [37, 1.4], [40.2, 3.1], [43.5, 1.4], [46.2, 2.55]]
@@ -255,14 +265,14 @@ export class SunnyNeighborhoodLevel {
           ? [[1, 1.4], [3.2, 1.4], [6.4, 2.7], [9.7, 1.4], [12.6, 3.5], [16.5, 1.4], [20.2, 2.8], [24, 1.4], [27.8, 3.75], [31.5, 1.4], [35.2, 3.0], [40.5, 2.6]]
           : [[1, 1.4], [2, 1.5], [3, 1.4], [5.5, 2.8], [11.4, 3.5], [15, 1.45], [20, 2.75], [25, 1.45], [28.2, 3.0], [33, 1.45]];
     for (const [x, y] of route) this.addCollectible('coin', x, y);
-    this.addCollectible('heart', this.levelNumber === 6 ? 28 : this.levelNumber === 5 ? 22.5 : this.levelNumber === 4 ? 20.5 : this.levelNumber === 2 ? 13.2 : this.levelNumber === 3 ? 18.4 : 8.8, 1.5);
-    this.addCollectible('shard', this.levelNumber === 6 ? 51.2 : this.levelNumber === 5 ? 47.2 : this.levelNumber === 4 ? 42.2 : this.levelNumber === 2 ? 36 : this.levelNumber === 3 ? 40 : 31, 1.8);
-    this.addCollectible('coin', this.levelNumber === 6 ? 42.5 : this.levelNumber === 5 ? 37.5 : this.levelNumber === 4 ? 34.5 : this.levelNumber === 2 ? 21.5 : this.levelNumber === 3 ? 29.4 : 9.5, 2.9, { hidden: true });
+    this.addCollectible('heart', this.levelNumber === 7 ? 35 : this.levelNumber === 6 ? 28 : this.levelNumber === 5 ? 22.5 : this.levelNumber === 4 ? 20.5 : this.levelNumber === 2 ? 13.2 : this.levelNumber === 3 ? 18.4 : 8.8, 1.5);
+    this.addCollectible('shard', this.levelNumber === 7 ? 55.2 : this.levelNumber === 6 ? 51.2 : this.levelNumber === 5 ? 47.2 : this.levelNumber === 4 ? 42.2 : this.levelNumber === 2 ? 36 : this.levelNumber === 3 ? 40 : 31, 1.8);
+    this.addCollectible('coin', this.levelNumber === 7 ? 48.5 : this.levelNumber === 6 ? 42.5 : this.levelNumber === 5 ? 37.5 : this.levelNumber === 4 ? 34.5 : this.levelNumber === 2 ? 21.5 : this.levelNumber === 3 ? 29.4 : 9.5, 2.9, { hidden: true });
   }
 
   buildEnemies() {
     const enemyMat = standard('#6373a6', 0.34, 0.22);
-    const enemySpawns = this.levelNumber === 6 ? [10.5, 18.5, 25.8, 33.8, 40.7, 46.8, 50.5] : this.levelNumber === 5 ? [9.8, 17.2, 25.8, 34.8, 41.2, 46.5] : this.levelNumber === 4 ? [10.5, 19.2, 28.3, 36.2, 42.1] : this.levelNumber === 2 ? [13.5, 29.5, 38.5] : this.levelNumber === 3 ? [12.8, 23.7, 33.8, 40.5] : [16.2, 34.2];
+    const enemySpawns = this.levelNumber === 7 ? [9.5,16.8,23.8,30.8,37.8,44.8,50.5,55] : this.levelNumber === 6 ? [10.5, 18.5, 25.8, 33.8, 40.7, 46.8, 50.5] : this.levelNumber === 5 ? [9.8, 17.2, 25.8, 34.8, 41.2, 46.5] : this.levelNumber === 4 ? [10.5, 19.2, 28.3, 36.2, 42.1] : this.levelNumber === 2 ? [13.5, 29.5, 38.5] : this.levelNumber === 3 ? [12.8, 23.7, 33.8, 40.5] : [16.2, 34.2];
     for (const startX of enemySpawns) {
       const group = new THREE.Group();
       mesh(new THREE.SphereGeometry(0.55, 14, 10), enemyMat, 0, 0.62, 0, group);
@@ -273,8 +283,8 @@ export class SunnyNeighborhoodLevel {
       }
       group.position.set(startX, 0, 0.55);
       this.group.add(group);
-      const routeHalfWidth = this.levelNumber === 6 ? 1.05 : this.levelNumber === 5 ? 1.1 : this.levelNumber === 4 ? 1.25 : this.levelNumber === 2 ? 1.7 : this.levelNumber === 3 ? 1.35 : 2.3;
-      const speed = this.levelNumber === 6 ? 2.35 : this.levelNumber === 5 ? 2.25 : this.levelNumber === 4 ? 2.1 : this.levelNumber === 2 ? 1.7 : this.levelNumber === 3 ? 1.9 : 1.5;
+      const routeHalfWidth = this.levelNumber === 7 ? 0.95 : this.levelNumber === 6 ? 1.05 : this.levelNumber === 5 ? 1.1 : this.levelNumber === 4 ? 1.25 : this.levelNumber === 2 ? 1.7 : this.levelNumber === 3 ? 1.35 : 2.3;
+      const speed = this.levelNumber === 7 ? 2.45 : this.levelNumber === 6 ? 2.35 : this.levelNumber === 5 ? 2.25 : this.levelNumber === 4 ? 2.1 : this.levelNumber === 2 ? 1.7 : this.levelNumber === 3 ? 1.9 : 1.5;
       this.enemies.push({ ...createEnemyState(startX, startX - routeHalfWidth, startX + routeHalfWidth, speed), group, indicator });
     }
   }
