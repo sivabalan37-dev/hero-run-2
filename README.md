@@ -27,6 +27,8 @@ On touch devices, use the on-screen left/right, jump and attack controls. Multip
 
 ## Run locally
 
+A branch CI workflow runs the unit tests and Vite production build on pushes to this development branch.
+
 Requires Node.js 20.19+ or 22.12+.
 
 ```sh
