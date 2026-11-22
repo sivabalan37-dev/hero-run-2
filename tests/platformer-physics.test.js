@@ -71,3 +71,22 @@ test('glide applies a safe terminal fall-speed cap', () => {
   stepBody(body, { move: 0, glide: true }, [], 1 / 60);
   assert.ok(body.vy >= -5.2);
 });
+
+
+test('character movement tuning changes speed and jump strength safely', () => {
+  const normal = createBody(0, 0);
+  const blaze = createBody(0, 0);
+  normal.grounded = true;
+  blaze.grounded = true;
+  for (let i = 0; i < 8; i++) {
+    stepBody(normal, { move: 1 }, floor, 1 / 60);
+    stepBody(blaze, { move: 1 }, floor, 1 / 60, null, { moveSpeed: 9.4, acceleration: 52, jumpSpeed: 11 });
+  }
+  assert.ok(blaze.vx > normal.vx);
+
+  const titanJump = createBody(0, 0);
+  titanJump.grounded = true;
+  stepBody(titanJump, { move: 0, jumpPressed: true }, floor, 1 / 60, null, { jumpSpeed: 9.8 });
+  assert.ok(titanJump.vy < 10.8);
+  assert.ok(titanJump.vy > 0);
+});
