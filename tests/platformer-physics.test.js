@@ -53,3 +53,21 @@ test('jump input is buffered briefly before landing', () => {
   }
   assert.ok(body.vy > 0);
 });
+
+test('glide input reduces Nobi fall speed while airborne', () => {
+  const normal = createBody(0, 8);
+  const gliding = createBody(0, 8);
+  normal.vy = -8;
+  gliding.vy = -8;
+  stepBody(normal, { move: 0 }, [], 1 / 60);
+  stepBody(gliding, { move: 0, glide: true }, [], 1 / 60);
+  assert.ok(gliding.vy > normal.vy, 'gliding velocity should be less downward');
+  assert.ok(gliding.vy < 0, 'glide should not turn a fall into a rise');
+});
+
+test('glide applies a safe terminal fall-speed cap', () => {
+  const body = createBody(0, 8);
+  body.vy = -21;
+  stepBody(body, { move: 0, glide: true }, [], 1 / 60);
+  assert.ok(body.vy >= -5.2);
+});
