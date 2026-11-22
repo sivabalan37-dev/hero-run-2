@@ -1,0 +1,42 @@
+export const PROJECT_CONFIG = Object.freeze({
+  name: "HERO RUN: TIME-TRAVEL ADVENTURE",
+  version: "1.0.0",
+  engine: "Three.js",
+  minimumThreeVersion: "0.187.0",
+  renderer: {
+    type: "WebGLRenderer",
+    webgl: 2,
+    outputColorSpace: "SRGBColorSpace",
+    toneMapping: "ACESFilmicToneMapping",
+    shadows: { enabledByDefault: true, type: "PCFSoftShadowMap" },
+  },
+  display: {
+    orientation: "landscape",
+    referenceWidth: 1280,
+    referenceHeight: 720,
+    targetFps: 60,
+    maxPixelRatio: 2,
+  },
+  performance: {
+    drawCallsTarget: 80,
+    visibleTrianglesMax: 120000,
+    textureSizeMax: 1024,
+    activeEnemiesMax: 12,
+    activeProjectilesMax: 40,
+    audioVoicesMax: 12,
+    particles: { low: 150, medium: 400, high: 900 },
+  },
+  gameplay: {
+    mode: "side-scrolling-platformer",
+    fixedUpdateHz: 60,
+    worlds: 5,
+    levels: 40,
+    bosses: 5,
+    characters: ["shin", "nobi", "benji"],
+  },
+  qualityPresets: {
+    low: { shadows: false, particles: 150, pixelRatio: 1, antialias: false },
+    medium: { shadows: true, particles: 400, pixelRatio: 1.5, antialias: true },
+    high: { shadows: true, particles: 900, pixelRatio: 2, antialias: true },
+  },
+});
