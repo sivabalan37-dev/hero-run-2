@@ -3,48 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#17283f" />
-    <meta name="description" content="Hero Run 2 — a cinematic 3D endless runner with a brave cartoon hero, floating green islands, waterfalls, a fantasy castle, coins and monsters." />
+    <meta name="theme-color" content="#10243a" />
+    <meta name="description" content="Hero Run: Time-Travel Adventure — a colorful Three.js action platformer." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <title>Hero Run 2</title>
+    <title>Hero Run: Time-Travel Adventure</title>
   </head>
   <body>
-    <div id="game-root">
-      <div id="game-canvas" aria-label="Hero Run 2 3D game"></div>
-      <div id="hud" class="hud hidden">
-        <div class="hud-left">
-          <div class="stat"><span>HEALTH</span><strong id="health-value">100</strong></div>
+    <main id="game-root">
+      <div id="game-canvas" aria-label="Hero Run 3D platform game"></div>
+
+      <section id="hud" class="hud hidden" aria-label="Game status">
+        <div class="hud-card health-card">
+          <div class="stat-line"><span>SHIN · HEALTH</span><strong id="health-value">100</strong></div>
           <div class="health-track"><div id="health-fill"></div></div>
-          <div class="stat-row"><span>🪙 <b id="coins-value">0</b></span><span>💎 <b id="shards-value">0</b></span></div>
+          <div class="collect-row">
+            <span>🪙 <b id="coins-value">0</b></span>
+            <span>💎 <b id="shards-value">0</b></span>
+          </div>
         </div>
-        <div class="hud-center"><strong id="distance-value">0 m</strong><span id="score-value">SCORE 0</span></div>
-        <button id="pause-button" class="icon-button" aria-label="Pause">Ⅱ</button>
-      </div>
-      <div id="toast" class="toast hidden" role="status"></div>
+        <div class="level-label" id="level-name">SUNNY NEIGHBORHOOD · LEVEL 1 / 40</div>
+        <button id="pause-button" class="icon-button" type="button" aria-label="Pause game">Ⅱ</button>
+      </section>
+
+      <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
       <section id="overlay" class="overlay">
         <div class="panel">
-          <div class="eyebrow">CINEMATIC 3D ACTION RUNNER</div>
-          <h1>HERO <em>RUN 2</em></h1>
-          <p id="overlay-message">Run through the world, collect coins and shards, defeat enemies and keep your health up.</p>
-          <div class="best-row"><span>BEST DISTANCE</span><strong id="best-value">0 m</strong></div>
-          <button id="start-button" class="primary-button">START RUN</button>
-          <div class="controls-note">Move: A / D or ← / → · Jump: Space / W · Attack: J · Special: K · Slide: S</div>
-          <div id="status-note" class="status-note">HIGH GRAPHICS · TOUCH + KEYBOARD READY</div>
+          <div class="eyebrow">THREE.JS · 3D PLATFORM ADVENTURE</div>
+          <h1 id="overlay-title">HERO <em>RUN</em></h1>
+          <p id="overlay-message">Help Shin recover the Time Shard in Sunny Neighborhood.</p>
+          <button id="start-button" class="primary-button" type="button">START LEVEL</button>
+          <div class="controls-note">Move: A / D or ◀ / ▶ · Jump: Space / W · Attack: J</div>
+          <div id="status-note" class="status-note">LEVEL 1 · SUNNY NEIGHBORHOOD</div>
         </div>
       </section>
-      <div id="touch-controls" class="touch-controls hidden">
+
+      <nav id="touch-controls" class="touch-controls hidden" aria-label="Touch game controls">
         <div class="touch-cluster left-cluster">
-          <button data-action="left" aria-label="Move left">◀</button>
-          <button data-action="right" aria-label="Move right">▶</button>
+          <button type="button" data-action="left" aria-label="Move left">◀</button>
+          <button type="button" data-action="right" aria-label="Move right">▶</button>
         </div>
         <div class="touch-cluster right-cluster">
-          <button data-action="attack" aria-label="Attack">HIT</button>
-          <button data-action="special" aria-label="Special attack">⚡</button>
-          <button data-action="jump" aria-label="Jump">JUMP</button>
-          <button data-action="slide" aria-label="Slide">SLIDE</button>
+          <button type="button" data-action="attack" aria-label="Attack">HIT</button>
+          <button type="button" data-action="jump" aria-label="Jump">JUMP</button>
         </div>
-      </div>
-    </div>
+      </nav>
+    </main>
     <script type="module" src="./src/main.js"></script>
   </body>
 </html>
