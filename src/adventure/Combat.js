@@ -89,7 +89,8 @@ export class ToyStarPool {
         if (!enemy.alive || enemy.hurtTimer > 0) continue;
         const dx = item.x - enemy.x;
         const dy = item.y - 0.62;
-        if (dx * dx + dy * dy > 0.88 * 0.88) continue;
+        const radius = Number.isFinite(enemy.hitRadius) ? enemy.hitRadius : 0.88;
+        if (dx * dx + dy * dy > radius * radius) continue;
         enemy.health = Math.max(0, enemy.health - item.damage);
         enemy.hurtTimer = 0.16;
         hits++;
