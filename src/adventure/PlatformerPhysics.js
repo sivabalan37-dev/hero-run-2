@@ -17,6 +17,10 @@ export function createBody(x = 0, y = 0) {
     coyoteTimer: 0,
     jumpBuffer: 0,
     facing: 1,
+    maxAirJumps: 0,
+    airJumpsRemaining: 0,
+    airDashTimer: 0,
+    airDashSpeed: 12,
   };
 }
 
@@ -47,7 +51,12 @@ export function stepBody(body, input, platforms, dt, bounds = null, tuning = nul
   const move = Math.max(-1, Math.min(1, input.move || 0));
   if (move) body.facing = Math.sign(move);
   const targetSpeed = move * moveSpeed;
-  body.vx = approach(body.vx, targetSpeed, (move ? acceleration : PHYSICS.friction) * dt);
+  if (body.airDashTimer > 0) {
+    body.airDashTimer = Math.max(0, body.airDashTimer - dt);
+    body.vx = (body.facing || 1) * Math.max(moveSpeed, body.airDashSpeed || 12);
+  } else {
+    body.vx = approach(body.vx, targetSpeed, (move ? acceleration : PHYSICS.friction) * dt);
+  }
 
   // Only solid-sided blocks stop horizontal motion; raised platforms are one-way ledges.
   const oldLeft = body.x - body.width / 2;
@@ -102,11 +111,18 @@ export function stepBody(body, input, platforms, dt, bounds = null, tuning = nul
     }
   }
 
+  if (body.grounded) body.airJumpsRemaining = Math.max(0, body.maxAirJumps || 0);
   if (body.jumpBuffer > 0 && (body.grounded || body.coyoteTimer > 0)) {
     body.vy = jumpSpeed;
     body.grounded = false;
     body.coyoteTimer = 0;
     body.jumpBuffer = 0;
+    body.airJumpsRemaining = Math.max(0, body.maxAirJumps || 0);
+  } else if (body.jumpBuffer > 0 && body.airJumpsRemaining > 0) {
+    body.vy = jumpSpeed * 0.92;
+    body.jumpBuffer = 0;
+    body.airJumpsRemaining--;
+    body.airDashTimer = 0;
   }
   return body;
 }
