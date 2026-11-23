@@ -347,13 +347,15 @@ export class AdventureGame {
     }
   }
 
-  damageHero() {
+  damageHero(source = null) {
     if (this.hero.invulnerable > 0) return;
     const benjiForm = this.hero.characterId === 'benji' ? this.hero.forms[this.hero.formIndex] : null;
     const damageMultiplier = benjiForm ? getBenjiFormStats(benjiForm).damageMultiplier : 1;
     this.hero.health = Math.max(0, this.hero.health - Math.round(25 * damageMultiplier));
     this.hero.invulnerable = 1.1;
-    this.toast('ROBO BUG HIT!');
+    this.toast(source?.isBoss
+      ? `${source.bossName.toUpperCase()} ATTACK!`
+      : source ? 'ROBO BUG HIT!' : 'FALL DAMAGE!');
     this.updateHud();
     if (this.hero.health <= 0) {
       this.state = 'gameover';
@@ -431,8 +433,10 @@ export class AdventureGame {
 
     for (const enemy of this.level.enemies) {
       if (!enemy.alive || !enemy.attackPulse) continue;
-      if (Math.abs(body.x - enemy.x) < 1.5 && body.y < 1.05) {
-        this.damageHero();
+      const hitRange = enemy.isBoss ? enemy.attackRange ?? 2.6 : 1.5;
+      const maxHeroY = enemy.isBoss ? enemy.attackHeight ?? 1.35 : 1.05;
+      if (Math.abs(body.x - enemy.x) <= hitRange && Math.max(0, body.y) <= maxHeroY) {
+        this.damageHero(enemy);
       }
     }
 
