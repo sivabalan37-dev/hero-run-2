@@ -19,6 +19,7 @@ import { getBossHudModel } from './BossHUD.js';
 import { AudioManager } from '../game/Audio.js';
 import { ImpactParticlePool } from './ImpactParticles.js';
 import { loadSettings, saveSettings } from './Settings.js';
+import { getAchievementProgress } from './Achievements.js';
 
 const FIXED_STEP = 1 / 60;
 const CHECKPOINT_KEY = 'hero-run-time-travel-save-v1';
@@ -105,6 +106,9 @@ export class AdventureGame {
       tutorialButton: document.querySelector('#tutorial-button'),
       tutorialPanel: document.querySelector('#tutorial-panel'),
       tutorialBack: document.querySelector('#tutorial-back'),
+      achievementsButton: document.querySelector('#achievements-button'),
+      achievementsPanel: document.querySelector('#achievements-panel'),
+      achievementsBack: document.querySelector('#achievements-back'),
       settingsPanel: document.querySelector('#settings-panel'),
       settingsBack: document.querySelector('#settings-back'),
       soundEnabled: document.querySelector('#sound-enabled'),
@@ -152,6 +156,8 @@ export class AdventureGame {
     this.onOpenSettings = () => this.openSettings();
     this.onOpenTutorial = () => this.openTutorial();
     this.onCloseTutorial = () => this.closeTutorial();
+    this.onOpenAchievements = () => this.openAchievements();
+    this.onCloseAchievements = () => this.closeAchievements();
     this.onCloseSettings = () => this.closeSettings();
     this.onSoundEnabledChange = () => this.updateSettings({ soundEnabled: this.ui.soundEnabled.checked });
     this.onSoundVolumeChange = () => this.updateSettings({ volume: Number(this.ui.soundVolume.value) });
@@ -162,6 +168,8 @@ export class AdventureGame {
     this.ui.settingsButton.addEventListener('click', this.onOpenSettings);
     this.ui.tutorialButton.addEventListener('click', this.onOpenTutorial);
     this.ui.tutorialBack.addEventListener('click', this.onCloseTutorial);
+    this.ui.achievementsButton.addEventListener('click', this.onOpenAchievements);
+    this.ui.achievementsBack.addEventListener('click', this.onCloseAchievements);
     this.ui.settingsBack.addEventListener('click', this.onCloseSettings);
     this.ui.soundEnabled.addEventListener('change', this.onSoundEnabledChange);
     this.ui.soundVolume.addEventListener('input', this.onSoundVolumeChange);
@@ -256,6 +264,68 @@ export class AdventureGame {
     this.showOverlay(this._overlayModel.title, this._overlayModel.subtitle, this._overlayModel.message, this._overlayModel.buttonText, this._overlayModel.status);
   }
 
+  openAchievements() {
+    if (['running', 'paused', 'gameover'].includes(this.state)) return;
+    this.renderAchievements();
+    this.ui.message.classList.add('hidden');
+    this.ui.start.classList.add('hidden');
+    this.ui.levelSelect.classList.add('hidden');
+    this.ui.levelSelectButton.classList.add('hidden');
+    this.ui.levelSelectBack.classList.add('hidden');
+    this.ui.settingsButton.classList.add('hidden');
+    this.ui.settingsPanel.classList.add('hidden');
+    this.ui.settingsBack.classList.add('hidden');
+    this.ui.tutorialButton.classList.add('hidden');
+    this.ui.tutorialPanel.classList.add('hidden');
+    this.ui.tutorialBack.classList.add('hidden');
+    this.ui.achievementsButton.classList.add('hidden');
+    this.ui.achievementsPanel.classList.remove('hidden');
+    this.ui.achievementsBack.classList.remove('hidden');
+    this.ui.title.textContent = 'ACHIEVEMENTS';
+    const unlocked = getAchievementProgress(this.progress).filter(item => item.unlocked).length;
+    this.ui.status.textContent = `${unlocked} OF 10 ACHIEVEMENTS UNLOCKED`;
+  }
+
+  renderAchievements() {
+    const entries = getAchievementProgress(this.progress);
+    this.ui.achievementsPanel.replaceChildren();
+    for (const achievement of entries) {
+      const card = document.createElement('article');
+      card.className = `achievement-card${achievement.unlocked ? ' unlocked' : ''}`;
+      const heading = document.createElement('div');
+      heading.className = 'achievement-heading';
+      const title = document.createElement('strong');
+      title.textContent = achievement.title;
+      const state = document.createElement('span');
+      state.textContent = achievement.unlocked ? 'UNLOCKED' : achievement.progressText;
+      heading.append(title, state);
+      const description = document.createElement('p');
+      description.textContent = achievement.description;
+      const track = document.createElement('div');
+      track.className = 'achievement-track';
+      track.setAttribute('role', 'progressbar');
+      track.setAttribute('aria-label', `${achievement.title} progress`);
+      track.setAttribute('aria-valuemin', '0');
+      track.setAttribute('aria-valuemax', String(achievement.target));
+      track.setAttribute('aria-valuenow', String(achievement.value));
+      const fill = document.createElement('div');
+      fill.className = 'achievement-fill';
+      fill.style.width = `${Math.round(achievement.value / achievement.target * 100)}%`;
+      track.appendChild(fill);
+      const reward = document.createElement('small');
+      reward.textContent = `TITLE · ${achievement.reward}`;
+      card.append(heading, description, track, reward);
+      this.ui.achievementsPanel.appendChild(card);
+    }
+  }
+
+  closeAchievements() {
+    if (!this._overlayModel) return;
+    this.ui.achievementsPanel.classList.add('hidden');
+    this.ui.achievementsBack.classList.add('hidden');
+    this.showOverlay(this._overlayModel.title, this._overlayModel.subtitle, this._overlayModel.message, this._overlayModel.buttonText, this._overlayModel.status);
+  }
+
   openTutorial() {
     if (['running', 'paused', 'gameover'].includes(this.state)) return;
     this.ui.message.classList.add('hidden');
@@ -294,7 +364,11 @@ export class AdventureGame {
     this.ui.settingsBack.classList.add('hidden');
     this.ui.tutorialPanel.classList.add('hidden');
     this.ui.tutorialBack.classList.add('hidden');
-    this.ui.settingsButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
+    this.ui.achievementsPanel.classList.add('hidden');
+    this.ui.achievementsBack.classList.add('hidden');
+    const menuOnly = this.state === 'paused' || this.state === 'gameover';
+    this.ui.achievementsButton.classList.toggle('hidden', menuOnly);
+    this.ui.settingsButton.classList.toggle('hidden', menuOnly);
     this.ui.tutorialButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
     this.ui.levelSelectButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
     this.ui.overlay.classList.remove('hidden');
@@ -312,6 +386,7 @@ export class AdventureGame {
     this.ui.levelSelectButton.classList.add('hidden');
     this.ui.settingsButton.classList.add('hidden');
     this.ui.tutorialButton.classList.add('hidden');
+    this.ui.achievementsButton.classList.add('hidden');
     this.ui.levelSelectBack.classList.remove('hidden');
     this.ui.levelSelect.classList.remove('hidden');
     this.ui.status.textContent = `${this.progress.completedLevels.length} OF 40 LEVELS CLEARED · ${this.progress.totalCoins} COINS`;
@@ -531,6 +606,7 @@ export class AdventureGame {
 
   completeLevel() {
     const alreadyCompleted = this.progress.completedLevels.includes(this.levelNumber);
+    const previouslyUnlockedAchievements = new Set(getAchievementProgress(this.progress).filter(item => item.unlocked).map(item => item.id));
     const starsEarned = this.shards > 0
       ? (this.hero.health >= 75 ? 3 : 2)
       : 1;
@@ -558,6 +634,8 @@ export class AdventureGame {
     if (starsEarned < bestStars) message += ` Your best rating remains ${bestStars} stars.`;
     if (nobiUnlocked) message += ' Nobi is now unlocked!';
     if (benjiUnlocked) message += ' Benji is now unlocked!';
+    const newlyUnlockedAchievements = getAchievementProgress(this.progress).filter(item => item.unlocked && !previouslyUnlockedAchievements.has(item.id));
+    if (newlyUnlockedAchievements.length) message += ` Achievement unlocked: ${newlyUnlockedAchievements.map(item => item.title).join(', ')}.`;
     const nextIsPlayable = PLAYABLE_LEVELS.includes(nextLevel);
     if (nextIsPlayable) {
       message += ` Next: ${nextInfo.title}.`;
@@ -758,6 +836,8 @@ export class AdventureGame {
     this.ui.settingsBack.removeEventListener('click', this.onCloseSettings);
     this.ui.tutorialButton.removeEventListener('click', this.onOpenTutorial);
     this.ui.tutorialBack.removeEventListener('click', this.onCloseTutorial);
+    this.ui.achievementsButton.removeEventListener('click', this.onOpenAchievements);
+    this.ui.achievementsBack.removeEventListener('click', this.onCloseAchievements);
     this.ui.soundEnabled.removeEventListener('change', this.onSoundEnabledChange);
     this.ui.soundVolume.removeEventListener('input', this.onSoundVolumeChange);
     this.ui.graphicsQuality.removeEventListener('change', this.onGraphicsQualityChange);
