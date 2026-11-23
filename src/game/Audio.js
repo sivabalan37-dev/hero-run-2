@@ -17,7 +17,7 @@ export class AudioManager {
     if (this.context.state === 'suspended') await this.context.resume();
   }
   tone(frequency, duration = 0.09, type = 'sine', volume = 0.035) {
-    if (!this.enabled || !this.context) return;
+    if (!this.enabled || !this.context || this.volume <= 0) return;
     const oscillator = this.context.createOscillator();
     const gain = this.context.createGain();
     oscillator.type = type; oscillator.frequency.value = frequency;
