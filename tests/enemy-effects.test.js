@@ -51,3 +51,26 @@ test('invalid elapsed time safely falls back to zero', () => {
   assert.ok(Number.isFinite(state.bodyScaleY));
   assert.ok(Number.isFinite(state.bob));
 });
+
+
+import { getEnemyMotionState } from '../src/adventure/EnemyEffects.js';
+
+test('vine sweeper gets a wider attack swing than its idle motion', () => {
+  const idle = getEnemyMotionState({ enemyType: 'vine-sweeper', state: 'patrol' }, 0.2);
+  const attack = getEnemyMotionState({ enemyType: 'vine-sweeper', state: 'attack' }, 0.2);
+  assert.ok(Math.abs(attack.vineSwing) > Math.abs(idle.vineSwing));
+  assert.equal(attack.wingFlap, 0);
+});
+
+test('drone wings flap faster during attack and sentinel core spins', () => {
+  const drone = getEnemyMotionState({ enemyType: 'drone-scout', state: 'attack' }, 0.5);
+  const sentinel = getEnemyMotionState({ enemyType: 'time-sentinel', state: 'telegraph' }, 0.5);
+  assert.notEqual(drone.wingFlap, 0);
+  assert.equal(sentinel.coreSpin, 4.5);
+});
+
+test('charger ring spins faster while charging', () => {
+  const idle = getEnemyMotionState({ enemyType: 'clockwork-charger', state: 'patrol' }, 1);
+  const charge = getEnemyMotionState({ enemyType: 'clockwork-charger', state: 'charge' }, 1);
+  assert.ok(charge.chargerSpin > idle.chargerSpin);
+});
