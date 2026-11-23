@@ -28,7 +28,15 @@ export function getEnemyVisualState(enemy, elapsed = 0) {
   let ringOpacity = 0;
   let ringColor = COLORS.idle;
 
-  if (mode === 'telegraph') {
+  if (mode === 'hurt' || enemy.hurtTimer > 0) {
+    bodyScaleX = baseScale * 0.78;
+    bodyScaleY = baseScale * 1.12;
+    rotationZ = -0.16 * (enemy.direction || 1);
+    ringVisible = true;
+    ringScale = 0.95;
+    ringOpacity = 0.82;
+    ringColor = '#ff514f';
+  } else if (mode === 'telegraph') {
     const pulse = 0.5 + 0.5 * Math.sin(t * (boss ? 18 : 22));
     bodyScaleX = baseScale * (1 + pulse * (boss ? 0.035 : 0.06));
     bodyScaleY = baseScale * (1 + pulse * (boss ? 0.12 : 0.1));
