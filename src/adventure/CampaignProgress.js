@@ -13,6 +13,19 @@ function cleanCompletedLevels(values) {
   ))].sort((a, b) => a - b);
 }
 
+function cleanStarsByLevel(values, completedLevels) {
+  if (!values || typeof values !== 'object' || Array.isArray(values)) return {};
+  const completed = new Set(completedLevels);
+  const result = {};
+  for (const [levelText, stars] of Object.entries(values)) {
+    const level = Number(levelText);
+    if (Number.isInteger(level) && completed.has(level) && Number.isInteger(stars) && stars >= 1 && stars <= 3) {
+      result[level] = stars;
+    }
+  }
+  return result;
+}
+
 function nextSequentialLevel(completedLevels) {
   const completed = new Set(completedLevels);
   let next = 1;
@@ -34,6 +47,7 @@ export function createProgressState(raw = null) {
   return {
     version: 1,
     completedLevels,
+    starsByLevel: cleanStarsByLevel(safe.starsByLevel, completedLevels),
     totalCoins,
     currentLevel: nextSequentialLevel(completedLevels),
     selectedCharacter,
@@ -58,17 +72,25 @@ export function selectCharacter(progress, characterId) {
   return { ...safe, selectedCharacter: characterId };
 }
 
-export function recordLevelCompletion(progress, levelNumber, coinsEarned = 0) {
+/** Records first-time coins and keeps the best star rating when a level is replayed. */
+export function recordLevelCompletion(progress, levelNumber, coinsEarned = 0, starsEarned = 1) {
   if (!Number.isInteger(levelNumber) || levelNumber < 1 || levelNumber > CAMPAIGN_LEVEL_COUNT) {
     throw new RangeError('Level number must be between 1 and 40');
   }
   const safe = createProgressState(progress);
+  const wasCompleted = safe.completedLevels.includes(levelNumber);
   const completedLevels = cleanCompletedLevels([...safe.completedLevels, levelNumber]);
   const validCoins = Number.isFinite(coinsEarned) ? Math.max(0, Math.floor(coinsEarned)) : 0;
+  const validStars = Number.isInteger(starsEarned) ? Math.max(1, Math.min(3, starsEarned)) : 1;
+  const starsByLevel = {
+    ...safe.starsByLevel,
+    [levelNumber]: Math.max(safe.starsByLevel[levelNumber] || 0, validStars),
+  };
   return createProgressState({
     ...safe,
     completedLevels,
-    totalCoins: safe.totalCoins + validCoins,
+    starsByLevel,
+    totalCoins: safe.totalCoins + (wasCompleted ? 0 : validCoins),
   });
 }
 
