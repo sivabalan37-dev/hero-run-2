@@ -101,3 +101,40 @@ test('a fully completed campaign advances to terminal level 41', () => {
   });
   assert.equal(progress.currentLevel, 41);
 });
+
+
+test('level completion stores a star rating and keeps the best replay rating', () => {
+  let progress = createProgressState();
+  progress = recordLevelCompletion(progress, 1, 8, 2);
+  assert.equal(progress.starsByLevel[1], 2);
+  assert.equal(progress.totalCoins, 8);
+
+  progress = recordLevelCompletion(progress, 1, 99, 1);
+  assert.equal(progress.starsByLevel[1], 2);
+  assert.equal(progress.totalCoins, 8);
+
+  progress = recordLevelCompletion(progress, 1, 0, 3);
+  assert.equal(progress.starsByLevel[1], 3);
+  assert.equal(progress.totalCoins, 8);
+});
+
+test('invalid or unearned star ratings are sanitized when loading progress', () => {
+  const progress = createProgressState({
+    version: 1,
+    completedLevels: [1, 2, 3],
+    starsByLevel: { 1: 3, 2: 0, 3: 4, 4: 2, nope: 3, 5: '3' },
+  });
+  assert.deepEqual(progress.starsByLevel, { 1: 3 });
+});
+
+test('star ratings survive campaign save and load', () => {
+  const values = new Map();
+  const storage = {
+    getItem(key) { return values.get(key) ?? null; },
+    setItem(key, value) { values.set(key, value); },
+  };
+  let progress = createProgressState();
+  progress = recordLevelCompletion(progress, 1, 5, 3);
+  assert.equal(saveCampaignProgress(progress, storage), true);
+  assert.deepEqual(loadCampaignProgress(storage).starsByLevel, { 1: 3 });
+});
