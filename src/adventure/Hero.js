@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createBody } from './PlatformerPhysics.js';
+import { getAttackPose } from './HeroAnimation.js';
 
 const material = (color, roughness = 0.72, metalness = 0) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -29,6 +30,7 @@ class BaseHero {
     this.invulnerable = 0;
     this.attackCooldown = 0;
     this.walkPhase = 0;
+    this.attackBlend = 0;
     this.visualScale = 1;
     this.group = new THREE.Group();
     scene.add(this.group);
@@ -44,6 +46,7 @@ class BaseHero {
     this.invulnerable = 0;
     this.attackCooldown = 0;
     this.walkPhase = 0;
+    this.attackBlend = 0;
     this.syncVisual();
   }
 
@@ -53,10 +56,13 @@ class BaseHero {
     const moving = Math.abs(this.body.vx) > 0.3 && this.body.grounded;
     this.walkPhase += moving ? dt * 11 : dt * 2;
     const swing = moving ? Math.sin(this.walkPhase) * 0.55 : 0;
+    this.attackBlend = attacking ? Math.min(1, this.attackBlend + dt * 14) : Math.max(0, this.attackBlend - dt * 9);
+    const attackPose = getAttackPose(this.attackBlend);
     if (this.leftLeg) this.leftLeg.rotation.z = swing;
     if (this.rightLeg) this.rightLeg.rotation.z = -swing;
-    if (this.leftArm) this.leftArm.rotation.z = -swing * 0.55;
-    if (this.rightArm) this.rightArm.rotation.z = swing * 0.55 - (attacking ? 0.9 : 0);
+    if (this.leftArm) this.leftArm.rotation.z = -swing * 0.55 + attackPose.leftArmRotation;
+    if (this.rightArm) this.rightArm.rotation.z = swing * 0.55 + attackPose.rightArmRotation;
+    this.model.rotation.z = -attackPose.bodyLean;
     if (this.rotor) this.rotor.rotation.y += dt * (moving ? 15 : 5);
     this.model.scale.set(this.body.facing * this.visualScale, this.visualScale, this.visualScale);
     this.model.visible = this.invulnerable <= 0 || Math.floor(this.invulnerable * 14) % 2 === 0;
