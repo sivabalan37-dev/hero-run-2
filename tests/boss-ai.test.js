@@ -12,7 +12,7 @@ function makeBoss(overrides = {}) {
 test('boss phase changes at two health thresholds', () => {
   const boss = makeBoss();
   assert.equal(getBossPhase(boss).phase, 1);
-  boss.health = 8;
+  boss.health = 7.9;
   assert.equal(getBossPhase(boss).phase, 2);
   boss.health = 3;
   assert.equal(getBossPhase(boss).phase, 3);
@@ -23,7 +23,9 @@ test('boss telegraphs before striking and then enters recovery', () => {
   stepBoss(boss, { x: 1, y: 0 }, 1 / 60);
   assert.equal(boss.bossMode, 'telegraph');
   assert.equal(boss.attackPulse, false);
-  for (let i = 0; i < 50; i++) stepBoss(boss, { x: 1, y: 0 }, 1 / 60);
+  for (let i = 0; i < 42; i++) stepBoss(boss, { x: 1, y: 0 }, 1 / 60);
+  assert.equal(boss.bossMode, 'telegraph');
+  stepBoss(boss, { x: 1, y: 0 }, 1 / 60);
   assert.equal(boss.bossMode, 'strike');
   assert.equal(boss.attackPulse, true);
   stepBoss(boss, { x: 1, y: 0 }, 1 / 60);
