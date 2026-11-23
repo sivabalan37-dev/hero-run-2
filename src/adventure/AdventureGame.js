@@ -15,6 +15,7 @@ import {
 import { getLevelInfo, PLAYABLE_LEVELS } from './LevelCatalog.js';
 import { getBossHudModel } from './BossHUD.js';
 import { AudioManager } from '../game/Audio.js';
+import { ImpactParticlePool } from './ImpactParticles.js';
 
 const FIXED_STEP = 1 / 60;
 const CHECKPOINT_KEY = 'hero-run-time-travel-save-v1';
@@ -83,6 +84,7 @@ export class AdventureGame {
     this.level = this.createLevel(this.levelNumber);
     this.hero = createHero(this.scene, this.progress.selectedCharacter, this.checkpointX);
     this.projectiles = new ToyStarPool(this.scene);
+    this.impactParticles = new ImpactParticlePool(this.scene);
     this.input = new AdventureInput(document);
     this.clock = new THREE.Clock();
 
@@ -213,6 +215,7 @@ export class AdventureGame {
     this.attackTimer = 0;
     this.specialTimer = 0;
     this.projectiles.clear();
+    this.impactParticles.clear();
     this.updateHud();
   }
 
@@ -434,7 +437,10 @@ export class AdventureGame {
       }
     }
 
-    const combatResult = this.projectiles.update(dt, this.level.enemies);
+    const combatResult = this.projectiles.update(dt, this.level.enemies, (x, y, isBoss) => {
+      this.impactParticles.spawn(x, y, isBoss);
+    });
+    this.impactParticles.update(dt);
     if (combatResult.defeated > 0) {
       this.coins += combatResult.defeated * 2;
       this.toast(`ENEMY DEFEATED · +${combatResult.defeated * 2}`);
@@ -520,6 +526,7 @@ export class AdventureGame {
     window.removeEventListener('resize', this.onResize);
     document.removeEventListener('visibilitychange', this.onVisibility);
     this.projectiles.destroy();
+    this.impactParticles.destroy();
     this.hero.destroy();
     this.level.destroy();
     this.renderer.dispose();
