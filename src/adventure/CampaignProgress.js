@@ -65,6 +65,13 @@ export function isCharacterUnlocked(progress, characterId) {
   return getUnlockedCharacters(progress).includes(characterId);
 }
 
+/** Completed levels can always be replayed; new levels unlock in campaign order. */
+export function isLevelUnlocked(progress, levelNumber) {
+  if (!Number.isInteger(levelNumber) || levelNumber < 1 || levelNumber > CAMPAIGN_LEVEL_COUNT) return false;
+  const safe = createProgressState(progress);
+  return levelNumber <= safe.currentLevel || safe.completedLevels.includes(levelNumber);
+}
+
 /** Returns null when a character is still locked. */
 export function selectCharacter(progress, characterId) {
   const safe = createProgressState(progress);
