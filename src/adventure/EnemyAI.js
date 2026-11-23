@@ -1,3 +1,5 @@
+import { stepEnemyHitReaction } from './EnemyHitReaction.js';
+
 const ENEMY_PROFILES = Object.freeze({
   'robo-bug': Object.freeze({
     label: 'Robo Bug', speed: 1.45, detectionRange: 5.2, disengageRange: 7.5,
@@ -78,7 +80,10 @@ export function stepEnemy(enemy, hero, dt) {
 
   const profile = getEnemyProfile(enemy.enemyType);
   enemy.attackCooldown = Math.max(0, enemy.attackCooldown - dt);
-  enemy.hurtTimer = Math.max(0, enemy.hurtTimer - dt);
+  if (stepEnemyHitReaction(enemy, dt)) {
+    enemy.state = 'hurt';
+    return;
+  }
   const dx = hero.x - enemy.x;
   const distance = Math.abs(dx);
   const heroHeight = Math.max(0, hero.y || 0);
