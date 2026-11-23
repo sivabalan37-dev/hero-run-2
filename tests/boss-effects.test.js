@@ -29,7 +29,7 @@ test('five boss strikes have distinct visual transforms', () => {
   const transforms = types.map(type => {
     const state = getBossAttackVisualState(boss(type, 'strike'), 1);
     assert.equal(state.visible, true);
-    assert.equal(state.opacity, 0.92);
+    assert.ok(state.opacity >= 0.72 && state.opacity <= 0.92);
     return [state.scaleX, state.scaleY, state.rotation, state.lift].join(':');
   });
   assert.equal(new Set(transforms).size, 5);
@@ -48,4 +48,23 @@ test('invalid elapsed time returns finite transforms', () => {
   const state = getBossAttackVisualState(boss('time-wave', 'telegraph'), Number.NaN);
   assert.ok(Number.isFinite(state.scaleX));
   assert.ok(Number.isFinite(state.opacity));
+});
+
+test('each boss strike animates over time instead of holding a static pose', () => {
+  const types = ['ground-slam', 'gear-dash', 'vine-sweep', 'pulse-blast', 'time-wave'];
+  for (const type of types) {
+    const early = getBossAttackVisualState(boss(type, 'strike'), 0.15);
+    const later = getBossAttackVisualState(boss(type, 'strike'), 0.65);
+    const changed = ['scaleX', 'scaleY', 'rotation', 'lift', 'opacity']
+      .some(key => Math.abs(early[key] - later[key]) > 0.001);
+    assert.equal(changed, true, type + ' should animate during its strike');
+  }
+});
+
+test('boss recovery visual fades within a bounded range', () => {
+  for (const type of ['ground-slam', 'gear-dash', 'vine-sweep', 'pulse-blast', 'time-wave']) {
+    const state = getBossAttackVisualState(boss(type, 'recover'), 1.2);
+    assert.ok(state.opacity >= 0.12 && state.opacity <= 0.24);
+    assert.ok(state.scaleX >= 1.25 && state.scaleX <= 1.37);
+  }
 });
