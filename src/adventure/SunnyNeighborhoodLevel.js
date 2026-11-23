@@ -466,6 +466,7 @@ export class SunnyNeighborhoodLevel {
       else stepEnemy(enemy, heroBody, dt);
       if (!enemy.alive) {
         enemy.effectRing.visible = false;
+        if (enemy.bossAttackEffect) enemy.bossAttackEffect.visible = false;
         continue;
       }
 
