@@ -59,7 +59,7 @@ The production build emits a non-blocking warning because the minified JavaScrip
 
 - Further playtesting and balance passes for all 40 authored stage layouts, including jumps, collectible reachability and enemy spacing.
 - More detailed boss-specific attack animation timing and broader music/ambient audio.
-- Remaining combat feedback polish, broader effects/audio, and three-star level ratings.
+- Remaining combat feedback polish, broader effects/audio, and further level-completion feedback.
 - Further Nobi aerial polish; Benji ability balancing and broader visual/audio polish.
 - Full achievements, settings, leaderboard, tutorial, cinematics/dialogue and final victory flow.
 - IndexedDB fallback/backup, Capacitor configuration and verified Android release.
