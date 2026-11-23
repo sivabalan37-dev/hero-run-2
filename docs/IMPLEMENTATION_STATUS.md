@@ -28,7 +28,7 @@
 - Projectile and Benji special hits share a hit-reaction system: bounded knockback, short AI hit-stun, a red impact pulse and boss recovery interruption. Hit responses are rejected while an enemy is already stunned, preventing rapid repeat-hit exploits.
 - Projectile hits trigger fixed-capacity pooled impact particle bursts. Standard enemies produce small golden/orange bursts; bosses produce larger purple bursts. Particle positions, velocities and fade are updated without allocating meshes during combat.
 - All three heroes now use a shared punch pose: the attacking arm drives forward, the opposite arm recoils and the torso leans into the attack. The pose eases in and out with the attack cooldown.
-- Full 40-level campaign catalog is playable in the browser game. Levels 1–7 have authored stage layouts; levels 8–40 currently use procedural layouts and world themes. Five boss gates are active at the end of each world.
+- All 40 campaign stages now have distinct authored platform routes, collectible paths and enemy placements. Levels 1–7 retain their hand-built neighborhood layouts; levels 8–40 use 33 individually authored world-specific blueprints, with dedicated boss-stage layouts at levels 8, 16, 24, 32 and 40. Five boss gates are active at the end of each world.
 - Versioned campaign save for completed levels, selected character and total coins; malformed save data is rejected before writing.
 - Per-level checkpoint save and safe fallback if storage is unavailable/corrupt.
 - HUD, menu, pause/resume, character controls, basic damage/respawn and level-completion progression.
@@ -37,7 +37,7 @@
 
 ## Automated validation
 
-Latest completed validation run:
+Latest completed validation run (before the 40-stage layout expansion):
 - **PASS:** 100 of 100 Node unit tests, including Gadget Vision scan animation, five enemy archetypes, enemy/boss visual states, five boss attack transforms, pooled impact particle behavior, shared hero punch poses, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
@@ -56,7 +56,7 @@ The production build emits a non-blocking warning because the minified JavaScrip
 
 ## Remaining implementation
 
-- Hand-authored, individually designed level layouts for levels 8–40; the current versions are procedural variants.
+- Further playtesting and balance passes for all 40 authored stage layouts, including jumps, collectible reachability and enemy spacing.
 - More detailed boss-specific attack animation timing and broader music/ambient audio.
 - Remaining combat feedback polish, broader effects/audio, and three-star level ratings.
 - Further Nobi aerial polish; Benji ability balancing and broader visual/audio polish.
@@ -65,3 +65,13 @@ The production build emits a non-blocking warning because the minified JavaScrip
 - Browser/device acceptance tests and mobile performance profiling.
 
 The old endless-runner modules remain under `src/game/` for reference. They are not loaded by the new browser entry point. The campaign branch was promoted to `main` after the passing validation run.
+
+
+## 40-stage layout expansion
+
+- Added `src/adventure/LevelDesigns.js` with 33 individual blueprints for levels 8–40.
+- Each blueprint specifies its own elevated platform positions/heights/widths, enemy spawn ratios and collectible route.
+- The five boss levels have dedicated boss-arena layout markers and retain their single boss encounter.
+- `SunnyNeighborhoodLevel` now consumes the authored blueprint data instead of generating generic platform, enemy and coin positions for levels 8–40.
+- Added automated tests that check all 33 blueprints exist, are distinct, contain valid platform/enemy/coin data and mark all five boss stages.
+- These are authored gameplay layouts built from the existing modular level geometry. They still require visual and difficulty playtesting in a running browser.
