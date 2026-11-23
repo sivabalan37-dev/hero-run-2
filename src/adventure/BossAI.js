@@ -17,6 +17,8 @@ const DEFAULT_ATTACK = Object.freeze({
   warningColor: '#fff15e',
 });
 
+import { stepEnemyHitReaction } from './EnemyHitReaction.js';
+
 const BOSS_ATTACKS = Object.freeze({
   'Neighborhood Guardian': Object.freeze({
     type: 'ground-slam',
@@ -129,7 +131,11 @@ export function stepBoss(boss, hero, dt) {
   boss.evadeHint = profile.evadeHint;
   boss.phase = config.phase;
   boss.attackCooldown = Math.max(0, boss.attackCooldown - dt);
-  boss.hurtTimer = Math.max(0, (boss.hurtTimer || 0) - dt);
+  if (stepEnemyHitReaction(boss, dt)) {
+    boss.bossMode = 'recover';
+    boss.recoverTimer = Math.max(boss.recoverTimer, 0.12);
+    return;
+  }
   boss.telegraphTimer = Math.max(0, boss.telegraphTimer - dt);
   boss.recoverTimer = Math.max(0, boss.recoverTimer - dt);
   const dx = hero.x - boss.x;
