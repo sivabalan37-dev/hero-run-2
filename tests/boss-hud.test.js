@@ -11,6 +11,8 @@ function boss(overrides = {}) {
     maxHealth: 12,
     alive: true,
     bossMode: 'approach',
+    attackLabel: 'GROUND SLAM',
+    evadeHint: 'JUMP TO EVADE',
     ...overrides,
   };
 }
@@ -37,16 +39,16 @@ test('boss HUD calculates remaining health and phase two', () => {
   assert.equal(model.healthText, '8 / 12');
 });
 
-test('boss HUD warns the player during the telegraph', () => {
+test('boss HUD warning identifies the boss-specific move and evasion hint', () => {
   const model = getBossHudModel(boss({ bossMode: 'telegraph' }));
   assert.equal(model.warning, true);
-  assert.match(model.statusText, /ATTACK INCOMING/);
+  assert.equal(model.statusText, 'GROUND SLAM · JUMP TO EVADE!');
 });
 
-test('boss HUD identifies the strike window', () => {
+test('boss HUD identifies the active strike', () => {
   const model = getBossHudModel(boss({ bossMode: 'strike' }));
   assert.equal(model.warning, true);
-  assert.equal(model.statusText, 'BOSS STRIKE!');
+  assert.equal(model.statusText, 'GROUND SLAM!');
 });
 
 test('boss HUD shows a defeated state and zero health', () => {
