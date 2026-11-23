@@ -338,10 +338,18 @@ export class AdventureGame {
 
   completeLevel() {
     const alreadyCompleted = this.progress.completedLevels.includes(this.levelNumber);
-    if (!alreadyCompleted) {
-      this.progress = recordLevelCompletion(this.progress, this.levelNumber, this.coins);
-      saveCampaignProgress(this.progress);
-    }
+    const starsEarned = this.shards > 0
+      ? (this.hero.health >= 75 ? 3 : 2)
+      : 1;
+    this.progress = recordLevelCompletion(
+      this.progress,
+      this.levelNumber,
+      alreadyCompleted ? 0 : this.coins,
+      starsEarned
+    );
+    saveCampaignProgress(this.progress);
+    const bestStars = this.progress.starsByLevel[this.levelNumber] || starsEarned;
+
     this.state = 'completed';
     this.audio.levelComplete();
     this.input.clear();
@@ -352,7 +360,9 @@ export class AdventureGame {
     const benjiUnlocked = newlyUnlocked.includes('benji') && !this._benjiUnlockAnnounced;
     if (nobiUnlocked) this._nobiUnlockAnnounced = true;
     if (benjiUnlocked) this._benjiUnlockAnnounced = true;
-    let message = `${getLevelInfo(this.levelNumber).title} cleared. Coins collected: ${this.coins}.`;
+    const starDisplay = '★'.repeat(bestStars) + '☆'.repeat(3 - bestStars);
+    let message = `${getLevelInfo(this.levelNumber).title} cleared. Rating: ${starDisplay}. Coins collected: ${this.coins}.`;
+    if (starsEarned < bestStars) message += ` Your best rating remains ${bestStars} stars.`;
     if (nobiUnlocked) message += ' Nobi is now unlocked!';
     if (benjiUnlocked) message += ' Benji is now unlocked!';
     const nextIsPlayable = PLAYABLE_LEVELS.includes(nextLevel);
