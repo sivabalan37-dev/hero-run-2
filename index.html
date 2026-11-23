@@ -64,6 +64,17 @@
           <p id="overlay-message">Help Shin recover the Time Shard in Sunny Neighborhood.</p>
           <button id="start-button" class="primary-button" type="button">START LEVEL</button>
           <button id="level-select-button" class="secondary-button" type="button">SELECT LEVEL</button>
+          <button id="settings-button" class="secondary-button" type="button">SETTINGS</button>
+          <section id="settings-panel" class="settings-panel hidden" aria-label="Game settings">
+            <label class="setting-row" for="sound-enabled"><span>Sound effects</span><input id="sound-enabled" type="checkbox" checked /></label>
+            <label class="setting-row" for="sound-volume"><span>Sound volume</span><output id="sound-volume-value">65%</output></label>
+            <input id="sound-volume" class="setting-range" type="range" min="0" max="1" step="0.05" value="0.65" aria-label="Sound volume" />
+            <label class="setting-row" for="graphics-quality"><span>Graphics quality</span>
+              <select id="graphics-quality"><option value="low">Low · smoother on older phones</option><option value="medium" selected>Medium · balanced</option><option value="high">High · best visuals</option></select>
+            </label>
+            <p class="settings-hint">Low quality reduces shadows and rendering resolution to help performance.</p>
+          </section>
+          <button id="settings-back" class="secondary-button hidden" type="button">BACK</button>
           <section id="level-select" class="level-select hidden" aria-label="Campaign level selection"></section>
           <button id="level-select-back" class="secondary-button hidden" type="button">BACK</button>
           <div class="controls-note">Move: A / D · Jump: Space · Attack: J · Special: K · Switch hero: C · Benji form: T</div>
