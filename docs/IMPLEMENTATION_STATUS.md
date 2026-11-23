@@ -22,6 +22,7 @@
 - Three-phase boss AI is connected to all five encounters. Bosses approach, telegraph, attack and recover; phase changes increase movement speed and attack cadence as health falls. Bosses recover from projectile hit-stun so repeated hits can register.
 - Each world boss has a distinct attack profile: Neighborhood Guardian Ground Slam, Mechanical Headmaster Gear Dash, Toy Forest Guardian Vine Sweep, Supreme Machine Pulse Blast and Ultimate Time Guardian Time Wave. Their attack range, jump-safe height, telegraph/cooldown timing and approach speed differ.
 - Boss indicators pulse during telegraphs and use pattern-specific warning colors. The HUD shows the boss name, phase and health, then displays the correct attack and dodge hint; defeated bosses show that the portal is open.
+- Enemy and boss visual feedback uses deterministic, delta-time-driven animation states: telegraph pulses, charger lean/compression, attack impact rings, boss-scale-preserving pulses and recovery motion. Impact rings are hidden outside active warning/attack windows.
 - Full 40-level campaign catalog is playable in the browser game. Levels 1–7 have authored stage layouts; levels 8–40 currently use procedural layouts and world themes. Five boss gates are active at the end of each world.
 - Versioned campaign save for completed levels, selected character and total coins; malformed save data is rejected before writing.
 - Per-level checkpoint save and safe fallback if storage is unavailable/corrupt.
@@ -32,7 +33,7 @@
 ## Automated validation
 
 Latest completed validation run:
-- **PASS:** 67 of 67 Node unit tests, including five enemy archetypes and their attack windows, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
+- **PASS:** 73 of 73 Node unit tests, including five enemy archetypes and their attack windows, six enemy/boss visual-effect states, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
 - **Verified run:** [GitHub Actions · run 45094012756](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45094012756).
@@ -51,7 +52,7 @@ The production build emits a non-blocking warning because the minified JavaScrip
 ## Remaining implementation
 
 - Hand-authored, individually designed level layouts for levels 8–40; the current versions are procedural variants.
-- Further enemy attack animations and impact effects; boss-specific animations, projectile/area effects and audio.
+- More distinctive enemy attack motion, boss-specific attack animations and projectile/area effects, plus combat audio.
 - Full combat feedback, effects/audio, checkpoints and three-star level ratings.
 - Nobi's complete aerial kit; Benji ability balancing and visual effects.
 - Full achievements, settings, leaderboard, tutorial, cinematics/dialogue and final victory flow.
