@@ -3,6 +3,7 @@ import { createEnemyState, stepEnemy } from './EnemyAI.js';
 import { initializeBoss, stepBoss } from './BossAI.js';
 import { getLevelInfo, WORLDS } from './LevelCatalog.js';
 import { getEnemyVisualState, getEnemyMotionState } from './EnemyEffects.js';
+import { getGadgetVisionVisualState } from './GadgetVisionEffects.js';
 import { getBossAttackVisualState } from './BossEffects.js';
 
 const standard = (color, roughness = 0.78, metalness = 0) =>
@@ -457,12 +458,24 @@ export class SunnyNeighborhoodLevel {
 
   buildGadgetVision() {
     this.gadgetScanTimer = 0;
+    const scanMaterial = new THREE.MeshStandardMaterial({
+      color: '#69f4ff', emissive: '#38dfff', emissiveIntensity: 2.2,
+      transparent: true, opacity: 0, depthWrite: false,
+    });
+    const outerScanMaterial = new THREE.MeshStandardMaterial({
+      color: '#b8fbff', emissive: '#69f4ff', emissiveIntensity: 1.5,
+      transparent: true, opacity: 0, depthWrite: false,
+    });
     this.gadgetScanRing = mesh(
       new THREE.TorusGeometry(0.72, 0.055, 7, 48),
-      new THREE.MeshStandardMaterial({ color: '#69f4ff', emissive: '#38dfff', emissiveIntensity: 2.2, transparent: true, opacity: 0, depthWrite: false }),
-      0, 0.12, 1.05, this.group, false,
+      scanMaterial, 0, 0.12, 1.05, this.group, false,
+    );
+    this.gadgetScanOuterRing = mesh(
+      new THREE.TorusGeometry(0.92, 0.035, 6, 48),
+      outerScanMaterial, 0, 0.16, 1.04, this.group, false,
     );
     this.gadgetScanRing.visible = false;
+    this.gadgetScanOuterRing.visible = false;
   }
 
   triggerGadgetVision(x) {
@@ -470,7 +483,9 @@ export class SunnyNeighborhoodLevel {
     this.gadgetScanTimer = 1.35;
     this.gadgetScanRing.position.x = x;
     this.gadgetScanRing.visible = true;
+    this.gadgetScanOuterRing.visible = true;
     this.gadgetScanRing.scale.setScalar(0.35);
+    this.gadgetScanOuterRing.scale.setScalar(0.18);
     return revealed;
   }
 
@@ -490,9 +505,14 @@ export class SunnyNeighborhoodLevel {
     if (this.gadgetScanTimer > 0) {
       this.gadgetScanTimer = Math.max(0, this.gadgetScanTimer - dt);
       const progress = 1 - this.gadgetScanTimer / 1.35;
-      this.gadgetScanRing.visible = this.gadgetScanTimer > 0;
-      this.gadgetScanRing.scale.setScalar(0.35 + progress * 5.2);
-      this.gadgetScanRing.material.opacity = (1 - progress) * 0.88;
+      const scan = getGadgetVisionVisualState(progress);
+      const visible = this.gadgetScanTimer > 0;
+      this.gadgetScanRing.visible = visible;
+      this.gadgetScanOuterRing.visible = visible;
+      this.gadgetScanRing.scale.setScalar(scan.innerScale);
+      this.gadgetScanOuterRing.scale.setScalar(scan.outerScale);
+      this.gadgetScanRing.material.opacity = scan.innerOpacity;
+      this.gadgetScanOuterRing.material.opacity = scan.outerOpacity;
     }
     for (const enemy of this.enemies) {
       if (enemy.isBoss) stepBoss(enemy, heroBody, dt);
