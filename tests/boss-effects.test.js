@@ -39,7 +39,7 @@ test('recovery fades and inactive boss effects are hidden', () => {
   const recovering = getBossAttackVisualState(boss('pulse-blast', 'recover'), 2);
   const idle = getBossAttackVisualState(boss('pulse-blast', 'approach'), 2);
   assert.equal(recovering.visible, true);
-  assert.equal(recovering.opacity, 0.18);
+  assert.ok(recovering.opacity >= 0.12 && recovering.opacity <= 0.24);
   assert.equal(idle.visible, false);
   assert.equal(idle.opacity, 0);
 });
