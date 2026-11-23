@@ -1,0 +1,851 @@
+{
+  "project": "Hero Run",
+  "schemaVersion": 1,
+  "levelRange": {
+    "start": 8,
+    "end": 40,
+    "total": 33
+  },
+  "generationRules": {
+    "length": {
+      "start": 1200,
+      "increment": 80
+    },
+    "obstacleDensity": {
+      "start": 0.15,
+      "end": 0.55,
+      "formula": "0.15 + ((level - 8) / 32) * 0.40"
+    },
+    "enemyCount": {
+      "formula": "2 + floor((level - 8) * 0.31)",
+      "note": "Explicit per-level counts in levels[] are authoritative; level 40 is pinned to the requested 12."
+    },
+    "coinTarget": {
+      "formula": "30 + (level - 8) * 3",
+      "note": "Explicit per-level targets are authoritative; the requested cap is 120."
+    },
+    "themeRotation": [
+      "forest",
+      "desert",
+      "ice",
+      "volcano",
+      "cyber_city",
+      "sky_temple",
+      "shadow_realm"
+    ],
+    "bossLevels": [
+      16,
+      24,
+      32,
+      40
+    ],
+    "unlockRule": "Complete previous level to unlock the next"
+  },
+  "levels": [
+    {
+      "id": 8,
+      "theme": "forest",
+      "length": 1200,
+      "difficulty": "easy",
+      "obstacles": [
+        "logs",
+        "spikes",
+        "moving_platforms"
+      ],
+      "enemies": 2,
+      "coins": 30,
+      "gems": 1,
+      "checkpoints": 4,
+      "obstacleDensity": 0.15,
+      "timerSeconds": 150,
+      "boss": null,
+      "objective": "Cross the forest, collect 30 coins, and reach the exit portal",
+      "completion_reward": {
+        "coins": 50,
+        "stars": 1
+      }
+    },
+    {
+      "id": 9,
+      "theme": "forest",
+      "length": 1280,
+      "difficulty": "easy",
+      "obstacles": [
+        "logs",
+        "spikes",
+        "pendulum_blades"
+      ],
+      "enemies": 2,
+      "coins": 33,
+      "gems": 1,
+      "checkpoints": 4,
+      "obstacleDensity": 0.1625,
+      "timerSeconds": 160,
+      "boss": null,
+      "objective": "Use slide and double jump to avoid swinging blades",
+      "completion_reward": {
+        "coins": 55,
+        "stars": 1
+      }
+    },
+    {
+      "id": 10,
+      "theme": "desert",
+      "length": 1360,
+      "difficulty": "easy",
+      "obstacles": [
+        "quicksand",
+        "cacti",
+        "falling_rocks"
+      ],
+      "enemies": 3,
+      "coins": 36,
+      "gems": 1,
+      "checkpoints": 4,
+      "obstacleDensity": 0.175,
+      "timerSeconds": 170,
+      "boss": null,
+      "objective": "Escape the desert before the timer expires",
+      "completion_reward": {
+        "coins": 60,
+        "stars": 1
+      }
+    },
+    {
+      "id": 11,
+      "theme": "desert",
+      "length": 1440,
+      "difficulty": "normal",
+      "obstacles": [
+        "quicksand",
+        "cacti",
+        "moving_sand_platforms"
+      ],
+      "enemies": 3,
+      "coins": 39,
+      "gems": 2,
+      "checkpoints": 4,
+      "obstacleDensity": 0.1875,
+      "timerSeconds": 180,
+      "boss": null,
+      "objective": "Collect the gem and reach the oasis portal",
+      "completion_reward": {
+        "coins": 65,
+        "stars": 1
+      }
+    },
+    {
+      "id": 12,
+      "theme": "ice",
+      "length": 1520,
+      "difficulty": "normal",
+      "obstacles": [
+        "ice_patches",
+        "falling_icicles",
+        "frozen_bridges"
+      ],
+      "enemies": 4,
+      "coins": 42,
+      "gems": 2,
+      "checkpoints": 4,
+      "obstacleDensity": 0.2,
+      "timerSeconds": 190,
+      "boss": null,
+      "objective": "Cross the frozen bridge without slipping into gaps",
+      "completion_reward": {
+        "coins": 70,
+        "stars": 2
+      }
+    },
+    {
+      "id": 13,
+      "theme": "ice",
+      "length": 1600,
+      "difficulty": "normal",
+      "obstacles": [
+        "ice_patches",
+        "snowballs",
+        "collapsing_ice"
+      ],
+      "enemies": 4,
+      "coins": 45,
+      "gems": 2,
+      "checkpoints": 4,
+      "obstacleDensity": 0.2125,
+      "timerSeconds": 200,
+      "boss": null,
+      "objective": "Dodge rolling snowballs and collect all gems",
+      "completion_reward": {
+        "coins": 75,
+        "stars": 2
+      }
+    },
+    {
+      "id": 14,
+      "theme": "volcano",
+      "length": 1680,
+      "difficulty": "normal",
+      "obstacles": [
+        "lava_geysers",
+        "falling_rocks",
+        "fire_traps"
+      ],
+      "enemies": 5,
+      "coins": 48,
+      "gems": 2,
+      "checkpoints": 4,
+      "obstacleDensity": 0.225,
+      "timerSeconds": 210,
+      "boss": null,
+      "objective": "Survive the volcanic route and activate the exit portal",
+      "completion_reward": {
+        "coins": 80,
+        "stars": 2
+      }
+    },
+    {
+      "id": 15,
+      "theme": "volcano",
+      "length": 1760,
+      "difficulty": "hard",
+      "obstacles": [
+        "lava_geysers",
+        "fire_traps",
+        "moving_lava_platforms"
+      ],
+      "enemies": 5,
+      "coins": 51,
+      "gems": 3,
+      "checkpoints": 4,
+      "obstacleDensity": 0.2375,
+      "timerSeconds": 220,
+      "boss": null,
+      "objective": "Use dash to cross unstable lava platforms",
+      "completion_reward": {
+        "coins": 85,
+        "stars": 2
+      }
+    },
+    {
+      "id": 16,
+      "theme": "volcano",
+      "length": 1840,
+      "difficulty": "boss",
+      "obstacles": [
+        "lava_geysers",
+        "fire_traps",
+        "boss_arena"
+      ],
+      "enemies": 6,
+      "coins": 54,
+      "gems": 3,
+      "checkpoints": 3,
+      "obstacleDensity": 0.25,
+      "timerSeconds": 230,
+      "boss": {
+        "name": "Magma Golem",
+        "health": 100,
+        "attacks": [
+          "ground_slam",
+          "fireball_volley",
+          "lava_wave"
+        ],
+        "weak_point": "head after slam attack"
+      },
+      "objective": "Defeat the Magma Golem and escape the volcano",
+      "completion_reward": {
+        "coins": 150,
+        "gems": 5,
+        "stars": 3
+      }
+    },
+    {
+      "id": 17,
+      "theme": "cyber_city",
+      "length": 1920,
+      "difficulty": "hard",
+      "obstacles": [
+        "laser_gates",
+        "moving_cars",
+        "electric_floors"
+      ],
+      "enemies": 6,
+      "coins": 57,
+      "gems": 3,
+      "checkpoints": 4,
+      "obstacleDensity": 0.2625,
+      "timerSeconds": 240,
+      "boss": null,
+      "objective": "Run through the neon city and disable the security drones",
+      "completion_reward": {
+        "coins": 90,
+        "stars": 2
+      }
+    },
+    {
+      "id": 18,
+      "theme": "cyber_city",
+      "length": 2000,
+      "difficulty": "hard",
+      "obstacles": [
+        "laser_gates",
+        "electric_floors",
+        "crushing_pistons"
+      ],
+      "enemies": 7,
+      "coins": 60,
+      "gems": 3,
+      "checkpoints": 4,
+      "obstacleDensity": 0.275,
+      "timerSeconds": 250,
+      "boss": null,
+      "objective": "Use slide to pass under laser gates and reach the data center",
+      "completion_reward": {
+        "coins": 95,
+        "stars": 2
+      }
+    },
+    {
+      "id": 19,
+      "theme": "cyber_city",
+      "length": 2080,
+      "difficulty": "hard",
+      "obstacles": [
+        "moving_cars",
+        "crushing_pistons",
+        "drone_turrets"
+      ],
+      "enemies": 7,
+      "coins": 63,
+      "gems": 4,
+      "checkpoints": 4,
+      "obstacleDensity": 0.2875,
+      "timerSeconds": 260,
+      "boss": null,
+      "objective": "Escape the drone patrol zone",
+      "completion_reward": {
+        "coins": 100,
+        "stars": 2
+      }
+    },
+    {
+      "id": 20,
+      "theme": "sky_temple",
+      "length": 2160,
+      "difficulty": "hard",
+      "obstacles": [
+        "floating_platforms",
+        "wind_gusts",
+        "spinning_blades"
+      ],
+      "enemies": 8,
+      "coins": 66,
+      "gems": 4,
+      "checkpoints": 4,
+      "obstacleDensity": 0.3,
+      "timerSeconds": 270,
+      "boss": null,
+      "objective": "Cross the sky temple using precise jumps and dashes",
+      "completion_reward": {
+        "coins": 105,
+        "stars": 3
+      }
+    },
+    {
+      "id": 21,
+      "theme": "sky_temple",
+      "length": 2240,
+      "difficulty": "hard",
+      "obstacles": [
+        "floating_platforms",
+        "wind_gusts",
+        "falling_columns"
+      ],
+      "enemies": 8,
+      "coins": 69,
+      "gems": 4,
+      "checkpoints": 4,
+      "obstacleDensity": 0.3125,
+      "timerSeconds": 280,
+      "boss": null,
+      "objective": "Reach the temple summit before the platform collapses",
+      "completion_reward": {
+        "coins": 110,
+        "stars": 3
+      }
+    },
+    {
+      "id": 22,
+      "theme": "shadow_realm",
+      "length": 2320,
+      "difficulty": "very_hard",
+      "obstacles": [
+        "dark_pits",
+        "shadow_spikes",
+        "phantom_walls"
+      ],
+      "enemies": 9,
+      "coins": 72,
+      "gems": 4,
+      "checkpoints": 4,
+      "obstacleDensity": 0.325,
+      "timerSeconds": 290,
+      "boss": null,
+      "objective": "Use light orbs to reveal hidden paths",
+      "completion_reward": {
+        "coins": 115,
+        "stars": 3
+      }
+    },
+    {
+      "id": 23,
+      "theme": "shadow_realm",
+      "length": 2400,
+      "difficulty": "very_hard",
+      "obstacles": [
+        "dark_pits",
+        "phantom_walls",
+        "teleport_traps"
+      ],
+      "enemies": 9,
+      "coins": 75,
+      "gems": 5,
+      "checkpoints": 4,
+      "obstacleDensity": 0.3375,
+      "timerSeconds": 300,
+      "boss": null,
+      "objective": "Avoid teleport traps and collect the shadow crystal",
+      "completion_reward": {
+        "coins": 120,
+        "stars": 3
+      }
+    },
+    {
+      "id": 24,
+      "theme": "shadow_realm",
+      "length": 2480,
+      "difficulty": "boss",
+      "obstacles": [
+        "dark_pits",
+        "shadow_spikes",
+        "boss_arena"
+      ],
+      "enemies": 10,
+      "coins": 78,
+      "gems": 5,
+      "checkpoints": 3,
+      "obstacleDensity": 0.35,
+      "timerSeconds": 310,
+      "boss": {
+        "name": "Shadow Wraith",
+        "health": 160,
+        "attacks": [
+          "shadow_dash",
+          "dark_orbs",
+          "summon_minions"
+        ],
+        "weak_point": "exposed core after dark orb attack"
+      },
+      "objective": "Defeat the Shadow Wraith and restore the light",
+      "completion_reward": {
+        "coins": 200,
+        "gems": 8,
+        "stars": 3
+      }
+    },
+    {
+      "id": 25,
+      "theme": "forest",
+      "length": 2560,
+      "difficulty": "very_hard",
+      "obstacles": [
+        "spike_pits",
+        "rotating_blades",
+        "collapsing_trees"
+      ],
+      "enemies": 10,
+      "coins": 81,
+      "gems": 5,
+      "checkpoints": 4,
+      "obstacleDensity": 0.3625,
+      "timerSeconds": 320,
+      "boss": null,
+      "objective": "Return through the corrupted forest",
+      "completion_reward": {
+        "coins": 125,
+        "stars": 3
+      }
+    },
+    {
+      "id": 26,
+      "theme": "desert",
+      "length": 2640,
+      "difficulty": "very_hard",
+      "obstacles": [
+        "sandstorms",
+        "quicksand",
+        "spinning_blades"
+      ],
+      "enemies": 10,
+      "coins": 84,
+      "gems": 5,
+      "checkpoints": 4,
+      "obstacleDensity": 0.375,
+      "timerSeconds": 330,
+      "boss": null,
+      "objective": "Survive the sandstorm and reach the ancient ruins",
+      "completion_reward": {
+        "coins": 130,
+        "stars": 3
+      }
+    },
+    {
+      "id": 27,
+      "theme": "ice",
+      "length": 2720,
+      "difficulty": "very_hard",
+      "obstacles": [
+        "ice_patches",
+        "avalanche",
+        "frozen_bridges"
+      ],
+      "enemies": 11,
+      "coins": 87,
+      "gems": 5,
+      "checkpoints": 4,
+      "obstacleDensity": 0.3875,
+      "timerSeconds": 340,
+      "boss": null,
+      "objective": "Escape the avalanche and cross the frozen canyon",
+      "completion_reward": {
+        "coins": 135,
+        "stars": 3
+      }
+    },
+    {
+      "id": 28,
+      "theme": "volcano",
+      "length": 2800,
+      "difficulty": "very_hard",
+      "obstacles": [
+        "lava_geysers",
+        "meteor_shower",
+        "fire_traps"
+      ],
+      "enemies": 11,
+      "coins": 90,
+      "gems": 6,
+      "checkpoints": 4,
+      "obstacleDensity": 0.4,
+      "timerSeconds": 350,
+      "boss": null,
+      "objective": "Reach the volcanic vault before it erupts",
+      "completion_reward": {
+        "coins": 140,
+        "stars": 3
+      }
+    },
+    {
+      "id": 29,
+      "theme": "cyber_city",
+      "length": 2880,
+      "difficulty": "extreme",
+      "obstacles": [
+        "laser_gates",
+        "electric_floors",
+        "moving_trains"
+      ],
+      "enemies": 11,
+      "coins": 93,
+      "gems": 6,
+      "checkpoints": 4,
+      "obstacleDensity": 0.4125,
+      "timerSeconds": 360,
+      "boss": null,
+      "objective": "Hack the city grid and escape through the rail yard",
+      "completion_reward": {
+        "coins": 145,
+        "stars": 3
+      }
+    },
+    {
+      "id": 30,
+      "theme": "sky_temple",
+      "length": 2960,
+      "difficulty": "extreme",
+      "obstacles": [
+        "floating_platforms",
+        "lightning_strikes",
+        "spinning_blades"
+      ],
+      "enemies": 12,
+      "coins": 96,
+      "gems": 6,
+      "checkpoints": 4,
+      "obstacleDensity": 0.425,
+      "timerSeconds": 370,
+      "boss": null,
+      "objective": "Climb the storm temple and reach the lightning core",
+      "completion_reward": {
+        "coins": 150,
+        "stars": 3
+      }
+    },
+    {
+      "id": 31,
+      "theme": "shadow_realm",
+      "length": 3040,
+      "difficulty": "extreme",
+      "obstacles": [
+        "dark_pits",
+        "phantom_walls",
+        "gravity_flips"
+      ],
+      "enemies": 12,
+      "coins": 99,
+      "gems": 6,
+      "checkpoints": 4,
+      "obstacleDensity": 0.4375,
+      "timerSeconds": 380,
+      "boss": null,
+      "objective": "Navigate reversed gravity zones and reach the portal",
+      "completion_reward": {
+        "coins": 155,
+        "stars": 3
+      }
+    },
+    {
+      "id": 32,
+      "theme": "mixed",
+      "length": 3120,
+      "difficulty": "boss",
+      "obstacles": [
+        "all_previous_hazards",
+        "boss_arena"
+      ],
+      "enemies": 12,
+      "coins": 102,
+      "gems": 7,
+      "checkpoints": 3,
+      "obstacleDensity": 0.45,
+      "timerSeconds": 390,
+      "boss": {
+        "name": "Chaos Sentinel",
+        "health": 220,
+        "attacks": [
+          "laser_sweep",
+          "meteor_rain",
+          "shadow_clones"
+        ],
+        "weak_point": "core after each attack pattern"
+      },
+      "objective": "Defeat the Chaos Sentinel guarding the final gate",
+      "completion_reward": {
+        "coins": 250,
+        "gems": 10,
+        "stars": 3
+      }
+    },
+    {
+      "id": 33,
+      "theme": "forest",
+      "length": 3200,
+      "difficulty": "extreme",
+      "obstacles": [
+        "spike_pits",
+        "moving_platforms",
+        "rotating_blades"
+      ],
+      "enemies": 12,
+      "coins": 105,
+      "gems": 7,
+      "checkpoints": 4,
+      "obstacleDensity": 0.4625,
+      "timerSeconds": 400,
+      "boss": null,
+      "objective": "Complete the final forest trial",
+      "completion_reward": {
+        "coins": 160,
+        "stars": 3
+      }
+    },
+    {
+      "id": 34,
+      "theme": "desert",
+      "length": 3280,
+      "difficulty": "extreme",
+      "obstacles": [
+        "sandstorms",
+        "quicksand",
+        "falling_rocks"
+      ],
+      "enemies": 12,
+      "coins": 108,
+      "gems": 7,
+      "checkpoints": 4,
+      "obstacleDensity": 0.475,
+      "timerSeconds": 410,
+      "boss": null,
+      "objective": "Escape the cursed desert before sunrise",
+      "completion_reward": {
+        "coins": 165,
+        "stars": 3
+      }
+    },
+    {
+      "id": 35,
+      "theme": "ice",
+      "length": 3360,
+      "difficulty": "extreme",
+      "obstacles": [
+        "ice_patches",
+        "avalanche",
+        "collapsing_ice"
+      ],
+      "enemies": 12,
+      "coins": 111,
+      "gems": 7,
+      "checkpoints": 4,
+      "obstacleDensity": 0.4875,
+      "timerSeconds": 420,
+      "boss": null,
+      "objective": "Cross the frozen fortress and collect the ice relic",
+      "completion_reward": {
+        "coins": 170,
+        "stars": 3
+      }
+    },
+    {
+      "id": 36,
+      "theme": "volcano",
+      "length": 3440,
+      "difficulty": "extreme",
+      "obstacles": [
+        "lava_geysers",
+        "meteor_shower",
+        "moving_lava_platforms"
+      ],
+      "enemies": 12,
+      "coins": 114,
+      "gems": 8,
+      "checkpoints": 4,
+      "obstacleDensity": 0.5,
+      "timerSeconds": 430,
+      "boss": null,
+      "objective": "Reach the eruption chamber and stop the volcano",
+      "completion_reward": {
+        "coins": 175,
+        "stars": 3
+      }
+    },
+    {
+      "id": 37,
+      "theme": "cyber_city",
+      "length": 3520,
+      "difficulty": "extreme",
+      "obstacles": [
+        "laser_gates",
+        "moving_trains",
+        "crushing_pistons"
+      ],
+      "enemies": 12,
+      "coins": 117,
+      "gems": 8,
+      "checkpoints": 4,
+      "obstacleDensity": 0.5125,
+      "timerSeconds": 440,
+      "boss": null,
+      "objective": "Infiltrate the final cyber tower",
+      "completion_reward": {
+        "coins": 180,
+        "stars": 3
+      }
+    },
+    {
+      "id": 38,
+      "theme": "sky_temple",
+      "length": 3600,
+      "difficulty": "extreme",
+      "obstacles": [
+        "floating_platforms",
+        "wind_gusts",
+        "lightning_strikes"
+      ],
+      "enemies": 12,
+      "coins": 120,
+      "gems": 8,
+      "checkpoints": 4,
+      "obstacleDensity": 0.525,
+      "timerSeconds": 450,
+      "boss": null,
+      "objective": "Reach the sky gate and activate the final portal",
+      "completion_reward": {
+        "coins": 185,
+        "stars": 3
+      }
+    },
+    {
+      "id": 39,
+      "theme": "shadow_realm",
+      "length": 3680,
+      "difficulty": "extreme",
+      "obstacles": [
+        "dark_pits",
+        "teleport_traps",
+        "gravity_flips"
+      ],
+      "enemies": 12,
+      "coins": 120,
+      "gems": 8,
+      "checkpoints": 4,
+      "obstacleDensity": 0.5375,
+      "timerSeconds": 460,
+      "boss": null,
+      "objective": "Break the shadow seal and enter the final arena",
+      "completion_reward": {
+        "coins": 190,
+        "stars": 3
+      }
+    },
+    {
+      "id": 40,
+      "theme": "final_arena",
+      "length": 3760,
+      "difficulty": "final_boss",
+      "obstacles": [
+        "all_previous_hazards",
+        "boss_arena",
+        "escape_sequence"
+      ],
+      "enemies": 12,
+      "coins": 120,
+      "gems": 10,
+      "checkpoints": 3,
+      "obstacleDensity": 0.55,
+      "timerSeconds": 470,
+      "boss": {
+        "name": "Dark Overlord",
+        "health": 300,
+        "phases": 3,
+        "attacks": [
+          "shadow_dash",
+          "fireball_volley",
+          "laser_sweep",
+          "meteor_rain",
+          "summon_minions"
+        ],
+        "weak_point": "glowing core exposed after each phase transition"
+      },
+      "objective": "Defeat the Dark Overlord, escape the collapsing arena, and complete Hero Run",
+      "completion_reward": {
+        "coins": 500,
+        "gems": 25,
+        "stars": 3,
+        "unlock": [
+          "Endless Mode",
+          "Hero Skin: Golden Champion"
+        ]
+      }
+    }
+  ]
+}
