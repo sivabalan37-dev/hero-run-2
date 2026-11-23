@@ -3,7 +3,7 @@ export function getBenjiFormTransitionVisualState(elapsed = 0, duration = 0.56) 
   const safeDuration = Number.isFinite(duration) && duration > 0 ? duration : 0.56;
   const time = Number.isFinite(elapsed) ? Math.max(0, elapsed) : 0;
   const progress = Math.min(1, time / safeDuration);
-  const envelope = Math.sin(Math.PI * progress);
+  const envelope = progress <= 0 || progress >= 1 ? 0 : Math.sin(Math.PI * progress);
   return {
     progress,
     active: progress < 1,
