@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getBossPhase, initializeBoss, stepBoss } from '../src/adventure/BossAI.js';
+import { getBossAttackProfile, getBossPhase, initializeBoss, stepBoss } from '../src/adventure/BossAI.js';
 
 function makeBoss(overrides = {}) {
   return initializeBoss({
@@ -61,4 +61,39 @@ test('boss hit-stun timer recovers so later projectiles can hit', () => {
   assert.ok(boss.hurtTimer < 0.24);
   for (let i = 0; i < 5; i++) stepBoss(boss, { x: 4, y: 0 }, 0.05);
   assert.equal(boss.hurtTimer, 0);
+});
+
+test('all five world bosses have distinct attack identities and tells', () => {
+  const names = [
+    'Neighborhood Guardian',
+    'Mechanical Headmaster',
+    'Toy Forest Guardian',
+    'Supreme Machine',
+    'Ultimate Time Guardian',
+  ];
+  const profiles = names.map(getBossAttackProfile);
+  assert.equal(new Set(profiles.map(profile => profile.type)).size, 5);
+  assert.equal(new Set(profiles.map(profile => profile.label)).size, 5);
+  assert.ok(profiles.every(profile => profile.attackRange > 0 && profile.triggerRange >= profile.attackRange));
+});
+
+test('boss-specific strike envelopes have their own distance and jump windows', () => {
+  const cases = [
+    ['Neighborhood Guardian', 3.2, 0.6, true],
+    ['Neighborhood Guardian', 3.2, 1.4, false],
+    ['Mechanical Headmaster', 1.9, 1.5, true],
+    ['Toy Forest Guardian', 3.5, 2.4, true],
+    ['Supreme Machine', 4.5, 1.2, true],
+    ['Ultimate Time Guardian', 5.0, 0.7, true],
+  ];
+
+  for (const [bossName, heroX, heroY, expectedHit] of cases) {
+    const boss = makeBoss({ bossName });
+    let pulse = false;
+    for (let i = 0; i < 180 && !pulse; i++) {
+      stepBoss(boss, { x: heroX, y: heroY }, 1 / 60);
+      pulse = boss.attackPulse;
+    }
+    assert.equal(pulse, expectedHit, `${bossName} envelope at hero y=${heroY}`);
+  }
 });
