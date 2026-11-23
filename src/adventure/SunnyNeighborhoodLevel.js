@@ -3,6 +3,7 @@ import { createEnemyState, stepEnemy } from './EnemyAI.js';
 import { initializeBoss, stepBoss } from './BossAI.js';
 import { getLevelInfo, WORLDS } from './LevelCatalog.js';
 import { getEnemyVisualState } from './EnemyEffects.js';
+import { getBossAttackVisualState } from './BossEffects.js';
 
 const standard = (color, roughness = 0.78, metalness = 0) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -366,6 +367,32 @@ export class SunnyNeighborhoodLevel {
         mesh(new THREE.OctahedronGeometry(0.2, 0), glow('#f4d6ff'), 0, 1.18, 0.1, group, false);
       }
       const indicator = mesh(new THREE.BoxGeometry(0.72, 0.15, 0.16), glow('#ff766b'), 0, 0.72, 0.44, group, false);
+      let bossAttackEffect = null;
+      if (isBoss) {
+        const attackType = this.info.boss === 'Neighborhood Guardian' ? 'ground-slam'
+          : this.info.boss === 'Mechanical Headmaster' ? 'gear-dash'
+          : this.info.boss === 'Toy Forest Guardian' ? 'vine-sweep'
+          : this.info.boss === 'Supreme Machine' ? 'pulse-blast' : 'time-wave';
+        const geometry = attackType === 'ground-slam'
+          ? new THREE.RingGeometry(0.58, 0.92, 32)
+          : attackType === 'gear-dash'
+            ? new THREE.BoxGeometry(2.2, 0.28, 0.12)
+            : attackType === 'vine-sweep'
+              ? new THREE.TorusGeometry(1.12, 0.12, 8, 28, Math.PI)
+              : attackType === 'pulse-blast'
+                ? new THREE.SphereGeometry(1.05, 16, 12)
+                : new THREE.TorusGeometry(1.45, 0.11, 8, 32);
+        const attackMaterial = new THREE.MeshStandardMaterial({
+          color: '#ffffff', emissive: '#ffffff', emissiveIntensity: 1.6,
+          transparent: true, opacity: 0, depthWrite: false,
+          side: THREE.DoubleSide, wireframe: attackType === 'pulse-blast',
+        });
+        bossAttackEffect = mesh(geometry, attackMaterial, 0, 0.7, 0.98, group, false);
+        bossAttackEffect.visible = false;
+        if (attackType === 'ground-slam') bossAttackEffect.position.y = -0.18;
+        if (attackType === 'vine-sweep') bossAttackEffect.rotation.z = -0.25;
+        if (attackType === 'time-wave') bossAttackEffect.scale.y = 0.38;
+      }
       const effectRing = mesh(
         new THREE.TorusGeometry(isBoss ? 1.3 : 0.78, isBoss ? 0.075 : 0.055, 7, 28),
         new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: '#ffffff', emissiveIntensity: 1.8, transparent: true, opacity: 0, depthWrite: false }),
@@ -394,7 +421,7 @@ export class SunnyNeighborhoodLevel {
       enemy.maxHealth = enemy.health;
       enemy.hitRadius = isBoss ? 1.9 : 0.88;
       if (isBoss) initializeBoss(enemy);
-      this.enemies.push({ ...enemy, group, indicator, effectRing });
+      this.enemies.push({ ...enemy, group, indicator, effectRing, bossAttackEffect });
     }
   }
 
@@ -454,6 +481,17 @@ export class SunnyNeighborhoodLevel {
       enemy.effectRing.material.color.set(visual.ringColor);
       enemy.effectRing.material.emissive.set(visual.ringColor);
       enemy.effectRing.material.opacity = visual.ringOpacity;
+      if (enemy.isBoss && enemy.bossAttackEffect) {
+        const attackVisual = getBossAttackVisualState(enemy, this.elapsed + enemy.x * 0.11);
+        const effect = enemy.bossAttackEffect;
+        effect.visible = attackVisual.visible;
+        effect.position.y = attackVisual.lift + (enemy.attackType === 'ground-slam' ? -0.18 : 0.7);
+        effect.scale.set(attackVisual.scaleX, attackVisual.scaleY, 1);
+        effect.rotation.z = attackVisual.rotation;
+        effect.material.color.set(attackVisual.color);
+        effect.material.emissive.set(attackVisual.color);
+        effect.material.opacity = attackVisual.opacity;
+      }
     }
   }
 
