@@ -355,7 +355,7 @@ export class AdventureGame {
     this.hero.invulnerable = 1.1;
     this.toast(source?.isBoss
       ? `${source.bossName.toUpperCase()} ATTACK!`
-      : source ? 'ROBO BUG HIT!' : 'FALL DAMAGE!');
+      : source ? `${(source.enemyName || 'ENEMY').toUpperCase()} HIT!` : 'FALL DAMAGE!');
     this.updateHud();
     if (this.hero.health <= 0) {
       this.state = 'gameover';
@@ -422,7 +422,7 @@ export class AdventureGame {
     const combatResult = this.projectiles.update(dt, this.level.enemies);
     if (combatResult.defeated > 0) {
       this.coins += combatResult.defeated * 2;
-      this.toast(`ROBO BUG DEFEATED · +${combatResult.defeated * 2}`);
+      this.toast(`ENEMY DEFEATED · +${combatResult.defeated * 2}`);
     }
     for (const item of this.level.collectibles) {
       if (item.collected) continue;
@@ -433,8 +433,8 @@ export class AdventureGame {
 
     for (const enemy of this.level.enemies) {
       if (!enemy.alive || !enemy.attackPulse) continue;
-      const hitRange = enemy.isBoss ? enemy.attackRange ?? 2.6 : 1.5;
-      const maxHeroY = enemy.isBoss ? enemy.attackHeight ?? 1.35 : 1.05;
+      const hitRange = enemy.attackRange ?? (enemy.isBoss ? 2.6 : 1.5);
+      const maxHeroY = enemy.attackHeight ?? (enemy.isBoss ? 1.35 : 1.05);
       if (Math.abs(body.x - enemy.x) <= hitRange && Math.max(0, body.y) <= maxHeroY) {
         this.damageHero(enemy);
       }
