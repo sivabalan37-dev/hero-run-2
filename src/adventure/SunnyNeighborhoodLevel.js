@@ -326,6 +326,8 @@ export class SunnyNeighborhoodLevel {
 
   buildEnemies() {
     const enemyMat = standard('#6373a6', 0.34, 0.22);
+    const worldEnemyTypes = ['robo-bug', 'clockwork-charger', 'vine-sweeper', 'drone-scout', 'time-sentinel'];
+    const enemyType = worldEnemyTypes[this.worldIndex] || 'robo-bug';
     const enemySpawns = this.levelNumber === 7 ? [9.5,16.8,23.8,30.8,37.8,44.8,50.5,55] : this.levelNumber === 6 ? [10.5, 18.5, 25.8, 33.8, 40.7, 46.8, 50.5] : this.levelNumber === 5 ? [9.8, 17.2, 25.8, 34.8, 41.2, 46.5] : this.levelNumber === 4 ? [10.5, 19.2, 28.3, 36.2, 42.1] : this.levelNumber === 2 ? [13.5, 29.5, 38.5] : this.levelNumber === 3 ? [12.8, 23.7, 33.8, 40.5] : [16.2, 34.2];
     const activeSpawns = this.levelNumber >= 8
       ? (this.isBossLevel ? [this.exitX - 5.5] : Array.from({ length: 5 + (this.levelNumber % 4) }, (_, i) => 7 + i * ((this.exitX - 14) / (4 + (this.levelNumber % 4)))))
@@ -335,22 +337,50 @@ export class SunnyNeighborhoodLevel {
       const bossNames = { 8: 'Neighborhood Guardian', 16: 'Mechanical Headmaster', 24: 'Toy Forest Guardian', 32: 'Supreme Machine', 40: 'Ultimate Time Guardian' };
       const isBoss = this.isBossLevel;
       const bodyMat = isBoss ? standard(this.worldIndex === 0 ? '#d95c56' : this.worldIndex === 1 ? '#5e6f96' : this.worldIndex === 2 ? '#6d9a52' : this.worldIndex === 3 ? '#6c59c4' : '#b58ad5', 0.38, 0.35) : enemyMat;
-      mesh(new THREE.SphereGeometry(isBoss ? 1.15 : 0.55, 16, 12), bodyMat, 0, isBoss ? 1.1 : 0.62, 0, group);
+      mesh(new THREE.SphereGeometry(isBoss ? 1.15 : enemyType === 'drone-scout' ? 0.48 : 0.55, 16, 12), bodyMat, 0, isBoss ? 1.1 : enemyType === 'drone-scout' ? 1.05 : 0.62, 0, group);
       if (isBoss) {
         mesh(new THREE.TorusGeometry(1.05, 0.13, 8, 24), standard(['#ffd166','#ffe08a','#e9c46a','#55e6ff','#f4d58d'][this.worldIndex], 0.3, 0.55), 0, 1.1, 0.12, group, false);
         group.scale.setScalar(1.65);
+      } else if (enemyType === 'clockwork-charger') {
+        mesh(new THREE.TorusGeometry(0.56, 0.09, 7, 18), standard('#f2bd58', 0.28, 0.65), 0, 0.62, 0.04, group, false);
+        for (const side of [-1, 1]) {
+          const horn = mesh(new THREE.ConeGeometry(0.13, 0.52, 6), standard('#f7e0a0', 0.3, 0.35), side * 0.34, 1.03, 0.02, group);
+          horn.rotation.z = side * -0.7;
+        }
+      } else if (enemyType === 'vine-sweeper') {
+        mesh(new THREE.IcosahedronGeometry(0.32, 1), standard('#a4d16b'), 0, 1.02, 0.05, group);
+        for (const side of [-1, 1]) {
+          const vine = mesh(new THREE.CylinderGeometry(0.07, 0.11, 1.05, 6), standard('#548b4d'), side * 0.62, 0.62, 0.02, group);
+          vine.rotation.z = side * -0.8;
+        }
+      } else if (enemyType === 'drone-scout') {
+        mesh(new THREE.TorusGeometry(0.58, 0.075, 7, 20), standard('#7be9ff', 0.25, 0.62), 0, 1.05, 0, group, false);
+        for (const side of [-1, 1]) {
+          const wing = mesh(new THREE.BoxGeometry(0.72, 0.13, 0.3), standard('#8bdcf0', 0.3, 0.5), side * 0.67, 1.03, 0, group);
+          wing.rotation.z = side * 0.12;
+        }
+      } else if (enemyType === 'time-sentinel') {
+        mesh(new THREE.TorusGeometry(0.62, 0.08, 7, 20), standard('#d7a0ff', 0.24, 0.68), 0, 0.64, 0.02, group, false);
+        mesh(new THREE.OctahedronGeometry(0.2, 0), glow('#f4d6ff'), 0, 1.18, 0.1, group, false);
       }
       const indicator = mesh(new THREE.BoxGeometry(0.72, 0.15, 0.16), glow('#ff766b'), 0, 0.72, 0.44, group, false);
-      for (const side of [-1, 1]) {
-        const leg = mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.45, 7), enemyMat, side * 0.42, 0.2, 0, group);
-        leg.rotation.z = side * -0.35;
+      if (!isBoss && enemyType !== 'drone-scout') {
+        for (const side of [-1, 1]) {
+          const leg = mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.45, 7), enemyMat, side * 0.42, 0.2, 0, group);
+          leg.rotation.z = side * -0.35;
+        }
       }
       group.position.set(startX, 0, 0.55);
       this.group.add(group);
       const routeHalfWidth = this.levelNumber === 7 ? 0.95 : this.levelNumber === 6 ? 1.05 : this.levelNumber === 5 ? 1.1 : this.levelNumber === 4 ? 1.25 : this.levelNumber === 2 ? 1.7 : this.levelNumber === 3 ? 1.35 : 2.3;
       const speed = this.levelNumber === 7 ? 2.45 : this.levelNumber === 6 ? 2.35 : this.levelNumber === 5 ? 2.25 : this.levelNumber === 4 ? 2.1 : this.levelNumber === 2 ? 1.7 : this.levelNumber === 3 ? 1.9 : 1.5;
-      const enemy = createEnemyState(startX, startX - routeHalfWidth, startX + routeHalfWidth, speed);
+      const enemy = createEnemyState(startX, startX - routeHalfWidth, startX + routeHalfWidth, speed, enemyType);
       enemy.isBoss = isBoss;
+      if (!isBoss) {
+        enemy.health = enemyType === 'time-sentinel' ? 3 : 2;
+        enemy.maxHealth = enemy.health;
+        enemy.hitRadius = enemyType === 'drone-scout' ? 0.92 : 0.88;
+      }
       enemy.bossName = isBoss ? this.info.boss : null;
       enemy.health = isBoss ? 12 : 2;
       enemy.maxHealth = enemy.health;
@@ -409,9 +439,18 @@ export class SunnyNeighborhoodLevel {
         enemy.indicator.material.color.set(telegraphing ? warningColor : striking ? '#ffffff' : '#75f0c0');
         const pulse = telegraphing ? 1 + Math.sin(enemy.telegraphTimer * 34) * 0.1 : striking ? 1.14 : 1;
         enemy.group.scale.y = 1.65 * pulse;
+      } else if (enemy.state === 'telegraph') {
+        enemy.indicator.material.color.set(enemy.warningColor || '#fff15e');
+        enemy.group.scale.y = 1 + Math.sin(enemy.telegraphTimer * 28) * 0.08;
+      } else if (enemy.state === 'charge') {
+        enemy.indicator.material.color.set('#ffffff');
+        enemy.group.scale.y = 1.12;
       } else if (enemy.state === 'attack') enemy.indicator.material.color.set('#fff15e');
       else if (enemy.state === 'chase') enemy.indicator.material.color.set('#ffad55');
-      else enemy.indicator.material.color.set('#ff766b');
+      else {
+        enemy.indicator.material.color.set('#ff766b');
+        enemy.group.scale.y = 1;
+      }
     }
   }
 
