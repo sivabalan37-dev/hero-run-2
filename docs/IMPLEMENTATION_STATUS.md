@@ -75,3 +75,12 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - `SunnyNeighborhoodLevel` now consumes the authored blueprint data instead of generating generic platform, enemy and coin positions for levels 8–40.
 - Added automated tests that check all 33 blueprints exist, are distinct, contain valid platform/enemy/coin data and mark all five boss stages.
 - These are authored gameplay layouts built from the existing modular level geometry. They still require visual and difficulty playtesting in a running browser.
+
+
+## New Level 8–40 campaign data specification
+
+- Added `src/data/levels-8-40.json` with all 33 requested campaign records, including theme, target length, obstacle density, explicit enemy/coin/gem targets, checkpoint count, objective, timer budget, completion rewards and boss definitions.
+- Boss encounters in this specification are levels 16, 24, 32 and 40; level 8 is not a boss in the new data set. This differs from the earlier platformer campaign's five boss gates and must be reconciled during gameplay integration.
+- Added `tests/campaign-level-data.test.js` to validate the complete 8–40 sequence, distance/density formulas, boss stages and final reward.
+- The JSON file is now the canonical source for the requested auto-runner campaign specification. It is data-only at this stage; the currently loaded Three.js entry point still launches the separate platform-adventure implementation. The next integration stage must connect this data to the runner's finite-level spawner, health/checkpoint/timer systems, boss encounters, progression UI and touch controls.
+- Specification consistency note: the supplied enemy-count formula does not produce the supplied per-level table values, and the coin formula exceeds the stated level-40 cap. The explicit per-level table values are preserved as authoritative in the JSON; the formulas are retained as documented guidance.
