@@ -31,6 +31,30 @@
         </div>
       </section>
 
+      <section id="boss-hud" class="boss-hud hidden" aria-label="Boss encounter status">
+        <div id="boss-card" class="boss-card">
+          <div class="boss-heading">
+            <span class="boss-eyebrow">WORLD GUARDIAN</span>
+            <strong id="boss-phase">PHASE 1</strong>
+          </div>
+          <div id="boss-name" class="boss-name">Neighborhood Guardian</div>
+          <div
+            id="boss-health-track"
+            class="boss-health-track"
+            role="progressbar"
+            aria-label="Boss health"
+            aria-valuemin="0"
+            aria-valuemax="12"
+            aria-valuenow="12"
+          ><div id="boss-health-fill"></div></div>
+          <div class="boss-health-row">
+            <span>HEALTH</span>
+            <strong id="boss-health-value">12 / 12</strong>
+          </div>
+          <p id="boss-warning" class="boss-warning hidden" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
       <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
       <section id="overlay" class="overlay">
