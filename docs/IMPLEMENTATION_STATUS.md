@@ -62,7 +62,7 @@ The production build emits a non-blocking warning because the minified JavaScrip
 - More detailed boss-specific attack animation timing and broader music/ambient audio.
 - Remaining combat feedback polish, broader effects/audio, and further level-completion feedback.
 - Further Nobi aerial polish; Benji ability balancing and broader visual/audio polish.
-- Full achievements, settings, leaderboard, tutorial, cinematics/dialogue and final victory flow.
+- Full achievements, leaderboard, cinematics/dialogue and final victory flow.
 - IndexedDB fallback/backup, Capacitor configuration and verified Android release.
 - Browser/device acceptance tests and mobile performance profiling.
 
@@ -84,3 +84,11 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - Added Low, Medium and High graphics profiles. Low disables shadow rendering and caps pixel ratio at 1; Medium caps it at 1.5; High caps it at 2 (also limited by the device pixel ratio).
 - Settings are validated and stored locally; corrupt or unavailable storage falls back to safe defaults.
 - Automated coverage is included in `tests/settings.test.js` and `tests/audio.test.js`, including volume bounds, mute toggling and muted resume behavior.
+
+## In-game tutorial
+
+- Added a How to Play panel reachable from the main menu.
+- Lists keyboard movement, jump, attack, special, character switching and Benji form controls.
+- Explains Shin's Toy Star attacks, Nobi's aerial movement/Gadget Vision, and Benji's four forms.
+- Includes Time Shard, three-star rating and boss telegraph tips.
+- Includes the phone touch-control layout and is scrollable on smaller screens.
