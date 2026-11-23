@@ -266,3 +266,38 @@ h1 em { color: #ffd45a; font-style: normal; }
   .level-select { grid-template-columns: repeat(3, minmax(0, 1fr)); max-height: 38vh; }
   .level-tile { min-height: 54px; }
 }
+
+
+.settings-panel {
+  display: grid;
+  gap: 10px;
+  margin-top: 13px;
+  padding: 13px;
+  border: 1px solid rgba(142,224,255,.24);
+  border-radius: 14px;
+  background: rgba(255,255,255,.055);
+  text-align: left;
+}
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #e5f3ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+.setting-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: #65dcb0; }
+.setting-row select {
+  max-width: 62%;
+  min-height: 36px;
+  padding: 5px 8px;
+  border: 1px solid rgba(142,224,255,.35);
+  border-radius: 9px;
+  background: #142b43;
+  color: #fff;
+  font: inherit;
+  font-size: 10px;
+}
+.setting-range { width: 100%; accent-color: #75dfff; }
+.settings-hint { margin: 0 !important; color: #a9bfd5 !important; font-size: 10px !important; line-height: 1.45 !important; }
