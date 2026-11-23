@@ -38,10 +38,10 @@
 ## Automated validation
 
 Latest completed validation run:
-- **PASS:** 82 of 82 Node unit tests, including five enemy archetypes, enemy/boss visual states, five boss attack transforms, pooled impact particle behavior, shared hero punch poses, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
+- **PASS:** 89 of 89 Node unit tests, including five enemy archetypes, enemy/boss visual states, five boss attack transforms, pooled impact particle behavior, shared hero punch poses, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
-- **Verified run:** [GitHub Actions · latest validation](https://github.com/sivabalan37-dev/hero-run-2/actions).
+- **Verified run:** [GitHub Actions · latest validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45095576029).
 
 The production build emits a non-blocking warning because the minified JavaScript bundle exceeds Vite's 500 kB advisory threshold.
 
