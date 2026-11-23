@@ -13,6 +13,7 @@ import {
   selectCharacter,
 } from './CampaignProgress.js';
 import { getLevelInfo, PLAYABLE_LEVELS } from './LevelCatalog.js';
+import { getBossHudModel } from './BossHUD.js';
 
 const FIXED_STEP = 1 / 60;
 const CHECKPOINT_KEY = 'hero-run-time-travel-save-v1';
@@ -102,6 +103,14 @@ export class AdventureGame {
       touch: document.querySelector('#touch-controls'),
       transform: document.querySelector('[data-action="transform"]'),
       special: document.querySelector('[data-action="special"]'),
+      bossHud: document.querySelector('#boss-hud'),
+      bossCard: document.querySelector('#boss-card'),
+      bossName: document.querySelector('#boss-name'),
+      bossPhase: document.querySelector('#boss-phase'),
+      bossHealthTrack: document.querySelector('#boss-health-track'),
+      bossHealth: document.querySelector('#boss-health-value'),
+      bossHealthFill: document.querySelector('#boss-health-fill'),
+      bossWarning: document.querySelector('#boss-warning'),
     };
 
     this.onResize = () => this.resize();
@@ -241,6 +250,25 @@ export class AdventureGame {
     this.ui.special.textContent = this.hero.characterId === 'nobi'
       ? 'GADGET'
       : benjiForm && benjiForm !== 'normal' ? getBenjiFormStats(benjiForm).specialLabel : 'BURST';
+    this.updateBossHud();
+  }
+
+  updateBossHud() {
+    const boss = this.level.enemies.find(enemy => enemy.isBoss);
+    const model = getBossHudModel(boss);
+    this.ui.bossHud.classList.toggle('hidden', !model);
+    if (!model) return;
+
+    this.ui.bossName.textContent = model.name;
+    this.ui.bossPhase.textContent = model.phaseText;
+    this.ui.bossHealth.textContent = model.healthText;
+    this.ui.bossHealthFill.style.width = `${model.healthPercent}%`;
+    this.ui.bossHealthTrack.setAttribute('aria-valuemax', String(Math.ceil(model.maxHealth)));
+    this.ui.bossHealthTrack.setAttribute('aria-valuenow', String(Math.ceil(model.health)));
+    this.ui.bossCard.classList.toggle('warning', model.warning);
+    this.ui.bossWarning.classList.toggle('hidden', !model.warning && !model.defeated);
+    this.ui.bossWarning.classList.toggle('defeated', model.defeated);
+    this.ui.bossWarning.textContent = model.statusText;
   }
 
   switchCharacter() {
