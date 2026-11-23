@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createEnemyState, stepEnemy } from './EnemyAI.js';
+import { initializeBoss, stepBoss } from './BossAI.js';
 import { getLevelInfo, WORLDS } from './LevelCatalog.js';
 
 const standard = (color, roughness = 0.78, metalness = 0) =>
@@ -354,6 +355,7 @@ export class SunnyNeighborhoodLevel {
       enemy.health = isBoss ? 12 : 2;
       enemy.maxHealth = enemy.health;
       enemy.hitRadius = isBoss ? 1.9 : 0.88;
+      if (isBoss) initializeBoss(enemy);
       this.enemies.push({ ...enemy, group, indicator });
     }
   }
@@ -394,7 +396,8 @@ export class SunnyNeighborhoodLevel {
 
   update(dt, heroBody = { x: -100, y: 0 }) {
     for (const enemy of this.enemies) {
-      stepEnemy(enemy, heroBody, dt);
+      if (enemy.isBoss) stepBoss(enemy, heroBody, dt);
+      else stepEnemy(enemy, heroBody, dt);
       if (!enemy.alive) continue;
       enemy.group.position.x = enemy.x;
       enemy.group.scale.x = enemy.direction;
