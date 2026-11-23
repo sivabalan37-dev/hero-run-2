@@ -20,8 +20,11 @@ export function getAchievementStats(progress) {
   const starsByLevel = progress?.starsByLevel && typeof progress.starsByLevel === 'object'
     ? progress.starsByLevel
     : {};
-  const stars = Object.values(starsByLevel).reduce((total, value) =>
-    total + (Number.isInteger(value) ? Math.max(0, Math.min(3, value)) : 0), 0);
+  const completedSet = new Set(completed);
+  const stars = Object.entries(starsByLevel).reduce((total, [level, value]) =>
+    total + (completedSet.has(Number(level)) && Number.isInteger(value)
+      ? Math.max(0, Math.min(3, value))
+      : 0), 0);
   return {
     levels: new Set(completed).size,
     shards: Object.entries(starsByLevel).filter(([level, rating]) =>
