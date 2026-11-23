@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createEnemyState, stepEnemy } from './EnemyAI.js';
 import { initializeBoss, stepBoss } from './BossAI.js';
 import { getLevelInfo, WORLDS } from './LevelCatalog.js';
-import { getEnemyVisualState } from './EnemyEffects.js';
+import { getEnemyVisualState, getEnemyMotionState } from './EnemyEffects.js';
 import { getBossAttackVisualState } from './BossEffects.js';
 
 const standard = (color, roughness = 0.78, metalness = 0) =>
@@ -41,6 +41,7 @@ export class SunnyNeighborhoodLevel {
     this.buildEnemies();
     this.buildCheckpoint();
     this.buildExit();
+    this.buildGadgetVision();
   }
 
   buildEnvironment() {
@@ -345,7 +346,7 @@ export class SunnyNeighborhoodLevel {
         mesh(new THREE.TorusGeometry(1.05, 0.13, 8, 24), standard(['#ffd166','#ffe08a','#e9c46a','#55e6ff','#f4d58d'][this.worldIndex], 0.3, 0.55), 0, 1.1, 0.12, group, false);
         group.scale.setScalar(1.65);
       } else if (enemyType === 'clockwork-charger') {
-        mesh(new THREE.TorusGeometry(0.56, 0.09, 7, 18), standard('#f2bd58', 0.28, 0.65), 0, 0.62, 0.04, group, false);
+        chargerRing = mesh(new THREE.TorusGeometry(0.56, 0.09, 7, 18), standard('#f2bd58', 0.28, 0.65), 0, 0.62, 0.04, group, false);
         for (const side of [-1, 1]) {
           const horn = mesh(new THREE.ConeGeometry(0.13, 0.52, 6), standard('#f7e0a0', 0.3, 0.35), side * 0.34, 1.03, 0.02, group);
           horn.rotation.z = side * -0.7;
@@ -355,18 +356,24 @@ export class SunnyNeighborhoodLevel {
         for (const side of [-1, 1]) {
           const vine = mesh(new THREE.CylinderGeometry(0.07, 0.11, 1.05, 6), standard('#548b4d'), side * 0.62, 0.62, 0.02, group);
           vine.rotation.z = side * -0.8;
+          vineArms.push(vine);
         }
       } else if (enemyType === 'drone-scout') {
         mesh(new THREE.TorusGeometry(0.58, 0.075, 7, 20), standard('#7be9ff', 0.25, 0.62), 0, 1.05, 0, group, false);
         for (const side of [-1, 1]) {
           const wing = mesh(new THREE.BoxGeometry(0.72, 0.13, 0.3), standard('#8bdcf0', 0.3, 0.5), side * 0.67, 1.03, 0, group);
           wing.rotation.z = side * 0.12;
+          droneWings.push(wing);
         }
       } else if (enemyType === 'time-sentinel') {
         mesh(new THREE.TorusGeometry(0.62, 0.08, 7, 20), standard('#d7a0ff', 0.24, 0.68), 0, 0.64, 0.02, group, false);
-        mesh(new THREE.OctahedronGeometry(0.2, 0), glow('#f4d6ff'), 0, 1.18, 0.1, group, false);
+        sentinelCore = mesh(new THREE.OctahedronGeometry(0.2, 0), glow('#f4d6ff'), 0, 1.18, 0.1, group, false);
       }
       const indicator = mesh(new THREE.BoxGeometry(0.72, 0.15, 0.16), glow('#ff766b'), 0, 0.72, 0.44, group, false);
+      const vineArms = [];
+      const droneWings = [];
+      let sentinelCore = null;
+      let chargerRing = null;
       let bossAttackEffect = null;
       if (isBoss) {
         const attackType = this.info.boss === 'Neighborhood Guardian' ? 'ground-slam'
@@ -421,7 +428,7 @@ export class SunnyNeighborhoodLevel {
       enemy.maxHealth = enemy.health;
       enemy.hitRadius = isBoss ? 1.9 : 0.88;
       if (isBoss) initializeBoss(enemy);
-      this.enemies.push({ ...enemy, group, indicator, effectRing, bossAttackEffect });
+      this.enemies.push({ ...enemy, group, indicator, effectRing, bossAttackEffect, vineArms, droneWings, sentinelCore, chargerRing });
     }
   }
 
@@ -448,6 +455,25 @@ export class SunnyNeighborhoodLevel {
     this.group.add(this.exit);
   }
 
+  buildGadgetVision() {
+    this.gadgetScanTimer = 0;
+    this.gadgetScanRing = mesh(
+      new THREE.TorusGeometry(0.72, 0.055, 7, 48),
+      new THREE.MeshStandardMaterial({ color: '#69f4ff', emissive: '#38dfff', emissiveIntensity: 2.2, transparent: true, opacity: 0, depthWrite: false }),
+      0, 0.12, 1.05, this.group, false,
+    );
+    this.gadgetScanRing.visible = false;
+  }
+
+  triggerGadgetVision(x) {
+    const revealed = this.revealHidden();
+    this.gadgetScanTimer = 1.35;
+    this.gadgetScanRing.position.x = x;
+    this.gadgetScanRing.visible = true;
+    this.gadgetScanRing.scale.setScalar(0.35);
+    return revealed;
+  }
+
   revealHidden() {
     let revealed = 0;
     for (const item of this.collectibles) {
@@ -461,6 +487,13 @@ export class SunnyNeighborhoodLevel {
 
   update(dt, heroBody = { x: -100, y: 0 }) {
     this.elapsed += dt;
+    if (this.gadgetScanTimer > 0) {
+      this.gadgetScanTimer = Math.max(0, this.gadgetScanTimer - dt);
+      const progress = 1 - this.gadgetScanTimer / 1.35;
+      this.gadgetScanRing.visible = this.gadgetScanTimer > 0;
+      this.gadgetScanRing.scale.setScalar(0.35 + progress * 5.2);
+      this.gadgetScanRing.material.opacity = (1 - progress) * 0.88;
+    }
     for (const enemy of this.enemies) {
       if (enemy.isBoss) stepBoss(enemy, heroBody, dt);
       else stepEnemy(enemy, heroBody, dt);
@@ -476,6 +509,17 @@ export class SunnyNeighborhoodLevel {
       enemy.group.scale.x = enemy.direction * visual.bodyScaleX;
       enemy.group.scale.y = visual.bodyScaleY;
       enemy.group.rotation.z = visual.rotationZ * enemy.direction;
+      if (!enemy.isBoss) {
+        const motion = getEnemyMotionState(enemy, this.elapsed + enemy.x * 0.07);
+        for (let i = 0; i < enemy.vineArms.length; i++) {
+          enemy.vineArms[i].rotation.z = (i === 0 ? -1 : 1) * (0.8 + motion.vineSwing);
+        }
+        for (let i = 0; i < enemy.droneWings.length; i++) {
+          enemy.droneWings[i].rotation.z = (i === 0 ? -1 : 1) * (0.12 + motion.wingFlap);
+        }
+        if (enemy.sentinelCore) enemy.sentinelCore.rotation.y = motion.coreSpin;
+        if (enemy.chargerRing) enemy.chargerRing.rotation.y = motion.chargerSpin;
+      }
       enemy.indicator.material.color.set(visual.ringVisible ? visual.ringColor : visual.ringColor);
       enemy.effectRing.visible = visual.ringVisible;
       enemy.effectRing.scale.setScalar(visual.ringScale);
