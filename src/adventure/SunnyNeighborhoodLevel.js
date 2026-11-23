@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createEnemyState, stepEnemy } from './EnemyAI.js';
 import { initializeBoss, stepBoss } from './BossAI.js';
 import { getLevelInfo, WORLDS } from './LevelCatalog.js';
+import { getEnemyVisualState } from './EnemyEffects.js';
 
 const standard = (color, roughness = 0.78, metalness = 0) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -30,6 +31,7 @@ export class SunnyNeighborhoodLevel {
     this.platforms = [];
     this.collectibles = [];
     this.enemies = [];
+    this.elapsed = 0;
     this.exitX = this.levelNumber <= 7 ? [0,40,42,44,46,50,54,58][this.levelNumber] : 58 + (this.levelNumber - 7) * 4;
     this.checkpointX = this.levelNumber <= 7 ? [0,22,24,26,30,34,38,42][this.levelNumber] : this.exitX - (this.isBossLevel ? 12 : 16);
     this.buildEnvironment();
@@ -364,6 +366,12 @@ export class SunnyNeighborhoodLevel {
         mesh(new THREE.OctahedronGeometry(0.2, 0), glow('#f4d6ff'), 0, 1.18, 0.1, group, false);
       }
       const indicator = mesh(new THREE.BoxGeometry(0.72, 0.15, 0.16), glow('#ff766b'), 0, 0.72, 0.44, group, false);
+      const effectRing = mesh(
+        new THREE.TorusGeometry(isBoss ? 1.3 : 0.78, isBoss ? 0.075 : 0.055, 7, 28),
+        new THREE.MeshStandardMaterial({ color: '#ffffff', emissive: '#ffffff', emissiveIntensity: 1.8, transparent: true, opacity: 0, depthWrite: false }),
+        0, 0.12, 0.58, group, false,
+      );
+      effectRing.visible = false;
       if (!isBoss && enemyType !== 'drone-scout') {
         for (const side of [-1, 1]) {
           const leg = mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.45, 7), enemyMat, side * 0.42, 0.2, 0, group);
@@ -386,7 +394,7 @@ export class SunnyNeighborhoodLevel {
       enemy.maxHealth = enemy.health;
       enemy.hitRadius = isBoss ? 1.9 : 0.88;
       if (isBoss) initializeBoss(enemy);
-      this.enemies.push({ ...enemy, group, indicator });
+      this.enemies.push({ ...enemy, group, indicator, effectRing });
     }
   }
 
@@ -425,32 +433,27 @@ export class SunnyNeighborhoodLevel {
   }
 
   update(dt, heroBody = { x: -100, y: 0 }) {
+    this.elapsed += dt;
     for (const enemy of this.enemies) {
       if (enemy.isBoss) stepBoss(enemy, heroBody, dt);
       else stepEnemy(enemy, heroBody, dt);
-      if (!enemy.alive) continue;
-      enemy.group.position.x = enemy.x;
-      enemy.group.scale.x = enemy.direction;
-      enemy.group.position.y = enemy.state === 'attack' ? 0.06 : 0;
-      if (enemy.isBoss) {
-        const telegraphing = enemy.bossMode === 'telegraph';
-        const striking = enemy.bossMode === 'strike';
-        const warningColor = enemy.attackProfile?.warningColor || '#fff15e';
-        enemy.indicator.material.color.set(telegraphing ? warningColor : striking ? '#ffffff' : '#75f0c0');
-        const pulse = telegraphing ? 1 + Math.sin(enemy.telegraphTimer * 34) * 0.1 : striking ? 1.14 : 1;
-        enemy.group.scale.y = 1.65 * pulse;
-      } else if (enemy.state === 'telegraph') {
-        enemy.indicator.material.color.set(enemy.warningColor || '#fff15e');
-        enemy.group.scale.y = 1 + Math.sin(enemy.telegraphTimer * 28) * 0.08;
-      } else if (enemy.state === 'charge') {
-        enemy.indicator.material.color.set('#ffffff');
-        enemy.group.scale.y = 1.12;
-      } else if (enemy.state === 'attack') enemy.indicator.material.color.set('#fff15e');
-      else if (enemy.state === 'chase') enemy.indicator.material.color.set('#ffad55');
-      else {
-        enemy.indicator.material.color.set('#ff766b');
-        enemy.group.scale.y = 1;
+      if (!enemy.alive) {
+        enemy.effectRing.visible = false;
+        continue;
       }
+
+      const visual = getEnemyVisualState(enemy, this.elapsed + enemy.x * 0.07);
+      enemy.group.position.x = enemy.x;
+      enemy.group.position.y = visual.bob;
+      enemy.group.scale.x = enemy.direction * visual.bodyScaleX;
+      enemy.group.scale.y = visual.bodyScaleY;
+      enemy.group.rotation.z = visual.rotationZ * enemy.direction;
+      enemy.indicator.material.color.set(visual.ringVisible ? visual.ringColor : visual.ringColor);
+      enemy.effectRing.visible = visual.ringVisible;
+      enemy.effectRing.scale.setScalar(visual.ringScale);
+      enemy.effectRing.material.color.set(visual.ringColor);
+      enemy.effectRing.material.emissive.set(visual.ringColor);
+      enemy.effectRing.material.opacity = visual.ringOpacity;
     }
   }
 
