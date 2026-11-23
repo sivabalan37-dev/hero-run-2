@@ -7,7 +7,9 @@ test('fresh campaign starts with all achievements locked and zero progress', () 
   const progress = createProgressState();
   const achievements = getAchievementProgress(progress);
   assert.equal(achievements.length, 10);
-  assert.ok(achievements.every(item => !item.unlocked && item.value === 0));
+  assert.ok(achievements.every(item => !item.unlocked));
+  assert.equal(achievements.find(item => item.id === 'full_roster').value, 1);
+  assert.ok(achievements.filter(item => item.id !== 'full_roster').every(item => item.value === 0));
   assert.deepEqual(getAchievementStats(progress), {
     levels: 0, shards: 0, stars: 0, coins: 0, bosses: 0, heroes: 1,
   });
