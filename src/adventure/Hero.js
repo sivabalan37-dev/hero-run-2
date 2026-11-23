@@ -264,6 +264,52 @@ export class BenjiHero extends BaseHero {
     this.auraRing.rotation.x = Math.PI / 2;
     this.auraRing.position.y = 0.07;
     this.group.add(this.auraRing);
+    this.specialEffectTimer = 0;
+    this.specialEffectAbility = null;
+    this.specialEffects = {
+      flame: new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.095, 8, 28), new THREE.MeshBasicMaterial({ color: '#ff7a27', transparent: true, opacity: 0, depthWrite: false })),
+      shock: new THREE.Mesh(new THREE.TorusGeometry(0.85, 0.065, 8, 32), new THREE.MeshBasicMaterial({ color: '#ffe85b', transparent: true, opacity: 0, depthWrite: false })),
+      stomp: new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.11, 8, 32), new THREE.MeshBasicMaterial({ color: '#a9e66e', transparent: true, opacity: 0, depthWrite: false })),
+    };
+    this.specialEffects.flame.position.set(1.15, 1.18, 0.55);
+    this.specialEffects.shock.rotation.x = Math.PI / 2;
+    this.specialEffects.shock.position.set(0, 0.13, 0.5);
+    this.specialEffects.stomp.rotation.x = Math.PI / 2;
+    this.specialEffects.stomp.position.set(0, 0.1, 0.55);
+    for (const [ability, effect] of Object.entries(this.specialEffects)) {
+      effect.visible = false;
+      this.group.add(effect);
+    }
+  }
+
+  triggerSpecialEffect(ability) {
+    if (!this.specialEffects?.[ability]) return false;
+    this.specialEffectAbility = ability;
+    this.specialEffectTimer = 0;
+    for (const [name, effect] of Object.entries(this.specialEffects)) effect.visible = name === ability;
+    return true;
+  }
+
+  update(dt, attacking = false, aerialState = {}) {
+    super.update(dt, attacking, aerialState);
+    if (!this.specialEffectAbility) return;
+    this.specialEffectTimer += dt;
+    // Lazy import-free visual math keeps the render loop allocation-free.
+    const durations = { flame: 0.34, shock: 0.48, stomp: 0.42 };
+    const duration = durations[this.specialEffectAbility];
+    const progress = Math.min(1, this.specialEffectTimer / duration);
+    const fade = 1 - progress;
+    const effect = this.specialEffects[this.specialEffectAbility];
+    const start = this.specialEffectAbility === 'flame' ? 0.55 : 0.45;
+    const growth = this.specialEffectAbility === 'flame' ? 1.05 : this.specialEffectAbility === 'shock' ? 1.8 : 2.1;
+    effect.scale.setScalar(start + progress * growth);
+    effect.material.opacity = fade * (this.specialEffectAbility === 'flame' ? 1 : 0.88);
+    effect.rotation.z = progress * (this.specialEffectAbility === 'flame' ? 1.5 : 0.4);
+    if (progress >= 1) {
+      effect.visible = false;
+      this.specialEffectAbility = null;
+      this.specialEffectTimer = 0;
+    }
   }
 
   cycleForm() {
