@@ -12,10 +12,10 @@
 - Procedural Shin, Nobi and Benji character models with a shared movement/animation interface.
 - Character progression: Shin starts unlocked; Nobi unlocks after 3 distinct completed levels; Benji unlocks after 6.
 - Character selection via C / HERO control, with selection persisted in campaign progress.
-- Nobi has a full basic aerial kit: one additional mid-air jump, reduced-gravity glide while holding jump during a fall, and a short directional air dash on Special while airborne. Special on the ground still activates Gadget Vision to reveal hidden collectibles. The propeller tilts and spins faster during glide/dash.
+- Nobi has a full basic aerial kit: one additional mid-air jump, reduced-gravity glide while holding jump during a fall, and a short directional air dash on Special while airborne. Special on the ground activates Gadget Vision, reveals hidden collectibles and displays an expanding cyan scan ring. The propeller tilts and spins faster during glide/dash.
 - Benji's Normal, Blaze, Shock and Titan forms, cycled with T / FORM. Blaze has faster movement and a forward flame strike; Shock has a stronger jump and radial pulse; Titan moves more slowly, performs a grounded stomp and takes 50% less damage.
 - Shin Toy Star projectile and seven-shot Star Burst; fixed-capacity pooled projectile entities.
-- Five world-themed enemy archetypes: Robo Bug (patrol/contact), Clockwork Charger (telegraphed dash), Vine Sweeper (wide ground sweep), Drone Scout (higher jump-lane pulse) and Time Sentinel (fast telegraphed strike). Each has its own movement, detection, attack range/height, cooldown and warning color.
+- Five world-themed enemy archetypes: Robo Bug (patrol/contact), Clockwork Charger (telegraphed dash), Vine Sweeper (wide ground sweep), Drone Scout (higher jump-lane pulse) and Time Sentinel (fast telegraphed strike). Each has its own movement, detection, attack range/height, cooldown and warning color. Vine arms now sweep with a distinct attack motion, drone wings flap faster during attacks, the Time Sentinel core spins during telegraphs, and the Charger ring accelerates during its dash.
 - Seven authored Sunny Neighborhood stages, levels 1–7, with separate platform layouts, dusk lighting in level 3, a festival-themed level 4, riverfront park level 5, Clocktower Climb level 6 and Rooftop Relay level 7.
 - Levels 8–40 are now playable procedural stages, distributed across School Playground, Forest of Forgotten Toys, Alien Tech City and Time-Travel Castle. Each receives a world-specific palette/landmark set, extended ground route, generated raised platforms, coin route, heart, hidden coin, Time Shard, checkpoint, enemies and exit.
 - Five boss-gated stages are implemented at levels 8, 16, 24, 32 and 40. Each boss has a larger visual model, 12 health, an enlarged projectile hitbox and blocks the exit until defeated.
@@ -38,7 +38,7 @@
 ## Automated validation
 
 Latest completed validation run:
-- **PASS:** 94 of 94 Node unit tests, including five enemy archetypes, enemy/boss visual states, five boss attack transforms, pooled impact particle behavior, shared hero punch poses, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
+- **PASS:** 97 of 97 Node unit tests, including five enemy archetypes, enemy/boss visual states, five boss attack transforms, pooled impact particle behavior, shared hero punch poses, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
 - **Verified run:** [GitHub Actions · latest validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45095576029).
@@ -52,14 +52,14 @@ The production build emits a non-blocking warning because the minified JavaScrip
 - Offline restart after installing/loading the PWA.
 - Mobile performance, draw-call/triangle budgets and sustained frame rate.
 - Capacitor Android build, APK installation and physical-device testing.
-- Sustained Nobi propeller flight, expanded Gadget Vision feedback and further Benji ability balancing/effects.
+- Sustained Nobi propeller flight and further Benji ability balancing/effects.
 
 ## Remaining implementation
 
 - Hand-authored, individually designed level layouts for levels 8–40; the current versions are procedural variants.
-- More detailed boss-specific attack animation timing, enemy attack motion, and broader music/ambient audio.
+- More detailed boss-specific attack animation timing and broader music/ambient audio.
 - Remaining combat feedback polish, broader effects/audio, and three-star level ratings.
-- Nobi's complete aerial kit; Benji ability balancing and visual effects.
+- Further Nobi aerial polish; Benji ability balancing and visual effects.
 - Full achievements, settings, leaderboard, tutorial, cinematics/dialogue and final victory flow.
 - IndexedDB fallback/backup, Capacitor configuration and verified Android release.
 - Browser/device acceptance tests and mobile performance profiling.
