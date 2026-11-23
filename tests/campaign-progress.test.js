@@ -4,6 +4,7 @@ import {
   createProgressState,
   getUnlockedCharacters,
   isCharacterUnlocked,
+  isLevelUnlocked,
   recordLevelCompletion,
   selectCharacter,
   loadCampaignProgress,
@@ -137,4 +138,24 @@ test('star ratings survive campaign save and load', () => {
   progress = recordLevelCompletion(progress, 1, 5, 3);
   assert.equal(saveCampaignProgress(progress, storage), true);
   assert.deepEqual(loadCampaignProgress(storage).starsByLevel, { 1: 3 });
+});
+
+
+test('level selection unlocks the next stage and allows completed stages to be replayed', () => {
+  let progress = createProgressState();
+  assert.equal(isLevelUnlocked(progress, 1), true);
+  assert.equal(isLevelUnlocked(progress, 2), false);
+  progress = recordLevelCompletion(progress, 1, 4, 2);
+  assert.equal(isLevelUnlocked(progress, 1), true);
+  assert.equal(isLevelUnlocked(progress, 2), true);
+  assert.equal(isLevelUnlocked(progress, 3), false);
+});
+
+test('level selection keeps completed stages replayable after a progress gap', () => {
+  const progress = createProgressState({ version: 1, completedLevels: [1, 3] });
+  assert.equal(progress.currentLevel, 2);
+  assert.equal(isLevelUnlocked(progress, 3), true);
+  assert.equal(isLevelUnlocked(progress, 4), false);
+  assert.equal(isLevelUnlocked(progress, 0), false);
+  assert.equal(isLevelUnlocked(progress, 41), false);
 });
