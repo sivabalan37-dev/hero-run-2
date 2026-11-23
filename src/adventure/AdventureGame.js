@@ -172,12 +172,14 @@ export class AdventureGame {
     this.ui.overlay.classList.remove('hidden');
     this.ui.hud.classList.add('hidden');
     this.ui.touch.classList.add('hidden');
+    this.ui.bossHud.classList.add('hidden');
   }
 
   hideOverlay() {
     this.ui.overlay.classList.add('hidden');
     this.ui.hud.classList.remove('hidden');
     if (matchMedia('(pointer: coarse)').matches) this.ui.touch.classList.remove('hidden');
+    this.updateBossHud();
   }
 
   start() {
