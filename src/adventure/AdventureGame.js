@@ -439,6 +439,7 @@ export class AdventureGame {
           this.toast('TITAN STOMP REQUIRES THE GROUND');
         } else {
           this.specialTimer = getBenjiFormStats(benjiForm).specialCooldown;
+          if (result.ready && result.ability !== 'star-burst') this.hero.triggerSpecialEffect(result.ability);
           if (result.defeated > 0) this.coins += result.defeated * 2;
           const labels = { flame: 'BLAZE STRIKE', shock: 'SHOCK PULSE', stomp: 'TITAN STOMP' };
           this.toast(result.hits > 0 ? `${labels[result.ability]} · ${result.hits} HIT(S)` : `${labels[result.ability]} · NO TARGET`);
