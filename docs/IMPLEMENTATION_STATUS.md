@@ -25,6 +25,7 @@
 - Enemy and boss visual feedback uses deterministic, delta-time-driven animation states: telegraph pulses, charger lean/compression, attack impact rings, boss-scale-preserving pulses and recovery motion. Impact rings are hidden outside active warning/attack windows.
 - Five boss attack effects have distinct shapes and motion envelopes: Neighborhood Guardian ground-slam shock ring, Mechanical Headmaster gear-dash streak, Toy Forest Guardian vine sweep arc, Supreme Machine pulse-blast energy shell and Ultimate Time Guardian time-wave ring. Effects telegraph, expand/strike and fade during recovery.
 - Boss audio cues are connected to combat state transitions. Each boss has a distinct warning tone and strike tone; the existing hit sound plays when the hero takes damage. Audio starts/resumes from the player's Start interaction.
+- Projectile and Benji special hits share a hit-reaction system: bounded knockback, short AI hit-stun, a red impact pulse and boss recovery interruption. Hit responses are rejected while an enemy is already stunned, preventing rapid repeat-hit exploits.
 - Projectile hits trigger fixed-capacity pooled impact particle bursts. Standard enemies produce small golden/orange bursts; bosses produce larger purple bursts. Particle positions, velocities and fade are updated without allocating meshes during combat.
 - All three heroes now use a shared punch pose: the attacking arm drives forward, the opposite arm recoils and the torso leans into the attack. The pose eases in and out with the attack cooldown.
 - Full 40-level campaign catalog is playable in the browser game. Levels 1–7 have authored stage layouts; levels 8–40 currently use procedural layouts and world themes. Five boss gates are active at the end of each world.
@@ -63,4 +64,4 @@ The production build emits a non-blocking warning because the minified JavaScrip
 - IndexedDB fallback/backup, Capacitor configuration and verified Android release.
 - Browser/device acceptance tests and mobile performance profiling.
 
-The old endless-runner modules remain under `src/game/` for reference. They are not loaded by the new browser entry point. No changes have been merged into `main`.
+The old endless-runner modules remain under `src/game/` for reference. They are not loaded by the new browser entry point. The campaign branch was promoted to `main` after the passing validation run.
