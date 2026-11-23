@@ -102,6 +102,9 @@ export class AdventureGame {
       levelSelect: document.querySelector('#level-select'),
       levelSelectBack: document.querySelector('#level-select-back'),
       settingsButton: document.querySelector('#settings-button'),
+      tutorialButton: document.querySelector('#tutorial-button'),
+      tutorialPanel: document.querySelector('#tutorial-panel'),
+      tutorialBack: document.querySelector('#tutorial-back'),
       settingsPanel: document.querySelector('#settings-panel'),
       settingsBack: document.querySelector('#settings-back'),
       soundEnabled: document.querySelector('#sound-enabled'),
@@ -147,6 +150,8 @@ export class AdventureGame {
     this.onOpenLevelSelect = () => this.openLevelSelection();
     this.onCloseLevelSelect = () => this.closeLevelSelection();
     this.onOpenSettings = () => this.openSettings();
+    this.onOpenTutorial = () => this.openTutorial();
+    this.onCloseTutorial = () => this.closeTutorial();
     this.onCloseSettings = () => this.closeSettings();
     this.onSoundEnabledChange = () => this.updateSettings({ soundEnabled: this.ui.soundEnabled.checked });
     this.onSoundVolumeChange = () => this.updateSettings({ volume: Number(this.ui.soundVolume.value) });
@@ -155,6 +160,8 @@ export class AdventureGame {
     this.ui.levelSelectButton.addEventListener('click', this.onOpenLevelSelect);
     this.ui.levelSelectBack.addEventListener('click', this.onCloseLevelSelect);
     this.ui.settingsButton.addEventListener('click', this.onOpenSettings);
+    this.ui.tutorialButton.addEventListener('click', this.onOpenTutorial);
+    this.ui.tutorialBack.addEventListener('click', this.onCloseTutorial);
     this.ui.settingsBack.addEventListener('click', this.onCloseSettings);
     this.ui.soundEnabled.addEventListener('change', this.onSoundEnabledChange);
     this.ui.soundVolume.addEventListener('input', this.onSoundVolumeChange);
@@ -227,6 +234,8 @@ export class AdventureGame {
 
   openSettings() {
     if (['running', 'paused', 'gameover'].includes(this.state)) return;
+    this.ui.tutorialPanel.classList.add('hidden');
+    this.ui.tutorialBack.classList.add('hidden');
     this.ui.message.classList.add('hidden');
     this.ui.start.classList.add('hidden');
     this.ui.levelSelect.classList.add('hidden');
@@ -247,6 +256,30 @@ export class AdventureGame {
     this.showOverlay(this._overlayModel.title, this._overlayModel.subtitle, this._overlayModel.message, this._overlayModel.buttonText, this._overlayModel.status);
   }
 
+  openTutorial() {
+    if (['running', 'paused', 'gameover'].includes(this.state)) return;
+    this.ui.message.classList.add('hidden');
+    this.ui.start.classList.add('hidden');
+    this.ui.levelSelect.classList.add('hidden');
+    this.ui.levelSelectButton.classList.add('hidden');
+    this.ui.levelSelectBack.classList.add('hidden');
+    this.ui.settingsButton.classList.add('hidden');
+    this.ui.settingsPanel.classList.add('hidden');
+    this.ui.settingsBack.classList.add('hidden');
+    this.ui.tutorialButton.classList.add('hidden');
+    this.ui.tutorialPanel.classList.remove('hidden');
+    this.ui.tutorialBack.classList.remove('hidden');
+    this.ui.title.textContent = 'HOW TO PLAY';
+    this.ui.status.textContent = 'CONTROLS · HEROES · LEVEL TIPS';
+  }
+
+  closeTutorial() {
+    if (!this._overlayModel) return;
+    this.ui.tutorialPanel.classList.add('hidden');
+    this.ui.tutorialBack.classList.add('hidden');
+    this.showOverlay(this._overlayModel.title, this._overlayModel.subtitle, this._overlayModel.message, this._overlayModel.buttonText, this._overlayModel.status);
+  }
+
   showOverlay(title, subtitle, message, buttonText, status = '') {
     this._overlayModel = { title, subtitle, message, buttonText, status };
     this.ui.title.textContent = title;
@@ -259,7 +292,10 @@ export class AdventureGame {
     this.ui.levelSelectBack.classList.add('hidden');
     this.ui.settingsPanel.classList.add('hidden');
     this.ui.settingsBack.classList.add('hidden');
+    this.ui.tutorialPanel.classList.add('hidden');
+    this.ui.tutorialBack.classList.add('hidden');
     this.ui.settingsButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
+    this.ui.tutorialButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
     this.ui.levelSelectButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
     this.ui.overlay.classList.remove('hidden');
     this.ui.hud.classList.add('hidden');
@@ -275,6 +311,7 @@ export class AdventureGame {
     this.ui.start.classList.add('hidden');
     this.ui.levelSelectButton.classList.add('hidden');
     this.ui.settingsButton.classList.add('hidden');
+    this.ui.tutorialButton.classList.add('hidden');
     this.ui.levelSelectBack.classList.remove('hidden');
     this.ui.levelSelect.classList.remove('hidden');
     this.ui.status.textContent = `${this.progress.completedLevels.length} OF 40 LEVELS CLEARED · ${this.progress.totalCoins} COINS`;
@@ -719,6 +756,8 @@ export class AdventureGame {
     this.ui.levelSelectBack.removeEventListener('click', this.onCloseLevelSelect);
     this.ui.settingsButton.removeEventListener('click', this.onOpenSettings);
     this.ui.settingsBack.removeEventListener('click', this.onCloseSettings);
+    this.ui.tutorialButton.removeEventListener('click', this.onOpenTutorial);
+    this.ui.tutorialBack.removeEventListener('click', this.onCloseTutorial);
     this.ui.soundEnabled.removeEventListener('change', this.onSoundEnabledChange);
     this.ui.soundVolume.removeEventListener('input', this.onSoundVolumeChange);
     this.ui.graphicsQuality.removeEventListener('change', this.onGraphicsQualityChange);
