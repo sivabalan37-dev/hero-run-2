@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createBody } from './PlatformerPhysics.js';
 import { getAttackPose } from './HeroAnimation.js';
 import { getBenjiSpecialVisualState } from './BenjiSpecialEffects.js';
+import { getBenjiFormTransitionVisualState } from './BenjiFormTransition.js';
 
 const material = (color, roughness = 0.72, metalness = 0) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -265,6 +266,19 @@ export class BenjiHero extends BaseHero {
     this.auraRing.rotation.x = Math.PI / 2;
     this.auraRing.position.y = 0.07;
     this.group.add(this.auraRing);
+    this.formTransitionRing = new THREE.Mesh(
+      new THREE.TorusGeometry(1, 0.075, 8, 40),
+      new THREE.MeshBasicMaterial({ color: '#b7ef75', transparent: true, opacity: 0, depthWrite: false })
+    );
+    this.formTransitionRing.rotation.x = Math.PI / 2;
+    this.formTransitionRing.position.y = 0.16;
+    this.formTransitionRing.visible = false;
+    this.group.add(this.formTransitionRing);
+    this.formTransitionTimer = 0;
+    this.formTransitionFrom = null;
+    this.formTransitionTo = null;
+    this.formScaleFrom = 1;
+    this.formScaleTo = 1;
     this.specialEffectTimer = 0;
     this.specialEffectAbility = null;
     this.specialEffects = {
@@ -293,23 +307,66 @@ export class BenjiHero extends BaseHero {
 
   update(dt, attacking = false, aerialState = {}) {
     super.update(dt, attacking, aerialState);
-    if (!this.specialEffectAbility) return;
-    this.specialEffectTimer += dt;
-    const effect = this.specialEffects[this.specialEffectAbility];
-    const visual = getBenjiSpecialVisualState(this.specialEffectAbility, this.specialEffectTimer);
-    effect.scale.setScalar(visual.scale);
-    effect.material.opacity = visual.opacity;
-    effect.rotation.z = visual.rotation;
-    if (!visual.visible) {
-      effect.visible = false;
-      this.specialEffectAbility = null;
-      this.specialEffectTimer = 0;
+    if (this.specialEffectAbility) {
+      this.specialEffectTimer += dt;
+      const effect = this.specialEffects[this.specialEffectAbility];
+      const visual = getBenjiSpecialVisualState(this.specialEffectAbility, this.specialEffectTimer);
+      effect.scale.setScalar(visual.scale);
+      effect.material.opacity = visual.opacity;
+      effect.rotation.z = visual.rotation;
+      if (!visual.visible) {
+        effect.visible = false;
+        this.specialEffectAbility = null;
+        this.specialEffectTimer = 0;
+      }
+    }
+    if (this.formTransitionFrom) {
+      this.formTransitionTimer += dt;
+      const visual = getBenjiFormTransitionVisualState(this.formTransitionTimer);
+      this.jacketMaterial.color.lerpColors(this.formTransitionFrom.jacket, this.formTransitionTo.jacket, visual.progress);
+      this.pantsMaterial.color.lerpColors(this.formTransitionFrom.pants, this.formTransitionTo.pants, visual.progress);
+      this.auraRing.material.color.lerpColors(this.formTransitionFrom.aura, this.formTransitionTo.aura, visual.progress);
+      this.formTransitionRing.material.color.copy(this.auraRing.material.color);
+      this.visualScale = this.formScaleFrom + (this.formScaleTo - this.formScaleFrom) * visual.progress;
+      this.model.scale.set(this.body.facing * this.visualScale, this.visualScale, this.visualScale);
+      this.formTransitionRing.scale.setScalar(visual.ringScale);
+      this.formTransitionRing.material.opacity = visual.ringOpacity;
+      this.auraRing.material.opacity = visual.auraOpacity;
+      this.formTransitionRing.visible = visual.active;
+      if (!visual.active) {
+        this.formTransitionFrom = null;
+        this.formTransitionTo = null;
+        this.formTransitionTimer = 0;
+        this.visualScale = this.formScaleTo;
+        this.auraRing.material.opacity = 0.4;
+        this.formTransitionRing.visible = false;
+      }
     }
   }
 
   cycleForm() {
+    const from = {
+      jacket: this.jacketMaterial.color.clone(),
+      pants: this.pantsMaterial.color.clone(),
+      aura: this.auraRing.material.color.clone(),
+    };
+    const scaleFrom = this.visualScale;
     this.formIndex = (this.formIndex + 1) % this.forms.length;
     this.applyForm();
+    this.formTransitionFrom = from;
+    this.formTransitionTo = {
+      jacket: this.jacketMaterial.color.clone(),
+      pants: this.pantsMaterial.color.clone(),
+      aura: this.auraRing.material.color.clone(),
+    };
+    this.formScaleFrom = scaleFrom;
+    this.formScaleTo = this.visualScale;
+    this.jacketMaterial.color.copy(from.jacket);
+    this.pantsMaterial.color.copy(from.pants);
+    this.auraRing.material.color.copy(from.aura);
+    this.formTransitionTimer = 0;
+    this.formTransitionRing.material.color.copy(from.aura);
+    this.formTransitionRing.visible = true;
     return this.forms[this.formIndex];
   }
 
