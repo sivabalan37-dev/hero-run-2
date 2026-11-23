@@ -1,5 +1,14 @@
 export class AudioManager {
-  constructor() { this.context = null; this.enabled = true; }
+  constructor({ enabled = true, volume = 0.65 } = {}) {
+    this.context = null;
+    this.enabled = enabled;
+    this.volume = Math.max(0, Math.min(1, Number(volume) || 0));
+  }
+  setEnabled(enabled) { this.enabled = Boolean(enabled); }
+  setVolume(volume) {
+    const value = Number(volume);
+    if (Number.isFinite(value)) this.volume = Math.max(0, Math.min(1, value));
+  }
   async resume() {
     if (!this.enabled) return;
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -12,7 +21,7 @@ export class AudioManager {
     const oscillator = this.context.createOscillator();
     const gain = this.context.createGain();
     oscillator.type = type; oscillator.frequency.value = frequency;
-    gain.gain.setValueAtTime(volume, this.context.currentTime);
+    gain.gain.setValueAtTime(volume * this.volume, this.context.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + duration);
     oscillator.connect(gain); gain.connect(this.context.destination);
     oscillator.start(); oscillator.stop(this.context.currentTime + duration);
