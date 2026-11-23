@@ -13,7 +13,7 @@
 - Character progression: Shin starts unlocked; Nobi unlocks after 3 distinct completed levels; Benji unlocks after 6.
 - Character selection via C / HERO control, with selection persisted in campaign progress.
 - Nobi has a full basic aerial kit: one additional mid-air jump, reduced-gravity glide while holding jump during a fall, and a short directional air dash on Special while airborne. Special on the ground activates Gadget Vision, reveals hidden collectibles and displays two expanding cyan scan waves with independent fade timing. The propeller tilts and spins faster during glide/dash.
-- Benji's Normal, Blaze, Shock and Titan forms, cycled with T / FORM. Blaze has faster movement and a forward flame strike; Shock has a stronger jump and radial pulse; Titan moves more slowly, performs a grounded stomp and takes 50% less damage.
+- Benji's Normal, Blaze, Shock and Titan forms, cycled with T / FORM. Blaze has faster movement and a forward flame strike; Shock has a stronger jump and radial pulse; Titan moves more slowly, performs a grounded stomp and takes 50% less damage. Blaze, Shock and Titan specials now trigger distinct pooled-in-place visual rings/arcs attached to Benji, with separate expansion, rotation and fade profiles; Normal retains the Star Burst projectile effect.
 - Shin Toy Star projectile and seven-shot Star Burst; fixed-capacity pooled projectile entities.
 - Five world-themed enemy archetypes: Robo Bug (patrol/contact), Clockwork Charger (telegraphed dash), Vine Sweeper (wide ground sweep), Drone Scout (higher jump-lane pulse) and Time Sentinel (fast telegraphed strike). Each has its own movement, detection, attack range/height, cooldown and warning color. Vine arms now sweep with a distinct attack motion, drone wings flap faster during attacks, the Time Sentinel core spins during telegraphs, and the Charger ring accelerates during its dash.
 - Seven authored Sunny Neighborhood stages, levels 1–7, with separate platform layouts, dusk lighting in level 3, a festival-themed level 4, riverfront park level 5, Clocktower Climb level 6 and Rooftop Relay level 7.
@@ -59,7 +59,7 @@ The production build emits a non-blocking warning because the minified JavaScrip
 - Hand-authored, individually designed level layouts for levels 8–40; the current versions are procedural variants.
 - More detailed boss-specific attack animation timing and broader music/ambient audio.
 - Remaining combat feedback polish, broader effects/audio, and three-star level ratings.
-- Further Nobi aerial polish; Benji ability balancing and visual effects.
+- Further Nobi aerial polish; Benji ability balancing and broader visual/audio polish.
 - Full achievements, settings, leaderboard, tutorial, cinematics/dialogue and final victory flow.
 - IndexedDB fallback/backup, Capacitor configuration and verified Android release.
 - Browser/device acceptance tests and mobile performance profiling.
