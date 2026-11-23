@@ -249,6 +249,8 @@ export class AdventureGame {
     this.ui.levelSelect.classList.add('hidden');
     this.ui.levelSelectButton.classList.add('hidden');
     this.ui.levelSelectBack.classList.add('hidden');
+    this.ui.tutorialButton.classList.add('hidden');
+    this.ui.achievementsButton.classList.add('hidden');
     this.ui.settingsButton.classList.add('hidden');
     this.ui.settingsPanel.classList.remove('hidden');
     this.ui.settingsBack.classList.remove('hidden');
@@ -275,6 +277,8 @@ export class AdventureGame {
     this.ui.settingsButton.classList.add('hidden');
     this.ui.settingsPanel.classList.add('hidden');
     this.ui.settingsBack.classList.add('hidden');
+    this.ui.achievementsButton.classList.add('hidden');
+    this.ui.achievementsPanel.classList.add('hidden');
     this.ui.tutorialButton.classList.add('hidden');
     this.ui.tutorialPanel.classList.add('hidden');
     this.ui.tutorialBack.classList.add('hidden');
