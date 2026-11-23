@@ -12,7 +12,7 @@
 - Procedural Shin, Nobi and Benji character models with a shared movement/animation interface.
 - Character progression: Shin starts unlocked; Nobi unlocks after 3 distinct completed levels; Benji unlocks after 6.
 - Character selection via C / HERO control, with selection persisted in campaign progress.
-- Nobi glide while holding jump during a fall; Gadget Vision reveals a hidden collectible.
+- Nobi has a full basic aerial kit: one additional mid-air jump, reduced-gravity glide while holding jump during a fall, and a short directional air dash on Special while airborne. Special on the ground still activates Gadget Vision to reveal hidden collectibles. The propeller tilts and spins faster during glide/dash.
 - Benji's Normal, Blaze, Shock and Titan forms, cycled with T / FORM. Blaze has faster movement and a forward flame strike; Shock has a stronger jump and radial pulse; Titan moves more slowly, performs a grounded stomp and takes 50% less damage.
 - Shin Toy Star projectile and seven-shot Star Burst; fixed-capacity pooled projectile entities.
 - Five world-themed enemy archetypes: Robo Bug (patrol/contact), Clockwork Charger (telegraphed dash), Vine Sweeper (wide ground sweep), Drone Scout (higher jump-lane pulse) and Time Sentinel (fast telegraphed strike). Each has its own movement, detection, attack range/height, cooldown and warning color.
@@ -38,7 +38,7 @@
 ## Automated validation
 
 Latest completed validation run:
-- **PASS:** 89 of 89 Node unit tests, including five enemy archetypes, enemy/boss visual states, five boss attack transforms, pooled impact particle behavior, shared hero punch poses, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
+- **PASS:** 94 of 94 Node unit tests, including five enemy archetypes, enemy/boss visual states, five boss attack transforms, pooled impact particle behavior, shared hero punch poses, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
 - **Verified run:** [GitHub Actions · latest validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45095576029).
@@ -52,7 +52,7 @@ The production build emits a non-blocking warning because the minified JavaScrip
 - Offline restart after installing/loading the PWA.
 - Mobile performance, draw-call/triangle budgets and sustained frame rate.
 - Capacitor Android build, APK installation and physical-device testing.
-- Full Nobi propeller flight, advanced Gadget Vision feedback and further Benji ability balancing/effects.
+- Sustained Nobi propeller flight, expanded Gadget Vision feedback and further Benji ability balancing/effects.
 
 ## Remaining implementation
 
