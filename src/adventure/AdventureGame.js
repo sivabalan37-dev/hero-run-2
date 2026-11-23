@@ -429,8 +429,7 @@ export class AdventureGame {
             this.toast('AIR DASH NOT READY');
           }
         } else {
-          const revealed = this.level.revealHidden();
-          this.hero.gadgetVision = true;
+          const revealed = this.level.triggerGadgetVision(body.x);
           this.specialTimer = 4.2;
           this.toast(revealed ? `GADGET VISION · ${revealed} SECRET REVEALED` : 'GADGET VISION · AREA SCANNED');
         }
