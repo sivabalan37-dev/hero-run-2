@@ -12,11 +12,17 @@ export function getBossHudModel(boss) {
   const name = typeof boss.bossName === 'string' && boss.bossName.trim()
     ? boss.bossName.trim()
     : DEFAULT_BOSS_NAME;
+  const attackLabel = typeof boss.attackLabel === 'string' && boss.attackLabel.trim()
+    ? boss.attackLabel.trim().toUpperCase()
+    : 'BOSS ATTACK';
+  const evadeHint = typeof boss.evadeHint === 'string' && boss.evadeHint.trim()
+    ? boss.evadeHint.trim().toUpperCase()
+    : 'MOVE OR JUMP';
 
   let statusText = '';
   if (defeated) statusText = 'DEFEATED · PORTAL OPEN';
-  else if (mode === 'telegraph') statusText = 'ATTACK INCOMING · JUMP OR MOVE!';
-  else if (mode === 'strike') statusText = 'BOSS STRIKE!';
+  else if (mode === 'telegraph') statusText = `${attackLabel} · ${evadeHint}!`;
+  else if (mode === 'strike') statusText = `${attackLabel}!`;
 
   return Object.freeze({
     name,
