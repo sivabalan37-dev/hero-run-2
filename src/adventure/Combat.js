@@ -68,7 +68,7 @@ export class ToyStarPool {
     return fired;
   }
 
-  update(dt, enemies) {
+  update(dt, enemies, onHit = null) {
     let hits = 0;
     let defeated = 0;
     for (const item of this.items) {
@@ -91,6 +91,7 @@ export class ToyStarPool {
         const dy = item.y - 0.62;
         const radius = Number.isFinite(enemy.hitRadius) ? enemy.hitRadius : 0.88;
         if (dx * dx + dy * dy > radius * radius) continue;
+        onHit?.(enemy.x, 0.62, enemy.isBoss);
         enemy.health = Math.max(0, enemy.health - item.damage);
         enemy.hurtTimer = enemy.isBoss ? 0.24 : 0.16;
         if (enemy.isBoss) enemy.group.scale.setScalar(1.65 + (enemy.health % 2) * 0.035);
