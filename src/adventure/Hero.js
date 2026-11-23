@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createBody } from './PlatformerPhysics.js';
 import { getAttackPose } from './HeroAnimation.js';
+import { getBenjiSpecialVisualState } from './BenjiSpecialEffects.js';
 
 const material = (color, roughness = 0.72, metalness = 0) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness });
@@ -294,18 +295,12 @@ export class BenjiHero extends BaseHero {
     super.update(dt, attacking, aerialState);
     if (!this.specialEffectAbility) return;
     this.specialEffectTimer += dt;
-    // Lazy import-free visual math keeps the render loop allocation-free.
-    const durations = { flame: 0.34, shock: 0.48, stomp: 0.42 };
-    const duration = durations[this.specialEffectAbility];
-    const progress = Math.min(1, this.specialEffectTimer / duration);
-    const fade = 1 - progress;
     const effect = this.specialEffects[this.specialEffectAbility];
-    const start = this.specialEffectAbility === 'flame' ? 0.55 : 0.45;
-    const growth = this.specialEffectAbility === 'flame' ? 1.05 : this.specialEffectAbility === 'shock' ? 1.8 : 2.1;
-    effect.scale.setScalar(start + progress * growth);
-    effect.material.opacity = fade * (this.specialEffectAbility === 'flame' ? 1 : 0.88);
-    effect.rotation.z = progress * (this.specialEffectAbility === 'flame' ? 1.5 : 0.4);
-    if (progress >= 1) {
+    const visual = getBenjiSpecialVisualState(this.specialEffectAbility, this.specialEffectTimer);
+    effect.scale.setScalar(visual.scale);
+    effect.material.opacity = visual.opacity;
+    effect.rotation.z = visual.rotation;
+    if (!visual.visible) {
       effect.visible = false;
       this.specialEffectAbility = null;
       this.specialEffectTimer = 0;
