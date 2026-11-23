@@ -5,6 +5,7 @@ import { SunnyNeighborhoodLevel } from './SunnyNeighborhoodLevel.js';
 import { stepBody } from './PlatformerPhysics.js';
 import { ToyStarPool } from './Combat.js';
 import { applyBenjiSpecial, getBenjiFormStats } from './BenjiAbilities.js';
+import { applyNobiAirDash } from './NobiAbilities.js';
 import {
   getUnlockedCharacters,
   loadCampaignProgress,
@@ -414,10 +415,20 @@ export class AdventureGame {
     }
     if (specialPressed && this.specialTimer <= 0) {
       if (this.hero.characterId === 'nobi') {
-        const revealed = this.level.revealHidden();
-        this.hero.gadgetVision = true;
-        this.specialTimer = 4.2;
-        this.toast(revealed ? `GADGET VISION · ${revealed} SECRET REVEALED` : 'GADGET VISION · AREA SCANNED');
+        if (!body.grounded) {
+          const dashed = applyNobiAirDash(body);
+          if (dashed) {
+            this.specialTimer = 4.2;
+            this.toast('NOBI AIR DASH!');
+          } else {
+            this.toast('AIR DASH NOT READY');
+          }
+        } else {
+          const revealed = this.level.revealHidden();
+          this.hero.gadgetVision = true;
+          this.specialTimer = 4.2;
+          this.toast(revealed ? `GADGET VISION · ${revealed} SECRET REVEALED` : 'GADGET VISION · AREA SCANNED');
+        }
       } else if (benjiForm && benjiForm !== 'normal') {
         const result = applyBenjiSpecial(benjiForm, body, this.level.enemies);
         if (!result.ready) {
@@ -489,7 +500,10 @@ export class AdventureGame {
       }
     }
 
-    this.hero.update(dt, this.attackTimer > 0);
+    this.hero.update(dt, this.attackTimer > 0, {
+      gliding: this.hero.characterId === 'nobi' && glide && body.vy < 0,
+      dashing: this.hero.characterId === 'nobi' && body.airDashTimer > 0,
+    });
     this.updateHud();
     this.input.endStep();
   }
