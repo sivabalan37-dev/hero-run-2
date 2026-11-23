@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createEnemyState, stepEnemy } from './EnemyAI.js';
 import { initializeBoss, stepBoss } from './BossAI.js';
 import { getLevelInfo, WORLDS } from './LevelCatalog.js';
+import { getLevelDesign } from './LevelDesigns.js';
 import { getEnemyVisualState, getEnemyMotionState } from './EnemyEffects.js';
 import { getGadgetVisionVisualState } from './GadgetVisionEffects.js';
 import { getBossAttackVisualState } from './BossEffects.js';
@@ -28,6 +29,7 @@ export class SunnyNeighborhoodLevel {
     this.info = getLevelInfo(this.levelNumber);
     this.worldIndex = WORLDS.findIndex(world => this.levelNumber >= world.firstLevel && this.levelNumber <= world.lastLevel);
     this.isBossLevel = this.info.isBossLevel;
+    this.design = getLevelDesign(this.levelNumber);
     this.group = new THREE.Group();
     scene.add(this.group);
     this.platforms = [];
@@ -260,12 +262,9 @@ export class SunnyNeighborhoodLevel {
       for (const [x, y] of [[5.5,1.7],[12.5,2.5],[19.5,3.2],[26.5,2.4],[33.5,3.15],[40.5,2.5],[47.5,3.2],[54,2.2]]) this.addPlatform(x,y,4,0.5);
       const rooftopMat = standard('#5f647c');
       for (const x of [-2, 12, 27, 42, 55]) mesh(new THREE.BoxGeometry(7.5,0.35,4.8), rooftopMat, x, 3.8, -7.8, this.group);
-    } else if (this.levelNumber >= 8) {
-      const count = this.isBossLevel ? 9 : 6 + (this.levelNumber % 3);
-      for (let i = 0; i < count; i++) {
-        const x = 5 + i * ((this.exitX - 10) / Math.max(1, count - 1));
-        const height = 1.5 + ((i + this.levelNumber) % 4) * 0.42;
-        this.addPlatform(x, height, 3.2 + (i % 2) * 0.5, 0.5);
+    } else if (this.design) {
+      for (const platform of this.design.platforms) {
+        this.addPlatform(this.exitX * platform.xRatio, platform.height, platform.width, 0.5);
       }
     }
     const grass = standard(this.worldIndex === 0 ? '#75c95c' : ['#75c95c','#68b8a0','#6f9d52','#4166a8','#7d638d'][this.worldIndex]);
@@ -311,13 +310,15 @@ export class SunnyNeighborhoodLevel {
         : this.levelNumber === 3
           ? [[1, 1.4], [3.2, 1.4], [6.4, 2.7], [9.7, 1.4], [12.6, 3.5], [16.5, 1.4], [20.2, 2.8], [24, 1.4], [27.8, 3.75], [31.5, 1.4], [35.2, 3.0], [40.5, 2.6]]
           : [[1, 1.4], [2, 1.5], [3, 1.4], [5.5, 2.8], [11.4, 3.5], [15, 1.45], [20, 2.75], [25, 1.45], [28.2, 3.0], [33, 1.45]];
-    if (this.levelNumber >= 8) {
+    if (this.design) {
       route.length = 0;
-      const count = 16 + (this.levelNumber % 4);
-      for (let i = 0; i < count; i++) {
-        const x = 1.5 + i * ((this.exitX - 6) / (count - 1));
-        const y = i % 3 === 1 ? 2.65 + ((i + this.levelNumber) % 2) * 0.45 : 1.4;
-        route.push([x, y]);
+      for (let i = 0; i < this.design.coinRatios.length; i++) {
+        const ratio = this.design.coinRatios[i];
+        const platform = this.design.platforms.reduce((nearest, candidate) =>
+          Math.abs(candidate.xRatio - ratio) < Math.abs(nearest.xRatio - ratio) ? candidate : nearest,
+          this.design.platforms[0]);
+        const y = i % 3 === 1 ? Math.max(2.45, platform.height + 0.65) : 1.4;
+        route.push([this.exitX * ratio, y]);
       }
     }
     for (const [x, y] of route) this.addCollectible('coin', x, y);
@@ -334,8 +335,8 @@ export class SunnyNeighborhoodLevel {
     const worldEnemyTypes = ['robo-bug', 'clockwork-charger', 'vine-sweeper', 'drone-scout', 'time-sentinel'];
     const enemyType = worldEnemyTypes[this.worldIndex] || 'robo-bug';
     const enemySpawns = this.levelNumber === 7 ? [9.5,16.8,23.8,30.8,37.8,44.8,50.5,55] : this.levelNumber === 6 ? [10.5, 18.5, 25.8, 33.8, 40.7, 46.8, 50.5] : this.levelNumber === 5 ? [9.8, 17.2, 25.8, 34.8, 41.2, 46.5] : this.levelNumber === 4 ? [10.5, 19.2, 28.3, 36.2, 42.1] : this.levelNumber === 2 ? [13.5, 29.5, 38.5] : this.levelNumber === 3 ? [12.8, 23.7, 33.8, 40.5] : [16.2, 34.2];
-    const activeSpawns = this.levelNumber >= 8
-      ? (this.isBossLevel ? [this.exitX - 5.5] : Array.from({ length: 5 + (this.levelNumber % 4) }, (_, i) => 7 + i * ((this.exitX - 14) / (4 + (this.levelNumber % 4)))))
+    const activeSpawns = this.design
+      ? (this.isBossLevel ? [this.exitX - 5.5] : this.design.enemyRatios.map(ratio => this.exitX * ratio))
       : enemySpawns;
     for (const startX of activeSpawns) {
       const group = new THREE.Group();
