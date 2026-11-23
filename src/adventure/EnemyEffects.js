@@ -90,3 +90,19 @@ export function getEnemyVisualState(enemy, elapsed = 0) {
     ringColor,
   };
 }
+
+
+/** Distinct, deterministic secondary motion for each regular enemy archetype. */
+export function getEnemyMotionState(enemy, elapsed = 0) {
+  const t = Number.isFinite(elapsed) ? elapsed : 0;
+  const attacking = enemy.state === 'attack' || enemy.state === 'charge' || enemy.state === 'telegraph';
+  const active = attacking ? 1 : 0.42;
+  const type = enemy.enemyType;
+  return {
+    vineSwing: type === 'vine-sweeper' ? Math.sin(t * (attacking ? 18 : 5)) * (attacking ? 0.95 : 0.22) : 0,
+    wingFlap: type === 'drone-scout' ? Math.sin(t * (attacking ? 24 : 9)) * (attacking ? 0.72 : 0.28) : 0,
+    coreSpin: type === 'time-sentinel' ? t * (attacking ? 9 : 2.8) : 0,
+    chargerSpin: type === 'clockwork-charger' ? t * (enemy.state === 'charge' ? 18 : 3.2) : 0,
+    intensity: active,
+  };
+}
