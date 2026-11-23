@@ -23,7 +23,7 @@ test('boss telegraphs before striking and then enters recovery', () => {
   stepBoss(boss, { x: 1, y: 0 }, 1 / 60);
   assert.equal(boss.bossMode, 'telegraph');
   assert.equal(boss.attackPulse, false);
-  for (let i = 0; i < 42; i++) stepBoss(boss, { x: 1, y: 0 }, 1 / 60);
+  for (let i = 0; i < 43; i++) stepBoss(boss, { x: 1, y: 0 }, 1 / 60);
   assert.equal(boss.bossMode, 'telegraph');
   stepBoss(boss, { x: 1, y: 0 }, 1 / 60);
   assert.equal(boss.bossMode, 'strike');
