@@ -322,12 +322,15 @@ export class AdventureGame {
     item.group.visible = false;
     if (item.type === 'coin') {
       this.coins += 1;
+      this.audio.coin();
       this.toast('+1 COIN');
     } else if (item.type === 'heart') {
       this.hero.health = Math.min(100, this.hero.health + 25);
+      this.audio.power();
       this.toast('HEALTH RESTORED');
     } else {
       this.shards += 1;
+      this.audio.power();
       this.toast('TIME SHARD FOUND!');
     }
     this.updateHud();
@@ -340,6 +343,7 @@ export class AdventureGame {
       saveCampaignProgress(this.progress);
     }
     this.state = 'completed';
+    this.audio.levelComplete();
     this.input.clear();
     const nextLevel = this.progress.currentLevel;
     const nextInfo = nextLevel <= 40 ? getLevelInfo(nextLevel) : null;
@@ -373,6 +377,7 @@ export class AdventureGame {
       : source ? `${(source.enemyName || 'ENEMY').toUpperCase()} HIT!` : 'FALL DAMAGE!');
     this.updateHud();
     if (this.hero.health <= 0) {
+      this.audio.gameOver();
       this.state = 'gameover';
       this.input.clear();
       this.showOverlay('TRY AGAIN', 'Checkpoint ready', `${this.hero.characterId[0].toUpperCase() + this.hero.characterId.slice(1)} ran out of health. Restart from the most recently activated checkpoint.`, 'RESPAWN');
@@ -391,6 +396,7 @@ export class AdventureGame {
     if (transformPressed) {
       if (this.hero.characterId === 'benji') {
         const form = this.hero.cycleForm();
+        this.audio.formShift();
         this.toast(`BENJI: ${form.toUpperCase()} FORM`);
       }
     }
@@ -424,12 +430,14 @@ export class AdventureGame {
           const dashed = applyNobiAirDash(body);
           if (dashed) {
             this.specialTimer = 4.2;
+            this.audio.airDash();
             this.toast('NOBI AIR DASH!');
           } else {
             this.toast('AIR DASH NOT READY');
           }
         } else {
           const revealed = this.level.triggerGadgetVision(body.x);
+          this.audio.gadgetScan();
           this.specialTimer = 4.2;
           this.toast(revealed ? `GADGET VISION · ${revealed} SECRET REVEALED` : 'GADGET VISION · AREA SCANNED');
         }
@@ -439,6 +447,7 @@ export class AdventureGame {
           this.toast('TITAN STOMP REQUIRES THE GROUND');
         } else {
           this.specialTimer = getBenjiFormStats(benjiForm).specialCooldown;
+          this.audio.power();
           if (result.ready && result.ability !== 'star-burst') this.hero.triggerSpecialEffect(result.ability);
           if (result.defeated > 0) this.coins += result.defeated * 2;
           const labels = { flame: 'BLAZE STRIKE', shock: 'SHOCK PULSE', stomp: 'TITAN STOMP' };
