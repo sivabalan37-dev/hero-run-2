@@ -25,7 +25,10 @@ function addSphere(parent, radius, position, mat, segments = 16) {
 class BaseHero {
   constructor(scene, x = -5) {
     this.scene = scene;
+    this.maxAirJumps = 0;
     this.body = createBody(x, 0);
+    this.body.maxAirJumps = this.maxAirJumps;
+    this.body.airJumpsRemaining = this.maxAirJumps;
     this.health = 100;
     this.invulnerable = 0;
     this.attackCooldown = 0;
@@ -42,6 +45,8 @@ class BaseHero {
 
   reset(x = -5) {
     this.body = createBody(x, 0);
+    this.body.maxAirJumps = this.maxAirJumps;
+    this.body.airJumpsRemaining = this.maxAirJumps;
     this.health = 100;
     this.invulnerable = 0;
     this.attackCooldown = 0;
@@ -50,7 +55,7 @@ class BaseHero {
     this.syncVisual();
   }
 
-  update(dt, attacking = false) {
+  update(dt, attacking = false, aerialState = {}) {
     this.invulnerable = Math.max(0, this.invulnerable - dt);
     this.attackCooldown = Math.max(0, this.attackCooldown - dt);
     const moving = Math.abs(this.body.vx) > 0.3 && this.body.grounded;
@@ -63,7 +68,13 @@ class BaseHero {
     if (this.leftArm) this.leftArm.rotation.z = -swing * 0.55 + attackPose.leftArmRotation;
     if (this.rightArm) this.rightArm.rotation.z = swing * 0.55 + attackPose.rightArmRotation;
     this.model.rotation.z = -attackPose.bodyLean;
-    if (this.rotor) this.rotor.rotation.y += dt * (moving ? 15 : 5);
+    if (this.rotor) {
+      this.rotor.rotation.y += dt * (aerialState.dashing ? 30 : moving ? 15 : 5);
+      this.rotor.rotation.x += ((aerialState.gliding ? 0.32 : 0) - this.rotor.rotation.x) * Math.min(1, dt * 8);
+      this.rotor.scale.setScalar(aerialState.gliding ? 1.12 : 1);
+    }
+    if (aerialState.dashing) this.model.rotation.z -= 0.16;
+    else if (aerialState.gliding) this.model.rotation.z -= 0.055;
     this.model.scale.set(this.body.facing * this.visualScale, this.visualScale, this.visualScale);
     this.model.visible = this.invulnerable <= 0 || Math.floor(this.invulnerable * 14) % 2 === 0;
     this.syncVisual();
@@ -146,6 +157,9 @@ export class NobiHero extends BaseHero {
   constructor(scene, x = -5) {
     super(scene, x);
     this.characterId = 'nobi';
+    this.maxAirJumps = 1;
+    this.body.maxAirJumps = this.maxAirJumps;
+    this.body.airJumpsRemaining = this.maxAirJumps;
     this.canGlide = true;
     this.gadgetVision = false;
   }
