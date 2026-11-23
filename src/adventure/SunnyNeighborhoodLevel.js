@@ -340,6 +340,10 @@ export class SunnyNeighborhoodLevel {
       const group = new THREE.Group();
       const bossNames = { 8: 'Neighborhood Guardian', 16: 'Mechanical Headmaster', 24: 'Toy Forest Guardian', 32: 'Supreme Machine', 40: 'Ultimate Time Guardian' };
       const isBoss = this.isBossLevel;
+      const vineArms = [];
+      const droneWings = [];
+      let sentinelCore = null;
+      let chargerRing = null;
       const bodyMat = isBoss ? standard(this.worldIndex === 0 ? '#d95c56' : this.worldIndex === 1 ? '#5e6f96' : this.worldIndex === 2 ? '#6d9a52' : this.worldIndex === 3 ? '#6c59c4' : '#b58ad5', 0.38, 0.35) : enemyMat;
       mesh(new THREE.SphereGeometry(isBoss ? 1.15 : enemyType === 'drone-scout' ? 0.48 : 0.55, 16, 12), bodyMat, 0, isBoss ? 1.1 : enemyType === 'drone-scout' ? 1.05 : 0.62, 0, group);
       if (isBoss) {
@@ -370,10 +374,6 @@ export class SunnyNeighborhoodLevel {
         sentinelCore = mesh(new THREE.OctahedronGeometry(0.2, 0), glow('#f4d6ff'), 0, 1.18, 0.1, group, false);
       }
       const indicator = mesh(new THREE.BoxGeometry(0.72, 0.15, 0.16), glow('#ff766b'), 0, 0.72, 0.44, group, false);
-      const vineArms = [];
-      const droneWings = [];
-      let sentinelCore = null;
-      let chargerRing = null;
       let bossAttackEffect = null;
       if (isBoss) {
         const attackType = this.info.boss === 'Neighborhood Guardian' ? 'ground-slam'
