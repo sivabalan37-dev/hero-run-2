@@ -36,6 +36,7 @@ export function stepBoss(boss, hero, dt) {
   const config = getBossPhase(boss);
   boss.phase = config.phase;
   boss.attackCooldown = Math.max(0, boss.attackCooldown - dt);
+  boss.hurtTimer = Math.max(0, (boss.hurtTimer || 0) - dt);
   boss.telegraphTimer = Math.max(0, boss.telegraphTimer - dt);
   boss.recoverTimer = Math.max(0, boss.recoverTimer - dt);
   const dx = hero.x - boss.x;
