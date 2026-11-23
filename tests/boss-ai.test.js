@@ -54,3 +54,11 @@ test('defeated boss cannot attack again', () => {
   assert.equal(boss.bossMode, 'defeated');
   assert.equal(boss.attackPulse, false);
 });
+
+test('boss hit-stun timer recovers so later projectiles can hit', () => {
+  const boss = makeBoss({ hurtTimer: 0.24 });
+  stepBoss(boss, { x: 4, y: 0 }, 0.05);
+  assert.ok(boss.hurtTimer < 0.24);
+  for (let i = 0; i < 5; i++) stepBoss(boss, { x: 4, y: 0 }, 0.05);
+  assert.equal(boss.hurtTimer, 0);
+});
