@@ -259,7 +259,7 @@ export class AdventureGame {
       : 'linear-gradient(90deg,#42e49a,#f6d95a)';
     this.ui.transform.classList.toggle('hidden', this.hero.characterId !== 'benji');
     this.ui.special.textContent = this.hero.characterId === 'nobi'
-      ? 'GADGET'
+      ? 'GADGET / DASH'
       : benjiForm && benjiForm !== 'normal' ? getBenjiFormStats(benjiForm).specialLabel : 'BURST';
     this.updateBossHud();
   }
@@ -300,6 +300,11 @@ export class AdventureGame {
     const invulnerable = oldHero.invulnerable;
     this.hero = createHero(this.scene, nextId, position.x);
     this.hero.body = position;
+    this.hero.body.maxAirJumps = this.hero.maxAirJumps || 0;
+    this.hero.body.airJumpsRemaining = this.hero.body.grounded
+      ? this.hero.body.maxAirJumps
+      : Math.min(this.hero.body.maxAirJumps, position.airJumpsRemaining ?? this.hero.body.maxAirJumps);
+    this.hero.body.airDashTimer = 0;
     this.hero.health = health;
     this.hero.invulnerable = invulnerable;
     this.hero.syncVisual();
