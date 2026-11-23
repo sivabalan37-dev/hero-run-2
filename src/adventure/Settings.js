@@ -19,19 +19,21 @@ export function createSettingsState(value = {}) {
   };
 }
 
-export function loadSettings(storage = globalThis.localStorage) {
+export function loadSettings(storage) {
   try {
-    const raw = storage?.getItem(STORAGE_KEY);
+    const target = storage ?? globalThis.localStorage;
+    const raw = target?.getItem(STORAGE_KEY);
     return raw ? createSettingsState(JSON.parse(raw)) : createSettingsState();
   } catch {
     return createSettingsState();
   }
 }
 
-export function saveSettings(value, storage = globalThis.localStorage) {
+export function saveSettings(value, storage) {
   try {
+    const target = storage ?? globalThis.localStorage;
     const settings = createSettingsState(value);
-    storage?.setItem(STORAGE_KEY, JSON.stringify(settings));
+    target?.setItem(STORAGE_KEY, JSON.stringify(settings));
     return true;
   } catch {
     return false;
