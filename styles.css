@@ -301,3 +301,60 @@ h1 em { color: #ffd45a; font-style: normal; }
 }
 .setting-range { width: 100%; accent-color: #75dfff; }
 .settings-hint { margin: 0 !important; color: #a9bfd5 !important; font-size: 10px !important; line-height: 1.45 !important; }
+
+
+.tutorial-panel {
+  display: grid;
+  gap: 9px;
+  width: 100%;
+  max-height: min(55vh, 440px);
+  margin-top: 12px;
+  padding: 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid rgba(142,224,255,.25);
+  border-radius: 14px;
+  background: rgba(255,255,255,.055);
+  text-align: left;
+  touch-action: pan-y;
+}
+.tutorial-panel h2 {
+  margin: 5px 0 0;
+  color: #8ee0ff;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .14em;
+}
+.tutorial-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+.tutorial-grid p {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid rgba(142,224,255,.16);
+  border-radius: 9px;
+  background: rgba(0,0,0,.12);
+  font-size: 10px;
+}
+.tutorial-grid strong { color: #ffd875; }
+.tutorial-grid span { color: #e4f2ff; }
+.tutorial-panel ul {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 18px;
+  color: #d0deed;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.tutorial-panel li strong { color: #fff0bf; }
+.tutorial-panel .tutorial-touch-note {
+  margin: 0;
+  color: #a9bfd5;
+  font-size: 10px;
+  line-height: 1.5;
+}
