@@ -90,3 +90,32 @@ test('character movement tuning changes speed and jump strength safely', () => {
   assert.ok(titanJump.vy < 10.8);
   assert.ok(titanJump.vy > 0);
 });
+
+test('Nobi can perform one additional jump while airborne', () => {
+  const body = createBody(0, 4);
+  body.maxAirJumps = 1;
+  body.airJumpsRemaining = 1;
+  body.vy = -2;
+  stepBody(body, { move: 0, jumpPressed: true }, [], 1 / 60);
+  assert.ok(body.vy > 0, 'air jump should launch upward');
+  assert.equal(body.airJumpsRemaining, 0);
+});
+
+test('air jumps reset after landing and a new grounded jump', () => {
+  const body = createBody(0, 0);
+  body.maxAirJumps = 1;
+  body.airJumpsRemaining = 0;
+  body.grounded = true;
+  stepBody(body, { move: 0, jumpPressed: true }, floor, 1 / 60);
+  assert.equal(body.airJumpsRemaining, 1);
+});
+
+test('air dash holds its burst speed for the configured short window', () => {
+  const body = createBody(0, 3);
+  body.facing = 1;
+  body.airDashTimer = 0.18;
+  body.airDashSpeed = 12;
+  stepBody(body, { move: 0 }, [], 1 / 60);
+  assert.equal(body.vx, 12);
+  assert.ok(body.airDashTimer < 0.18 && body.airDashTimer > 0);
+});
