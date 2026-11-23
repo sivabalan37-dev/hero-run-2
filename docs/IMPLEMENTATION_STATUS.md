@@ -3,7 +3,7 @@
 **Project:** HERO RUN: TIME-TRAVEL ADVENTURE  
 **Engine:** Three.js 0.187.0  
 **Development branch:** `feature/time-travel-adventure-threejs`  
-**Updated:** 2026-11-22
+**Updated:** 2026-11-23
 
 ## Implemented in this branch
 
@@ -19,6 +19,8 @@
 - Seven authored Sunny Neighborhood stages, levels 1–7, with separate platform layouts, dusk lighting in level 3, a festival-themed level 4, riverfront park level 5, Clocktower Climb level 6 and Rooftop Relay level 7.
 - Levels 8–40 are now playable procedural stages, distributed across School Playground, Forest of Forgotten Toys, Alien Tech City and Time-Travel Castle. Each receives a world-specific palette/landmark set, extended ground route, generated raised platforms, coin route, heart, hidden coin, Time Shard, checkpoint, enemies and exit.
 - Five boss-gated stages are implemented at levels 8, 16, 24, 32 and 40. Each boss has a larger visual model, 12 health, an enlarged projectile hitbox and blocks the exit until defeated.
+- Three-phase boss AI is connected to all five encounters. Bosses approach, telegraph a close-range strike, strike and recover; phase changes increase movement speed and attack cadence as health falls. Bosses recover from projectile hit-stun so repeated hits can register.
+- Responsive boss encounter HUD shows the boss name, current phase and health bar. It warns during telegraph/strike windows and reports when the boss is defeated and the portal is open.
 - Full 40-level campaign catalog is playable in the browser game. Levels 1–7 have authored stage layouts; levels 8–40 currently use procedural layouts and world themes. Five boss gates are active at the end of each world.
 - Versioned campaign save for completed levels, selected character and total coins; malformed save data is rejected before writing.
 - Per-level checkpoint save and safe fallback if storage is unavailable/corrupt.
@@ -29,12 +31,12 @@
 ## Automated validation
 
 Latest completed validation run:
-- **PASS:** 47 of 47 Node unit tests, including campaign catalog, all 40 stage constructors, all five boss gates, Benji form abilities, character-specific physics tuning and progression.
+- **PASS:** 60 of 60 Node unit tests, including the campaign catalog, all 40 stage constructors, all five boss gates, three-phase boss AI and boss HUD state tests.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
-- **Verified run:** [GitHub Actions · run 45044219040](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45044219040).
+- **Verified run:** [GitHub Actions · run 45093308451](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45093308451).
 
-The production build may emit a non-blocking bundle-size warning.
+The production build emits a non-blocking warning because the minified JavaScript bundle exceeds Vite's 500 kB advisory threshold.
 
 ## Not yet tested
 
@@ -48,7 +50,7 @@ The production build may emit a non-blocking bundle-size warning.
 ## Remaining implementation
 
 - Hand-authored, individually designed level layouts for levels 8–40; the current versions are procedural variants.
-- Remaining enemy families (the current generated campaign uses Robo Bugs); multi-phase boss patterns and boss-specific attacks.
+- Remaining enemy families (the current generated campaign uses Robo Bugs); unique attack patterns and tells for each of the five bosses. The current bosses share one close-range telegraphed strike.
 - Full combat feedback, effects/audio, checkpoints and three-star level ratings.
 - Nobi's complete aerial kit; Benji ability balancing and visual effects.
 - Full achievements, settings, leaderboard, tutorial, cinematics/dialogue and final victory flow.
