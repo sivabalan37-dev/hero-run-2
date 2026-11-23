@@ -118,3 +118,80 @@ h1 em { color: #ffd45a; font-style: normal; }
   .controls-note { margin-top: 8px; }
   .touch-cluster button { min-height: 44px; min-width: 46px; }
 }
+
+
+/* Boss encounter HUD */
+.boss-hud {
+  position: absolute;
+  z-index: 3;
+  top: max(76px, calc(env(safe-area-inset-top) + 64px));
+  left: 50%;
+  width: min(380px, calc(100vw - 32px));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.boss-card {
+  padding: 10px 14px 9px;
+  border: 1px solid rgba(255, 211, 126, .58);
+  border-radius: 15px;
+  background: linear-gradient(145deg, rgba(38, 25, 39, .94), rgba(13, 24, 43, .91));
+  box-shadow: 0 12px 30px rgba(7, 14, 30, .34), inset 0 1px rgba(255,255,255,.13);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.boss-card.warning {
+  border-color: rgba(255, 106, 104, .94);
+  box-shadow: 0 0 0 2px rgba(255, 83, 90, .16), 0 12px 30px rgba(7, 14, 30, .4);
+}
+.boss-heading, .boss-health-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #c9d8ea;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+.boss-eyebrow { color: #ffd47b; }
+.boss-heading strong { color: #8ee0ff; }
+.boss-name {
+  margin: 4px 0 7px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 950;
+  letter-spacing: .02em;
+  text-shadow: 0 2px 9px rgba(0,0,0,.35);
+}
+.boss-health-track {
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.17);
+  border-radius: 99px;
+  background: rgba(255,255,255,.15);
+}
+#boss-health-fill {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff5367, #ffad59 62%, #ffe17b);
+  box-shadow: 0 0 12px rgba(255, 94, 95, .36);
+  transition: width .12s linear;
+}
+.boss-health-row { margin-top: 5px; font-size: 8px; color: #a9bfd5; }
+.boss-health-row strong { color: #fff; font-size: 10px; letter-spacing: .04em; }
+.boss-warning {
+  margin: 7px 0 0;
+  color: #ff9b8b;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .08em;
+}
+.boss-warning.hidden { display: none; }
+.boss-warning.defeated { color: #88efc3; }
+@media (max-width: 620px) {
+  .boss-hud { top: max(66px, calc(env(safe-area-inset-top) + 58px)); width: min(340px, calc(100vw - 22px)); }
+  .boss-card { padding: 8px 11px 7px; border-radius: 12px; }
+  .boss-name { font-size: 12px; }
+}
