@@ -21,6 +21,28 @@ export class AudioManager {
   hit() { this.tone(150, 0.16, 'sawtooth', 0.045); }
   jump() { this.tone(380, 0.11, 'sine'); }
   power() { this.tone(540, 0.1, 'triangle'); setTimeout(() => this.tone(760, 0.13, 'triangle'), 80); }
+  formShift() {
+    this.tone(420, 0.09, 'sine', 0.04);
+    setTimeout(() => this.tone(620, 0.11, 'triangle', 0.045), 65);
+    setTimeout(() => this.tone(880, 0.16, 'triangle', 0.04), 130);
+  }
+  gadgetScan() {
+    this.tone(680, 0.12, 'sine', 0.03);
+    setTimeout(() => this.tone(920, 0.18, 'sine', 0.035), 100);
+  }
+  airDash() {
+    this.tone(260, 0.07, 'sawtooth', 0.025);
+    setTimeout(() => this.tone(720, 0.12, 'triangle', 0.04), 45);
+  }
+  levelComplete() {
+    [523, 659, 784, 1046].forEach((note, index) => {
+      setTimeout(() => this.tone(note, 0.2, 'triangle', 0.045), index * 115);
+    });
+  }
+  gameOver() {
+    this.tone(330, 0.18, 'sine', 0.04);
+    setTimeout(() => this.tone(247, 0.24, 'sine', 0.035), 150);
+  }
   bossWarning(attackType) {
     const notes = {
       'ground-slam': 220,
