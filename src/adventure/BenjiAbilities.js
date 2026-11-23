@@ -1,3 +1,5 @@
+import { applyEnemyHit } from './EnemyHitReaction.js';
+
 export const BENJI_FORM_CONFIG = Object.freeze({
   normal: Object.freeze({
     movement: Object.freeze({ moveSpeed: 7.2, acceleration: 42, jumpSpeed: 10.8 }),
@@ -34,25 +36,13 @@ export function getBenjiFormStats(form) {
 }
 
 function damageEnemy(enemy, damage, knockback = 0, originX = 0) {
-  if (!enemy?.alive || enemy.hurtTimer > 0) return { hit: false, defeated: false };
-
-  enemy.health = Math.max(0, enemy.health - damage);
-  enemy.hurtTimer = 0.32;
-  if (knockback > 0 && Number.isFinite(enemy.x)) {
-    const direction = Math.sign(enemy.x - originX) || 1;
-    const minX = Number.isFinite(enemy.minX) ? enemy.minX : enemy.x - 2;
-    const maxX = Number.isFinite(enemy.maxX) ? enemy.maxX : enemy.x + 2;
-    enemy.x = Math.max(minX, Math.min(maxX, enemy.x + direction * knockback));
-  }
-
-  const defeated = enemy.health <= 0;
-  if (defeated) {
-    enemy.alive = false;
-    enemy.state = 'dead';
-    enemy.attackPulse = false;
-    if (enemy.group) enemy.group.visible = false;
-  }
-  return { hit: true, defeated };
+  const direction = Math.sign(enemy?.x - originX) || 1;
+  return applyEnemyHit(enemy, {
+    damage,
+    knockback: knockback * 4,
+    direction,
+    stunDuration: enemy?.isBoss ? 0.28 : 0.24,
+  });
 }
 
 /**
