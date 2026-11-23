@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyEnemyHit } from './EnemyHitReaction.js';
 
 const MAX_PROJECTILES = 12;
 function createStarGeometry() {
@@ -91,17 +92,16 @@ export class ToyStarPool {
         const dy = item.y - 0.62;
         const radius = Number.isFinite(enemy.hitRadius) ? enemy.hitRadius : 0.88;
         if (dx * dx + dy * dy > radius * radius) continue;
+        const hit = applyEnemyHit(enemy, {
+          damage: item.damage,
+          knockback: enemy.isBoss ? 2.2 : 3.2,
+          direction: Math.sign(item.vx),
+          stunDuration: enemy.isBoss ? 0.24 : 0.2,
+        });
+        if (!hit.hit) continue;
         onHit?.(enemy.x, 0.62, enemy.isBoss);
-        enemy.health = Math.max(0, enemy.health - item.damage);
-        enemy.hurtTimer = enemy.isBoss ? 0.24 : 0.16;
-        if (enemy.isBoss) enemy.group.scale.setScalar(1.65 + (enemy.health % 2) * 0.035);
         hits++;
-        if (enemy.health <= 0) {
-          enemy.alive = false;
-          enemy.state = 'dead';
-          enemy.group.visible = false;
-          defeated++;
-        }
+        if (hit.defeated) defeated++;
         this.deactivate(item);
         break;
       }
