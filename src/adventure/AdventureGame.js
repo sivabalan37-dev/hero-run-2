@@ -14,6 +14,7 @@ import {
 } from './CampaignProgress.js';
 import { getLevelInfo, PLAYABLE_LEVELS } from './LevelCatalog.js';
 import { getBossHudModel } from './BossHUD.js';
+import { AudioManager } from '../game/Audio.js';
 
 const FIXED_STEP = 1 / 60;
 const CHECKPOINT_KEY = 'hero-run-time-travel-save-v1';
@@ -53,6 +54,8 @@ export class AdventureGame {
     this.checkpointX = readCheckpoint(this.levelNumber);
     this.attackTimer = 0;
     this.specialTimer = 0;
+    this.audio = new AudioManager();
+    this.bossModes = new Map();
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.OrthographicCamera(-12, 12, 7, -7, 0.1, 140);
@@ -183,6 +186,7 @@ export class AdventureGame {
   }
 
   start() {
+    this.audio.resume();
     if (this.state === 'completed') {
       this.levelNumber = Math.min(this.progress.currentLevel, Math.max(...PLAYABLE_LEVELS));
       this.checkpointX = readCheckpoint(this.levelNumber);
@@ -201,6 +205,7 @@ export class AdventureGame {
 
   resetLevel() {
     this.level.destroy();
+    this.bossModes.clear();
     this.level = this.createLevel(this.levelNumber);
     this.hero.reset(this.checkpointX);
     this.coins = 0;
@@ -353,6 +358,7 @@ export class AdventureGame {
     const damageMultiplier = benjiForm ? getBenjiFormStats(benjiForm).damageMultiplier : 1;
     this.hero.health = Math.max(0, this.hero.health - Math.round(25 * damageMultiplier));
     this.hero.invulnerable = 1.1;
+    this.audio.hit();
     this.toast(source?.isBoss
       ? `${source.bossName.toUpperCase()} ATTACK!`
       : source ? `${(source.enemyName || 'ENEMY').toUpperCase()} HIT!` : 'FALL DAMAGE!');
@@ -386,6 +392,15 @@ export class AdventureGame {
     const glide = this.hero.characterId === 'nobi' && !body.grounded && this.input.isDown('jump');
     stepBody(body, { move, jumpPressed, glide }, this.level.platforms, dt, { minX: -9, maxX: this.level.exitX + 2 }, movementTuning);
     this.level.update(dt, body);
+    for (const enemy of this.level.enemies) {
+      if (!enemy.isBoss) continue;
+      const previousMode = this.bossModes.get(enemy.bossName);
+      if (enemy.bossMode === 'telegraph' && previousMode !== 'telegraph') {
+        this.audio.bossWarning(enemy.attackType);
+      }
+      if (enemy.attackPulse) this.audio.bossAttack(enemy.attackType);
+      this.bossModes.set(enemy.bossName, enemy.bossMode);
+    }
     this.attackTimer = Math.max(0, this.attackTimer - dt);
     this.specialTimer = Math.max(0, this.specialTimer - dt);
 
