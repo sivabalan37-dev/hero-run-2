@@ -18,6 +18,7 @@ import { getLevelInfo, PLAYABLE_LEVELS, WORLDS } from './LevelCatalog.js';
 import { getBossHudModel } from './BossHUD.js';
 import { AudioManager } from '../game/Audio.js';
 import { ImpactParticlePool } from './ImpactParticles.js';
+import { loadSettings, saveSettings } from './Settings.js';
 
 const FIXED_STEP = 1 / 60;
 const CHECKPOINT_KEY = 'hero-run-time-travel-save-v1';
@@ -57,7 +58,8 @@ export class AdventureGame {
     this.checkpointX = readCheckpoint(this.levelNumber);
     this.attackTimer = 0;
     this.specialTimer = 0;
-    this.audio = new AudioManager();
+    this.settings = loadSettings();
+    this.audio = new AudioManager({ enabled: this.settings.soundEnabled, volume: this.settings.volume });
     this.bossModes = new Map();
 
     this.scene = new THREE.Scene();
@@ -79,7 +81,7 @@ export class AdventureGame {
     this.renderer.toneMappingExposure = 1.12;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.applyGraphicsSettings();
     this.renderer.setSize(mount.clientWidth || window.innerWidth, mount.clientHeight || window.innerHeight, false);
     mount.appendChild(this.renderer.domElement);
 
@@ -99,6 +101,13 @@ export class AdventureGame {
       levelSelectButton: document.querySelector('#level-select-button'),
       levelSelect: document.querySelector('#level-select'),
       levelSelectBack: document.querySelector('#level-select-back'),
+      settingsButton: document.querySelector('#settings-button'),
+      settingsPanel: document.querySelector('#settings-panel'),
+      settingsBack: document.querySelector('#settings-back'),
+      soundEnabled: document.querySelector('#sound-enabled'),
+      soundVolume: document.querySelector('#sound-volume'),
+      soundVolumeValue: document.querySelector('#sound-volume-value'),
+      graphicsQuality: document.querySelector('#graphics-quality'),
       pause: document.querySelector('#pause-button'),
       heroSwitch: document.querySelector('#hero-switch'),
       health: document.querySelector('#health-value'),
@@ -137,9 +146,20 @@ export class AdventureGame {
     this.onHeroSwitch = () => this.switchCharacter();
     this.onOpenLevelSelect = () => this.openLevelSelection();
     this.onCloseLevelSelect = () => this.closeLevelSelection();
+    this.onOpenSettings = () => this.openSettings();
+    this.onCloseSettings = () => this.closeSettings();
+    this.onSoundEnabledChange = () => this.updateSettings({ soundEnabled: this.ui.soundEnabled.checked });
+    this.onSoundVolumeChange = () => this.updateSettings({ volume: Number(this.ui.soundVolume.value) });
+    this.onGraphicsQualityChange = () => this.updateSettings({ graphicsQuality: this.ui.graphicsQuality.value });
     this.ui.start.addEventListener('click', this.onStart);
     this.ui.levelSelectButton.addEventListener('click', this.onOpenLevelSelect);
     this.ui.levelSelectBack.addEventListener('click', this.onCloseLevelSelect);
+    this.ui.settingsButton.addEventListener('click', this.onOpenSettings);
+    this.ui.settingsBack.addEventListener('click', this.onCloseSettings);
+    this.ui.soundEnabled.addEventListener('change', this.onSoundEnabledChange);
+    this.ui.soundVolume.addEventListener('input', this.onSoundVolumeChange);
+    this.ui.graphicsQuality.addEventListener('change', this.onGraphicsQualityChange);
+    this.syncSettingsControls();
     this.ui.pause.addEventListener('click', this.onPause);
     this.ui.heroSwitch.addEventListener('click', this.onHeroSwitch);
     window.addEventListener('resize', this.onResize);
@@ -175,7 +195,56 @@ export class AdventureGame {
     this.camera.bottom = -viewHeight / 2;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.setPixelRatio(this.getPixelRatio());
+  }
+
+  getPixelRatio() {
+    const caps = { low: 1, medium: 1.5, high: 2 };
+    return Math.min(window.devicePixelRatio || 1, caps[this.settings.graphicsQuality] || 1.5);
+  }
+
+  applyGraphicsSettings() {
+    const quality = this.settings.graphicsQuality;
+    this.renderer.shadowMap.enabled = quality !== 'low';
+    this.renderer.setPixelRatio(this.getPixelRatio());
+  }
+
+  syncSettingsControls() {
+    this.ui.soundEnabled.checked = this.settings.soundEnabled;
+    this.ui.soundVolume.value = String(this.settings.volume);
+    this.ui.soundVolumeValue.textContent = `${Math.round(this.settings.volume * 100)}%`;
+    this.ui.graphicsQuality.value = this.settings.graphicsQuality;
+  }
+
+  updateSettings(changes) {
+    this.settings = { ...this.settings, ...changes };
+    saveSettings(this.settings);
+    this.audio.setEnabled(this.settings.soundEnabled);
+    this.audio.setVolume(this.settings.volume);
+    this.applyGraphicsSettings();
+    this.syncSettingsControls();
+  }
+
+  openSettings() {
+    if (['running', 'paused', 'gameover'].includes(this.state)) return;
+    this.ui.message.classList.add('hidden');
+    this.ui.start.classList.add('hidden');
+    this.ui.levelSelect.classList.add('hidden');
+    this.ui.levelSelectButton.classList.add('hidden');
+    this.ui.levelSelectBack.classList.add('hidden');
+    this.ui.settingsButton.classList.add('hidden');
+    this.ui.settingsPanel.classList.remove('hidden');
+    this.ui.settingsBack.classList.remove('hidden');
+    this.ui.title.textContent = 'GAME SETTINGS';
+    this.ui.status.textContent = 'SOUND · PERFORMANCE · SAVED ON THIS DEVICE';
+    this.syncSettingsControls();
+  }
+
+  closeSettings() {
+    if (!this._overlayModel) return;
+    this.ui.settingsPanel.classList.add('hidden');
+    this.ui.settingsBack.classList.add('hidden');
+    this.showOverlay(this._overlayModel.title, this._overlayModel.subtitle, this._overlayModel.message, this._overlayModel.buttonText, this._overlayModel.status);
   }
 
   showOverlay(title, subtitle, message, buttonText, status = '') {
@@ -188,6 +257,9 @@ export class AdventureGame {
     this.ui.start.classList.remove('hidden');
     this.ui.levelSelect.classList.add('hidden');
     this.ui.levelSelectBack.classList.add('hidden');
+    this.ui.settingsPanel.classList.add('hidden');
+    this.ui.settingsBack.classList.add('hidden');
+    this.ui.settingsButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
     this.ui.levelSelectButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
     this.ui.overlay.classList.remove('hidden');
     this.ui.hud.classList.add('hidden');
@@ -202,6 +274,7 @@ export class AdventureGame {
     this.ui.message.classList.add('hidden');
     this.ui.start.classList.add('hidden');
     this.ui.levelSelectButton.classList.add('hidden');
+    this.ui.settingsButton.classList.add('hidden');
     this.ui.levelSelectBack.classList.remove('hidden');
     this.ui.levelSelect.classList.remove('hidden');
     this.ui.status.textContent = `${this.progress.completedLevels.length} OF 40 LEVELS CLEARED · ${this.progress.totalCoins} COINS`;
@@ -642,6 +715,13 @@ export class AdventureGame {
     clearTimeout(this.toastTimer);
     this.input.destroy();
     this.ui.start.removeEventListener('click', this.onStart);
+    this.ui.levelSelectButton.removeEventListener('click', this.onOpenLevelSelect);
+    this.ui.levelSelectBack.removeEventListener('click', this.onCloseLevelSelect);
+    this.ui.settingsButton.removeEventListener('click', this.onOpenSettings);
+    this.ui.settingsBack.removeEventListener('click', this.onCloseSettings);
+    this.ui.soundEnabled.removeEventListener('change', this.onSoundEnabledChange);
+    this.ui.soundVolume.removeEventListener('input', this.onSoundVolumeChange);
+    this.ui.graphicsQuality.removeEventListener('change', this.onGraphicsQualityChange);
     this.ui.pause.removeEventListener('click', this.onPause);
     this.ui.heroSwitch.removeEventListener('click', this.onHeroSwitch);
     window.removeEventListener('resize', this.onResize);
