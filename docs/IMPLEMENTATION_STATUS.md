@@ -31,6 +31,7 @@
 - All 40 campaign stages now have distinct authored platform routes, collectible paths and enemy placements. Levels 1–7 retain their hand-built neighborhood layouts; levels 8–40 use 33 individually authored world-specific blueprints, with dedicated boss-stage layouts at levels 8, 16, 24, 32 and 40. Five boss gates are active at the end of each world.
 - Versioned campaign save for completed levels, selected character and total coins; malformed save data is rejected before writing.
 - Three-star level ratings are saved per completed stage. A clear earns one star, recovering the Time Shard earns two, and recovering it while finishing with at least 75 health earns three; replays keep the best rating and do not farm campaign coins.
+- Campaign level-selection screen groups all 40 stages into five worlds, marks completed stages with saved star ratings, allows completed-level replays, and disables stages that have not yet been unlocked. Level unlock rules are covered by campaign-progress unit tests.
 - Per-level checkpoint save and safe fallback if storage is unavailable/corrupt.
 - HUD, menu, pause/resume, character controls, basic damage/respawn and level-completion progression.
 - Production PWA manifest and same-origin service-worker cache.
