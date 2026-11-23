@@ -15,7 +15,7 @@
 - Nobi glide while holding jump during a fall; Gadget Vision reveals a hidden collectible.
 - Benji's Normal, Blaze, Shock and Titan forms, cycled with T / FORM. Blaze has faster movement and a forward flame strike; Shock has a stronger jump and radial pulse; Titan moves more slowly, performs a grounded stomp and takes 50% less damage.
 - Shin Toy Star projectile and seven-shot Star Burst; fixed-capacity pooled projectile entities.
-- Robo Bug patrol, alert, chase and cooldown-based attack AI; two-hit enemy health.
+- Five world-themed enemy archetypes: Robo Bug (patrol/contact), Clockwork Charger (telegraphed dash), Vine Sweeper (wide ground sweep), Drone Scout (higher jump-lane pulse) and Time Sentinel (fast telegraphed strike). Each has its own movement, detection, attack range/height, cooldown and warning color.
 - Seven authored Sunny Neighborhood stages, levels 1–7, with separate platform layouts, dusk lighting in level 3, a festival-themed level 4, riverfront park level 5, Clocktower Climb level 6 and Rooftop Relay level 7.
 - Levels 8–40 are now playable procedural stages, distributed across School Playground, Forest of Forgotten Toys, Alien Tech City and Time-Travel Castle. Each receives a world-specific palette/landmark set, extended ground route, generated raised platforms, coin route, heart, hidden coin, Time Shard, checkpoint, enemies and exit.
 - Five boss-gated stages are implemented at levels 8, 16, 24, 32 and 40. Each boss has a larger visual model, 12 health, an enlarged projectile hitbox and blocks the exit until defeated.
@@ -32,10 +32,10 @@
 ## Automated validation
 
 Latest completed validation run:
-- **PASS:** 62 of 62 Node unit tests, including all five boss attack profiles, strike envelopes, boss-specific HUD messages, campaign catalog and stage construction.
+- **PASS:** 67 of 67 Node unit tests, including five enemy archetypes and their attack windows, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
-- **Verified run:** [GitHub Actions · run 45093548646](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45093548646).
+- **Verified run:** [GitHub Actions · run 45094012756](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45094012756).
 
 The production build emits a non-blocking warning because the minified JavaScript bundle exceeds Vite's 500 kB advisory threshold.
 
@@ -51,7 +51,7 @@ The production build emits a non-blocking warning because the minified JavaScrip
 ## Remaining implementation
 
 - Hand-authored, individually designed level layouts for levels 8–40; the current versions are procedural variants.
-- Remaining enemy families (the current generated campaign uses Robo Bugs); further boss-specific animations, projectile/area effects and audio.
+- Further enemy attack animations and impact effects; boss-specific animations, projectile/area effects and audio.
 - Full combat feedback, effects/audio, checkpoints and three-star level ratings.
 - Nobi's complete aerial kit; Benji ability balancing and visual effects.
 - Full achievements, settings, leaderboard, tutorial, cinematics/dialogue and final victory flow.
