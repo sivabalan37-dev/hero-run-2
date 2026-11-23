@@ -8,12 +8,13 @@ import { applyBenjiSpecial, getBenjiFormStats } from './BenjiAbilities.js';
 import { applyNobiAirDash } from './NobiAbilities.js';
 import {
   getUnlockedCharacters,
+  isLevelUnlocked,
   loadCampaignProgress,
   recordLevelCompletion,
   saveCampaignProgress,
   selectCharacter,
 } from './CampaignProgress.js';
-import { getLevelInfo, PLAYABLE_LEVELS } from './LevelCatalog.js';
+import { getLevelInfo, PLAYABLE_LEVELS, WORLDS } from './LevelCatalog.js';
 import { getBossHudModel } from './BossHUD.js';
 import { AudioManager } from '../game/Audio.js';
 import { ImpactParticlePool } from './ImpactParticles.js';
@@ -95,6 +96,9 @@ export class AdventureGame {
       title: document.querySelector('#overlay-title'),
       message: document.querySelector('#overlay-message'),
       start: document.querySelector('#start-button'),
+      levelSelectButton: document.querySelector('#level-select-button'),
+      levelSelect: document.querySelector('#level-select'),
+      levelSelectBack: document.querySelector('#level-select-back'),
       pause: document.querySelector('#pause-button'),
       heroSwitch: document.querySelector('#hero-switch'),
       health: document.querySelector('#health-value'),
@@ -131,7 +135,11 @@ export class AdventureGame {
       ? this.pause()
       : this.state === 'paused' ? this.resume() : null;
     this.onHeroSwitch = () => this.switchCharacter();
+    this.onOpenLevelSelect = () => this.openLevelSelection();
+    this.onCloseLevelSelect = () => this.closeLevelSelection();
     this.ui.start.addEventListener('click', this.onStart);
+    this.ui.levelSelectButton.addEventListener('click', this.onOpenLevelSelect);
+    this.ui.levelSelectBack.addEventListener('click', this.onCloseLevelSelect);
     this.ui.pause.addEventListener('click', this.onPause);
     this.ui.heroSwitch.addEventListener('click', this.onHeroSwitch);
     window.addEventListener('resize', this.onResize);
@@ -171,14 +179,89 @@ export class AdventureGame {
   }
 
   showOverlay(title, subtitle, message, buttonText, status = '') {
+    this._overlayModel = { title, subtitle, message, buttonText, status };
     this.ui.title.textContent = title;
     this.ui.message.textContent = message;
     this.ui.start.textContent = buttonText;
     this.ui.status.textContent = status || subtitle;
+    this.ui.message.classList.remove('hidden');
+    this.ui.start.classList.remove('hidden');
+    this.ui.levelSelect.classList.add('hidden');
+    this.ui.levelSelectBack.classList.add('hidden');
+    this.ui.levelSelectButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
     this.ui.overlay.classList.remove('hidden');
     this.ui.hud.classList.add('hidden');
     this.ui.touch.classList.add('hidden');
     this.ui.bossHud.classList.add('hidden');
+  }
+
+  openLevelSelection() {
+    if (this.state === 'paused' || this.state === 'gameover' || this.state === 'running') return;
+    this.renderLevelSelection();
+    this.ui.title.textContent = 'CHOOSE YOUR LEVEL';
+    this.ui.message.classList.add('hidden');
+    this.ui.start.classList.add('hidden');
+    this.ui.levelSelectButton.classList.add('hidden');
+    this.ui.levelSelectBack.classList.remove('hidden');
+    this.ui.levelSelect.classList.remove('hidden');
+    this.ui.status.textContent = `${this.progress.completedLevels.length} OF 40 LEVELS CLEARED · ${this.progress.totalCoins} COINS`;
+  }
+
+  closeLevelSelection() {
+    if (!this._overlayModel) return;
+    const { title, subtitle, message, buttonText, status } = this._overlayModel;
+    this.showOverlay(title, subtitle, message, buttonText, status);
+  }
+
+  renderLevelSelection() {
+    this.ui.levelSelect.replaceChildren();
+    for (const world of WORLDS) {
+      const heading = document.createElement('h2');
+      heading.className = 'level-world-heading';
+      heading.textContent = world.name;
+      this.ui.levelSelect.appendChild(heading);
+
+      for (let level = world.firstLevel; level <= world.lastLevel; level++) {
+        const info = getLevelInfo(level);
+        const unlocked = isLevelUnlocked(this.progress, level);
+        const completed = this.progress.completedLevels.includes(level);
+        const stars = this.progress.starsByLevel[level] || 0;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'level-tile';
+        if (completed) button.classList.add('completed');
+        if (level === this.progress.currentLevel) button.classList.add('current');
+        button.disabled = !unlocked;
+        button.setAttribute('aria-label', unlocked
+          ? `Level ${level}: ${info.title}. ${completed ? `${stars} stars, completed` : 'uncompleted'}`
+          : `Level ${level}: locked`);
+        const number = document.createElement('span');
+        number.textContent = unlocked ? `LEVEL ${level}` : `🔒 ${level}`;
+        const detail = document.createElement('small');
+        detail.textContent = completed
+          ? `${'★'.repeat(stars)}${'☆'.repeat(3 - stars)}`
+          : unlocked ? (info.isBossLevel ? 'BOSS STAGE' : 'PLAY NOW') : 'LOCKED';
+        button.append(number, detail);
+        if (unlocked) button.addEventListener('click', () => this.chooseLevel(level));
+        this.ui.levelSelect.appendChild(button);
+      }
+    }
+  }
+
+  chooseLevel(levelNumber) {
+    if (!isLevelUnlocked(this.progress, levelNumber)) return;
+    this.levelNumber = levelNumber;
+    this.checkpointX = readCheckpoint(levelNumber);
+    this.state = 'menu';
+    this.resetLevel();
+    const info = getLevelInfo(levelNumber);
+    this.showOverlay(
+      `LEVEL ${levelNumber} READY`,
+      info.world,
+      `${info.title}. Recover the Time Shard, collect coins and reach the exit.`,
+      'START LEVEL',
+      `${info.world.toUpperCase()} · ${levelNumber} / 40`
+    );
   }
 
   hideOverlay() {
