@@ -62,7 +62,7 @@ The production build emits a non-blocking warning because the minified JavaScrip
 - More detailed boss-specific attack animation timing and broader music/ambient audio.
 - Remaining combat feedback polish, broader effects/audio, and further level-completion feedback.
 - Further Nobi aerial polish; Benji ability balancing and broader visual/audio polish.
-- Full achievements, leaderboard, cinematics/dialogue and final victory flow.
+- Leaderboards, cinematics/dialogue and final victory flow.
 - IndexedDB fallback/backup, Capacitor configuration and verified Android release.
 - Browser/device acceptance tests and mobile performance profiling.
 
@@ -92,3 +92,13 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - Explains Shin's Toy Star attacks, Nobi's aerial movement/Gadget Vision, and Benji's four forms.
 - Includes Time Shard, three-star rating and boss telegraph tips.
 - Includes the phone touch-control layout and is scrollable on smaller screens.
+
+## Campaign achievements
+
+- Added 10 campaign achievements with live progress: first clear, 10 and 40 levels, five Time Shard levels, 30 and 120 stars, 25 and 100 coins, all five boss stages and the full hero roster.
+- Achievement progress is derived from the existing saved campaign data, so it persists with campaign progress and does not introduce a second save file.
+- Replaying a stage cannot farm level, star or coin milestones; best saved star ratings are used.
+- Boss milestones count completed boss-gated stages (8, 16, 24, 32 and 40).
+- The main menu includes a scrollable achievements screen with progress bars and earned title labels.
+- Newly unlocked achievements are announced on the level-completion screen.
+- Automated coverage is included in `tests/achievements.test.js`.
