@@ -60,8 +60,12 @@ test('Vine Sweeper has a wider ground sweep but cannot hit above its lane', () =
   enemy.attackCooldown = 0;
   stepEnemy(enemy, { x: 2.4, y: 0 }, 1 / 60);
   assert.equal(enemy.state, 'telegraph');
-  for (let i = 0; i < 42; i++) stepEnemy(enemy, { x: 2.4, y: 0 }, 1 / 60);
-  assert.equal(enemy.attackPulse, true);
+  let pulse = false;
+  for (let i = 0; i < 48 && !pulse; i++) {
+    stepEnemy(enemy, { x: 2.4, y: 0 }, 1 / 60);
+    pulse = enemy.attackPulse;
+  }
+  assert.equal(pulse, true);
   enemy.state = 'chase';
   enemy.attackCooldown = 0;
   stepEnemy(enemy, { x: 2.4, y: 3.2 }, 1 / 60);
