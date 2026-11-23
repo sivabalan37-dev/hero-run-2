@@ -402,7 +402,14 @@ export class SunnyNeighborhoodLevel {
       enemy.group.position.x = enemy.x;
       enemy.group.scale.x = enemy.direction;
       enemy.group.position.y = enemy.state === 'attack' ? 0.06 : 0;
-      if (enemy.state === 'attack') enemy.indicator.material.color.set('#fff15e');
+      if (enemy.isBoss) {
+        const telegraphing = enemy.bossMode === 'telegraph';
+        const striking = enemy.bossMode === 'strike';
+        const warningColor = enemy.attackProfile?.warningColor || '#fff15e';
+        enemy.indicator.material.color.set(telegraphing ? warningColor : striking ? '#ffffff' : '#75f0c0');
+        const pulse = telegraphing ? 1 + Math.sin(enemy.telegraphTimer * 34) * 0.1 : striking ? 1.14 : 1;
+        enemy.group.scale.y = 1.65 * pulse;
+      } else if (enemy.state === 'attack') enemy.indicator.material.color.set('#fff15e');
       else if (enemy.state === 'chase') enemy.indicator.material.color.set('#ffad55');
       else enemy.indicator.material.color.set('#ff766b');
     }
