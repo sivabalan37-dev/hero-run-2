@@ -16,11 +16,12 @@ export class ImpactParticlePool {
   constructor(scene, capacity = PARTICLE_COUNT) {
     this.scene = scene;
     this.geometry = new THREE.SphereGeometry(0.075, 6, 5);
-    this.materials = PARTICLE_COLORS.map(color => new THREE.MeshBasicMaterial({
-      color, transparent: true, opacity: 1, depthWrite: false,
+    this.materials = Array.from({ length: capacity }, (_, index) => new THREE.MeshBasicMaterial({
+      color: PARTICLE_COLORS[index % PARTICLE_COLORS.length],
+      transparent: true, opacity: 1, depthWrite: false,
     }));
     this.items = Array.from({ length: capacity }, (_, index) => {
-      const material = this.materials[index % this.materials.length];
+      const material = this.materials[index];
       const mesh = new THREE.Mesh(this.geometry, material);
       mesh.visible = false;
       mesh.position.z = 1.45;
@@ -43,7 +44,7 @@ export class ImpactParticlePool {
       item.maxLife = item.life;
       item.mesh.position.set(x, y, 1.45);
       item.mesh.scale.setScalar(boss ? 1.45 : 1);
-      item.mesh.material = this.materials[boss ? 4 : i % 4];
+      item.mesh.material.color.set(boss ? PARTICLE_COLORS[4] : PARTICLE_COLORS[i % 4]);
       item.mesh.visible = true;
       item.mesh.material.opacity = 1;
     }
