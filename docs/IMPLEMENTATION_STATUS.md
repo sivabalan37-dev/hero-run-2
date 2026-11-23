@@ -77,3 +77,10 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - `SunnyNeighborhoodLevel` now consumes the authored blueprint data instead of generating generic platform, enemy and coin positions for levels 8–40.
 - Added automated tests that check all 33 blueprints exist, are distinct, contain valid platform/enemy/coin data and mark all five boss stages.
 - These are authored gameplay layouts built from the existing modular level geometry. They still require visual and difficulty playtesting in a running browser.
+
+## Settings menu
+
+- Added a persistent settings panel for sound effects enable/disable and volume.
+- Added Low, Medium and High graphics profiles. Low disables shadow rendering and caps pixel ratio at 1; Medium caps it at 1.5; High caps it at 2 (also limited by the device pixel ratio).
+- Settings are validated and stored locally; corrupt or unavailable storage falls back to safe defaults.
+- Automated coverage is included in `tests/settings.test.js`.
