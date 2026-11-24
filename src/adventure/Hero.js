@@ -77,7 +77,8 @@ class BaseHero {
     }
     if (aerialState.dashing) this.model.rotation.z -= 0.16;
     else if (aerialState.gliding) this.model.rotation.z -= 0.055;
-    this.model.scale.set(this.body.facing * this.visualScale, this.visualScale, this.visualScale);
+    const crouchScale = this.body.crouching ? 0.72 : 1;
+    this.model.scale.set(this.body.facing * this.visualScale, this.visualScale * crouchScale, this.visualScale);
     this.model.visible = this.invulnerable <= 0 || Math.floor(this.invulnerable * 14) % 2 === 0;
     this.syncVisual();
   }
