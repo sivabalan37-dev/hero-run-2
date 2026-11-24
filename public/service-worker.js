@@ -1,8 +1,32 @@
-const CACHE_NAME = 'hero-run-time-travel-v1';
-const APP_SHELL = ['./', './index.html', './manifest.webmanifest'];
+const CACHE_NAME = 'hero-run-time-travel-v2';
+const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './.vite/manifest.json'];
+
+async function getBuildAssets() {
+  const response = await fetch('./.vite/manifest.json', { cache: 'no-cache' });
+  if (!response.ok) throw new Error('Unable to load the production asset manifest');
+  const manifest = await response.json();
+  const assets = new Set();
+
+  for (const entry of Object.values(manifest)) {
+    if (typeof entry.file === 'string') assets.add(`./${entry.file}`);
+    for (const file of entry.css || []) {
+      if (typeof file === 'string') assets.add(`./${file}`);
+    }
+    for (const file of entry.assets || []) {
+      if (typeof file === 'string') assets.add(`./${file}`);
+    }
+  }
+  return [...assets];
+}
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.addAll(APP_SHELL);
+    const buildAssets = await getBuildAssets();
+    if (buildAssets.length) await cache.addAll(buildAssets);
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', event => {
