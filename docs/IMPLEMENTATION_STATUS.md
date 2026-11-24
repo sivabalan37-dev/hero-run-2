@@ -136,3 +136,10 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - Blaze's flame visual now appears on the side Benji is facing, matching the forward-only attack hitbox.
 - Added tests for left/right facing and safe fallback handling.
 - CI validation is required before treating this update as verified; real-device visual testing remains outstanding.
+
+
+## Benji Shock vertical-range fix
+
+- Shock pulse now checks both horizontal radius and vertical separation from each enemy's combat center, so a high jump no longer hits ground-level enemies across an unrealistic vertical gap while hovering drones and bosses remain reachable within the pulse height.
+- Added regression coverage for a jumping Benji hitting a hovering drone without hitting a ground-level enemy at the same horizontal distance.
+- Automated CI validation is pending; real-device combat balance and visual testing remain outstanding.
