@@ -148,3 +148,27 @@ test('normal movement can change facing again after the dash ends', () => {
   assert.equal(body.airDashDirection, 0);
   assert.equal(body.facing, -1);
 });
+
+test('holding sprint increases running speed without exceeding the safe speed cap', () => {
+  const normal = createBody(0, 0);
+  const sprinting = createBody(0, 0);
+  normal.grounded = true;
+  sprinting.grounded = true;
+
+  for (let i = 0; i < 90; i++) {
+    stepBody(normal, { move: 1 }, floor, 1 / 60);
+    stepBody(sprinting, { move: 1, sprint: true }, floor, 1 / 60);
+  }
+
+  assert.ok(sprinting.vx > normal.vx, 'sprint should increase the top running speed');
+  assert.ok(sprinting.vx <= 20, 'sprint speed must remain within the physics cap');
+  assert.ok(sprinting.x > normal.x, 'sprinting should cover more ground over the same time');
+});
+
+test('sprint without a movement direction does not move the player', () => {
+  const body = createBody(0, 0);
+  body.grounded = true;
+  for (let i = 0; i < 20; i++) stepBody(body, { move: 0, sprint: true }, floor, 1 / 60);
+  assert.equal(body.x, 0);
+  assert.equal(body.vx, 0);
+});
