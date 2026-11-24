@@ -102,3 +102,12 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - The main menu includes a scrollable achievements screen with progress bars and earned title labels.
 - Newly unlocked achievements are announced on the level-completion screen.
 - Automated coverage is included in `tests/achievements.test.js`.
+
+
+## Achievement title rewards
+
+- Added an equipable title for each of the 10 campaign achievements.
+- Players can open Rewards & Titles from the main menu, equip earned titles, or clear the equipped title; locked rewards remain disabled until their achievement is earned.
+- The equipped title is saved in the existing version-1 campaign save and defaults safely for older saves.
+- The selected title appears in the in-game hero HUD. Invalid or unearned title IDs are never displayed as equipped.
+- Automated coverage is included in `tests/titles.test.js` and `tests/titles-ui.test.js`.
