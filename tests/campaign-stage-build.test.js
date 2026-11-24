@@ -101,3 +101,44 @@ test('all forty campaign levels build playable stage structures', () => {
     }
   }
 });
+
+test('distant enemies keep their world position but skip off-screen animation updates', () => {
+  const { scene, stage } = buildStage(10);
+  try {
+    const enemy = stage.enemies[0];
+    enemy.x = 12;
+    enemy.group.scale.x = 1.9;
+    enemy.effectRing.visible = true;
+    enemy.attackCooldown = 0;
+
+    stage.update(1 / 60, { x: -100, y: 0 });
+
+    assert.equal(enemy.group.position.x, enemy.x,
+      'AI and scene position remain synchronized while the enemy is distant');
+    assert.equal(enemy.group.scale.x, 1.9,
+      'off-screen visual scale is not recalculated');
+    assert.equal(enemy.effectRing.visible, false,
+      'transient attack ring is hidden while the enemy is distant');
+  } finally {
+    stage.destroy();
+  }
+});
+
+test('nearby enemies continue to animate their telegraph effects', () => {
+  const { scene, stage } = buildStage(10);
+  try {
+    const enemy = stage.enemies[0];
+    enemy.x = 12;
+    enemy.minX = 8;
+    enemy.maxX = 16;
+    enemy.attackCooldown = 0;
+
+    stage.update(1 / 60, { x: 12, y: 0 });
+
+    assert.equal(enemy.state, 'telegraph');
+    assert.equal(enemy.effectRing.visible, true,
+      'nearby telegraph animation must remain visible');
+  } finally {
+    stage.destroy();
+  }
+});
