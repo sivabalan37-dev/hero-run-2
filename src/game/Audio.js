@@ -72,8 +72,6 @@ export class AudioManager {
     };
     this.tone(notes[attackType] || 160, 0.2, 'triangle', 0.055);
   }
-}
-
   destroy() {
     const context = this.context;
     this.context = null;
