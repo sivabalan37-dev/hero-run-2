@@ -2,7 +2,7 @@
 
 **Reviewed:** 2026-11-24  
 **Development branch:** `feature/time-travel-adventure-threejs`  
-**Current automated baseline:** 191/191 Node tests pass; production build and build checks pass.
+**Current automated baseline:** 195/195 Node tests pass; production build and build checks pass.
 
 This is a delivery checklist, not a promise that the game is release-ready. A feature is only complete when its implementation and the appropriate test evidence both exist.
 
@@ -88,11 +88,11 @@ Distance-aware enemy visual culling and pooled effects have automated coverage, 
 - Responsive touch controls and input cleanup.
 - Fixed-capacity projectile/impact pools and Web Audio teardown.
 - Distance-aware enemy animation culling.
-- 191 passing automated tests and a passing production build.
+- 195 passing automated tests and a passing production build.
 
 ## Latest validation evidence
 
-- [191-test and performance-culling validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45418119154)
+- [191-test and performance-culling validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45419606722)
 - [Physical Android testing guide](../ANDROID_TESTING_GUIDE.md)
 - [Implementation status](IMPLEMENTATION_STATUS.md)
 - [Release checklist](../RELEASE_CHECKLIST.md)
