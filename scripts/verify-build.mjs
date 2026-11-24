@@ -1,17 +1,31 @@
 import assert from 'node:assert/strict';
 import { readdir, readFile, stat } from 'node:fs/promises';
-import { basename, join, resolve } from 'node:path';
+import { basename, join, resolve, relative, isAbsolute } from 'node:path';
 
 const distDirectory = resolve('dist');
 const assetsDirectory = join(distDirectory, 'assets');
 const html = await readFile(join(distDirectory, 'index.html'), 'utf8');
-const entryMatch = html.match(/<script\\b[^>]*\\bsrc=["']([^"']+\\.js)["'][^>]*>/i);
 
-assert.ok(entryMatch, 'production HTML must reference an entry JavaScript file');
+const scriptStart = html.indexOf('<script');
+assert.notEqual(scriptStart, -1, 'production HTML must contain a module script');
+const scriptEnd = html.indexOf('>', scriptStart);
+assert.notEqual(scriptEnd, -1, 'production module script tag must be complete');
+const scriptTag = html.slice(scriptStart, scriptEnd + 1);
+const sourceStart = scriptTag.indexOf('src="');
+assert.notEqual(sourceStart, -1, 'production module script must have a source');
+const sourceValueStart = sourceStart + 5;
+const sourceValueEnd = scriptTag.indexOf('"', sourceValueStart);
+assert.notEqual(sourceValueEnd, -1, 'production module script source must be quoted');
 
-const entryRelativePath = entryMatch[1].replace(/^\\.\\//, '').replace(/^\\//, '');
+let entryRelativePath = scriptTag.slice(sourceValueStart, sourceValueEnd);
+if (entryRelativePath.startsWith('./')) entryRelativePath = entryRelativePath.slice(2);
+if (entryRelativePath.startsWith('/')) entryRelativePath = entryRelativePath.slice(1);
+
 const entryPath = resolve(distDirectory, entryRelativePath);
-assert.ok(entryPath.startsWith(distDirectory), 'entry JavaScript must stay inside dist');
+const entryFromDist = relative(distDirectory, entryPath);
+assert.ok(entryFromDist && !entryFromDist.startsWith('..') && !isAbsolute(entryFromDist),
+  'entry JavaScript must stay inside dist');
+
 const entryName = basename(entryPath);
 const entrySize = (await stat(entryPath)).size;
 const javascriptFiles = (await readdir(assetsDirectory)).filter(name => name.endsWith('.js'));
