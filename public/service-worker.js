@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hero-run-time-travel-v2';
+const CACHE_NAME = 'hero-run-time-travel-v3';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './.vite/manifest.json'];
 
 async function getBuildAssets() {
@@ -25,8 +25,12 @@ self.addEventListener('install', event => {
     await cache.addAll(APP_SHELL);
     const buildAssets = await getBuildAssets();
     if (buildAssets.length) await cache.addAll(buildAssets);
-    await self.skipWaiting();
+    // A waiting worker is activated only after the player approves the update.
   })());
+});
+
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -45,18 +49,18 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   event.respondWith((async () => {
-    const cached = await caches.match(request);
+    const cache = await caches.open(CACHE_NAME);
+    const cached = await cache.match(request);
     if (cached) return cached;
     try {
       const response = await fetch(request);
       if (response.ok && response.type === 'basic') {
-        const cache = await caches.open(CACHE_NAME);
         await cache.put(request, response.clone());
       }
       return response;
     } catch (error) {
       if (request.mode === 'navigate') {
-        const shell = await caches.match('./index.html');
+        const shell = await cache.match('./index.html');
         if (shell) return shell;
       }
       throw error;
