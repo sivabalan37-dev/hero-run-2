@@ -16,7 +16,8 @@ export class AdventureInput {
       const action = KEY_ACTIONS.get(event.code);
       if (!action) return;
       if (action === 'jump' || action === 'left' || action === 'right') event.preventDefault();
-      if (!this.keys.has(event.code)) this.pressed.add(action);
+      const wasDown = this.isDown(action);
+      if (!wasDown) this.pressed.add(action);
       this.keys.add(event.code);
     };
     this.onKeyUp = (event) => this.keys.delete(event.code);
