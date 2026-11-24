@@ -9,7 +9,7 @@
 
 - Three.js WebGL 2 renderer, responsive orthographic side camera and landscape-aware resizing.
 - Device-aware renderer pixel-ratio caps: coarse-pointer phones and devices reporting 4 GB RAM or 4 CPU threads or fewer use a reduced resolution ceiling to lower GPU fill cost; desktop quality presets remain unchanged. Automated coverage is included in `tests/graphics-quality.test.js`.
-- Fixed 60 Hz AABB platform movement, gravity, horizontal bounds, landing/underside collision, one-way raised platforms, coyote time and jump buffering.
+- Fixed 60 Hz AABB platform movement, gravity, horizontal bounds, landing/underside collision, one-way raised platforms, coyote time, jump buffering and hold-to-sprint movement (Shift on keyboard or SPRINT on touch).
 - Procedural Shin, Nobi and Benji character models with a shared movement/animation interface.
 - Character progression: Shin starts unlocked; Nobi unlocks after 3 distinct completed levels; Benji unlocks after 6.
 - Character selection via C / HERO control, with selection persisted in campaign progress.
@@ -169,3 +169,10 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - Titan's 50% incoming-damage reduction now applies the exact fractional amount instead of rounding a 25-point hit up from 12.5 to 13.
 - Added unit coverage for all Benji form damage modifiers and for invalid/negative damage inputs.
 - CI validation is pending; actual combat balance and physical-device playtesting remain outstanding.
+
+
+## Sprint movement
+
+- Added hold-to-sprint movement using either Shift key or the on-screen SPRINT touch control.
+- Sprint increases the active hero's configured movement speed by 35%, respects the physics speed cap and does not change movement when no direction is held.
+- Automated tests cover speed increase, no-direction behavior, Shift key alias handling and touch-control markup. Real-device sprint ergonomics remain to be checked.
