@@ -56,3 +56,14 @@ Use [ANDROID_TESTING_GUIDE.md](ANDROID_TESTING_GUIDE.md) to record the phone/bro
 
 - [ ] Do not advertise online multiplayer unless a real networking/backend implementation has been added and tested.
 - [ ] Mark each test above only after it has been run; automated CI does not count as physical-device playtesting.
+
+
+## Automated campaign data checks
+
+The CI suite validates metadata for every one of the 40 campaign levels and checks normalized platform, enemy and collectible placement data for authored encounter layouts (levels 8–40). These are data-integrity checks, not a simulated or human playthrough of all 40 levels.
+
+## Android APK pipeline
+
+The `Build Hero Run Android debug APK` workflow creates a Capacitor Android wrapper, runs the test suite, builds the web assets, compiles an installable debug APK and uploads it as a GitHub Actions artifact. A debug APK is signed automatically with the standard Android debug key and is for testing only. It is not a Play Store release artifact and is not signed with a private release key.
+
+For a production release APK/AAB, configure a private keystore and passwords as protected GitHub Actions secrets, add a release signing configuration, then verify the resulting artifact on a physical Android device. Never commit keystore files or passwords to the repository.
