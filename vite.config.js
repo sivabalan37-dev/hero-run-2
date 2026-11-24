@@ -12,7 +12,7 @@ export default defineConfig({
           groups: [
             {
               name: 'three-vendor',
-              test: /node_modules\\/three\\//,
+              test: /node_modules.*three/,
             },
           ],
         },
