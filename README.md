@@ -1,7 +1,7 @@
 # HERO RUN: TIME-TRAVEL ADVENTURE
 
 **Engine:** Three.js 0.187.0 · JavaScript ES modules · Vite  
-**Runtime:** Browser-based WebGL 2 · Unity is not used.  
+**Runtime:** Web PWA and Capacitor Android wrapper · WebGL 2 · Unity is not used.  
 **App version:** 1.0.1
 
 The active entry point runs a side-scrolling action platformer from `src/adventure/`. The older endless-runner modules in `src/game/` are retained as reference code and are not loaded by the adventure entry point.
@@ -65,7 +65,7 @@ npm run dev
 
 The latest completed validation passed 210 unit tests, the Vite production build, PWA asset-manifest checks and the JavaScript chunk-budget guard. The initial entry is about 3.33 KB (1.55 KB gzip); the deferred adventure code is about 100.93 KB (29.31 KB gzip); and the separate Three.js vendor file is about 562.65 KB (140.75 KB gzip). The vendor file still triggers Vite's non-blocking 500 KB advisory. See [the successful validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45424687621) and [GitHub Actions](https://github.com/sivabalan37-dev/hero-run-2/actions). The chunk guard can be run locally with `npm run verify:build` after `npm run build`.
 
-Automated checks are not a substitute for hands-on playtesting. Physical-device touch controls, sustained mobile performance, offline relaunch after PWA installation, and Android packaging/installation still require device verification.
+Automated checks are not a substitute for hands-on playtesting. Physical-device touch controls, sustained mobile performance, offline relaunch after PWA installation, and APK installation still require device verification. A GitHub Actions workflow now builds a test-only Android debug APK; a privately signed production release is not yet configured.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md), [roadmap](docs/IMPLEMENTATION_ROADMAP.md), [time-travel adventure specification](docs/TIME_TRAVEL_ADVENTURE_SPEC.md), [Android device testing guide](ANDROID_TESTING_GUIDE.md), [remaining work plan](docs/REMAINING_WORK.md), and [release checklist](RELEASE_CHECKLIST.md).
 
