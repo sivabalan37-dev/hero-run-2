@@ -120,3 +120,19 @@ test('boss attack envelope includes its exact horizontal and vertical limits', (
   }
   assert.equal(pulse, true);
 });
+
+test('every boss keeps a readable warning window in its fastest phase', () => {
+  const names = [
+    'Neighborhood Guardian',
+    'Mechanical Headmaster',
+    'Toy Forest Guardian',
+    'Supreme Machine',
+    'Ultimate Time Guardian',
+  ];
+  for (const name of names) {
+    const profile = getBossAttackProfile(name);
+    const fastestPhaseWarning = 0.42 * profile.telegraphScale;
+    assert.ok(fastestPhaseWarning >= 0.28,
+      `${name} keeps at least 0.28 seconds of warning in phase three`);
+  }
+});
