@@ -531,3 +531,30 @@ h1 em { color: #ffd45a; font-style: normal; }
   .rewards-panel { grid-template-columns: 1fr; max-height: 48vh; }
   .reward-card p { min-height: 0; }
 }
+
+
+.update-center {
+  margin-top: 13px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(142,224,255,.18);
+}
+.app-version {
+  margin: 0 auto 4px !important;
+  color: #ffd875 !important;
+  font-size: 10px !important;
+  font-weight: 950;
+  letter-spacing: .14em;
+}
+.update-status {
+  margin: 0 auto 4px !important;
+  color: #b9cce0 !important;
+  font-size: 11px !important;
+  line-height: 1.45 !important;
+}
+.update-center button {
+  min-height: 38px;
+  margin-top: 6px;
+}
+.update-center button:disabled {
+  opacity: .6;
+}
