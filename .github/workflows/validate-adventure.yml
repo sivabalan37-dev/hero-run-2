@@ -26,5 +26,6 @@ jobs:
         run: |
           test -f dist/service-worker.js
           test -f dist/manifest.webmanifest
+          test -f dist/.vite/manifest.json
       - name: Verify production JavaScript chunk budgets
         run: npm run verify:build
