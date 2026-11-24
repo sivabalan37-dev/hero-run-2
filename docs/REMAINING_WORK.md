@@ -2,7 +2,8 @@
 
 **Reviewed:** 2026-11-24  
 **Development branch:** `feature/time-travel-adventure-threejs`  
-**Current automated baseline:** 203/203 Node tests pass; production build and build checks pass.
+**Current automated baseline:** 210/210 Node tests pass; production build and build checks pass.  
+**Current app version:** 1.0.1
 
 This is a delivery checklist, not a promise that the game is release-ready. A feature is only complete when its implementation and the appropriate test evidence both exist.
 
@@ -27,6 +28,7 @@ There are **7 major remaining work areas**. Some involve code; others require re
 - [ ] Test touch input against the actual rendered page, not only DOM/CSS structure and the input module.
 - [ ] Verify one complete level in a browser, including collectibles, checkpoint, boss gate where applicable, completion and saved progress.
 - [ ] Verify WebGL 2 startup and a clear error path when WebGL 2 is unavailable.
+- [ ] Manually verify the hosted PWA update lifecycle: detect a new build, keep the current build active while waiting, approve UPDATE NOW, reload and confirm campaign data remains saved.
 
 Current automated coverage is primarily Node unit/integration tests and a production build. It is not a full Playwright/browser acceptance suite.
 
@@ -88,14 +90,15 @@ Distance-aware enemy visual culling and pooled effects have automated coverage, 
 - Three playable heroes and Benji's four forms.
 - Five enemy archetypes, combat, pickups, checkpoints and progression.
 - PWA manifest, service-worker caching and code splitting.
+- Versioned PWA update center (v1.0.1) with per-release cache isolation and explicit player approval before update activation.
 - Responsive touch controls and input cleanup.
 - Fixed-capacity projectile/impact pools and Web Audio teardown.
 - Distance-aware enemy animation culling.
-- 203 passing automated tests and a passing production build.
+- 210 passing automated tests and a passing production build.
 
 ## Latest validation evidence
 
-- [203-test crouch/slide validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45422726694)
+- [210-test PWA updater validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45424687621)
 - [Physical Android testing guide](../ANDROID_TESTING_GUIDE.md)
 - [Implementation status](IMPLEMENTATION_STATUS.md)
 - [Release checklist](../RELEASE_CHECKLIST.md)
