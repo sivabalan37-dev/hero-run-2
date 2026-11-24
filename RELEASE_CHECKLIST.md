@@ -11,6 +11,7 @@
 ## Adventure gameplay
 
 - [ ] Test left/right movement, normal jump, coyote time and jump buffering.
+- [ ] Automated input tests cover keyboard aliases, simultaneous touch pointers, pointer cancellation, blur cleanup and listener teardown.
 - [ ] Test Shin attack and special ability.
 - [ ] Test Nobi's extra mid-air jump, glide, air dash and Gadget Vision.
 - [ ] Test Benji's Normal, Blaze, Shock and Titan forms and each special.
