@@ -77,7 +77,7 @@ test('all forty campaign levels build playable stage structures', () => {
           const supportedPlatform = stage.platforms.some(platform =>
             !platform.solidSides
             && Math.abs(item.x - platform.x) <= platform.width / 2 + 0.75
-            && Math.abs(item.y - (platform.y + platform.height + 0.65)) <= 0.05
+            && Math.abs(item.y - Math.max(2.45, platform.y + platform.height + 0.65)) <= 0.05
           );
           assert.ok(supportedPlatform,
             `level ${levelNumber} elevated coin is positioned over a reachable platform`);
