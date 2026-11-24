@@ -434,3 +434,55 @@ h1 em { color: #ffd45a; font-style: normal; }
   .achievements-panel { grid-template-columns: 1fr; max-height: 48vh; }
   .achievement-card p { min-height: 0; }
 }
+
+
+.hero-title-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  color: #a9bfd5;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+.hero-title-line b { color: #8ee0ff; letter-spacing: .04em; }
+
+.titles-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  max-height: min(55vh, 440px);
+  margin-top: 12px;
+  padding: 3px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+.title-option {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  min-height: 58px;
+  padding: 10px;
+  border: 1px solid rgba(142,224,255,.25);
+  border-radius: 11px;
+  background: rgba(255,255,255,.06);
+  color: #eaf6ff;
+  text-align: left;
+}
+.title-option strong { font-size: 11px; font-weight: 950; }
+.title-option small { color: #a9bfd5; font-size: 8px; line-height: 1.35; }
+.title-option.earned { border-color: rgba(105,235,174,.42); }
+.title-option.selected {
+  border-color: #ffd875;
+  background: rgba(255,216,117,.13);
+}
+.title-option.selected small { color: #ffd875; }
+.title-option.locked { opacity: .48; }
+.title-option:disabled { cursor: not-allowed; }
+.title-option:focus-visible { outline: 2px solid #8ee0ff; outline-offset: 2px; }
+@media (max-width: 420px) {
+  .titles-panel { grid-template-columns: 1fr; max-height: 48vh; }
+}
