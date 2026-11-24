@@ -28,6 +28,7 @@
 - Boss audio cues are connected to combat state transitions. Each boss has a distinct warning tone and strike tone; the existing hit sound plays when the hero takes damage. Audio starts/resumes from the player's Start interaction. The Web Audio context is closed and detached when the game instance is destroyed.
 - Projectile and Benji special hits share a hit-reaction system: bounded knockback, short AI hit-stun, a red impact pulse and boss recovery interruption. Hit responses are rejected while an enemy is already stunned, preventing rapid repeat-hit exploits.
 - Projectile hits trigger fixed-capacity pooled impact particle bursts. Standard enemies produce small golden/orange bursts; bosses produce larger purple bursts. Particle positions, velocities and fade are updated without allocating meshes during combat. Burst allocation now scans the bounded pool without building temporary filtered arrays or velocity objects.
+- Distant enemies continue updating their gameplay AI and world positions, but off-screen animation calculations and transient effect updates are skipped until they approach the player. Automated tests verify the distance boundary and confirm nearby telegraph effects still animate.
 - All three heroes now use a shared punch pose: the attacking arm drives forward, the opposite arm recoils and the torso leans into the attack. The pose eases in and out with the attack cooldown.
 - All 40 campaign stages now have distinct authored platform routes, collectible paths and enemy placements. Levels 1–7 retain their hand-built neighborhood layouts; levels 8–40 use 33 individually authored world-specific blueprints, with dedicated boss-stage layouts at levels 8, 16, 24, 32 and 40. Five boss gates are active at the end of each world.
 - Versioned campaign save for completed levels, selected character and total coins; malformed save data is rejected before writing.
@@ -43,7 +44,7 @@
 ## Automated validation
 
 Latest completed validation:
-- **PASS:** 187 of 187 Node unit tests.
+- **PASS:** 191 of 191 Node unit tests.
 - **PASS:** Vite production build.
 - **PASS:** service worker, PWA manifest and Vite asset manifest copied into the production output.
 - **PASS:** service-worker install precaching, offline asset reuse, navigation fallback and cache isolation.
@@ -51,7 +52,7 @@ Latest completed validation:
 - **PASS:** touch-control action coverage, phone target dimensions, coarse/fine pointer visibility and pointer-event handling.
 - **PASS:** production entry and deferred application chunk budgets; Three.js vendor split is present.
 - **PASS:** GitHub Actions updated to Node 24-compatible action releases.
-- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45394560605).
+- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45418119154).
 
 The Three.js vendor chunk remains above Vite's 500 kB advisory threshold (562.65 kB minified, 140.75 kB gzip). This is an advisory, not a failed build.
 
@@ -60,13 +61,13 @@ The Three.js vendor chunk remains above Vite's 500 kB advisory threshold (562.65
 - Actual interactive WebGL gameplay in desktop or mobile browsers.
 - Touch controls and landscape behavior on a physical phone (responsive narrow-screen layout has been improved in CSS, but still needs hands-on verification).
 - Offline restart after installing/loading the PWA.
-- Mobile performance, draw-call/triangle budgets and sustained frame rate.
+- Mobile performance, draw-call/triangle budgets and sustained frame rate. Enemy animation culling is automated-tested, but actual performance improvement has not yet been measured on a phone.
 - Capacitor Android build, APK installation and physical-device testing.
 - Sustained Nobi propeller flight and further Benji ability balancing/effects.
 
 ## Remaining implementation
 
-- Further playtesting and balance passes for all 40 authored stage layouts, including jumps, collectible reachability and enemy spacing.
+- Further playtesting and balance passes for all 40 authored stage layouts, including jumps, collectible reachability and enemy spacing. See [remaining work plan](REMAINING_WORK.md) for a prioritized breakdown.
 - More detailed boss-specific attack animation timing and broader music/ambient audio.
 - Remaining combat feedback polish, broader effects/audio, and further level-completion feedback.
 - Further Nobi aerial polish; Benji ability balancing and broader visual/audio polish.
