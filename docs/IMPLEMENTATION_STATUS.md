@@ -43,14 +43,15 @@
 ## Automated validation
 
 Latest completed validation:
-- **PASS:** 180 of 180 Node unit tests.
+- **PASS:** 183 of 183 Node unit tests.
 - **PASS:** Vite production build.
 - **PASS:** service worker, PWA manifest and Vite asset manifest copied into the production output.
 - **PASS:** service-worker install precaching, offline asset reuse, navigation fallback and cache isolation.
 - **PASS:** keyboard aliases, independent simultaneous touch pointers, same-action multi-pointer release, blur cleanup and input listener teardown.
+- **PASS:** touch-control action coverage, phone target dimensions, coarse/fine pointer visibility and pointer-event handling.
 - **PASS:** production entry and deferred application chunk budgets; Three.js vendor split is present.
 - **PASS:** GitHub Actions updated to Node 24-compatible action releases.
-- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45393521685).
+- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/LATEST_TOUCH_CONTROLS_CI).
 
 The Three.js vendor chunk remains above Vite's 500 kB advisory threshold (562.65 kB minified, 140.75 kB gzip). This is an advisory, not a failed build.
 
