@@ -20,10 +20,10 @@ test('checkpoint coordinates match all forty authored levels', () => {
   assert.deepEqual(
     Array.from({ length: 40 }, (_, index) => getLevelCheckpointX(index + 1)),
     [22, 24, 26, 30, 34, 38, 42,
-      78, 84, 88, 92, 96, 100, 104, 106,
-      110, 114, 118, 122, 126, 130, 134, 138,
-      142, 146, 150, 154, 158, 162, 166, 170,
-      174, 178, 182, 186, 190, 194, 198, 202, 206]
+      50, 50, 54, 58, 62, 66, 70, 74,
+      82, 82, 86, 90, 94, 98, 102, 106,
+      114, 114, 118, 122, 126, 130, 134, 138,
+      146, 146, 150, 154, 158, 162, 166, 170, 178]
   );
   assert.equal(getLevelCheckpointX(0), null);
   assert.equal(getLevelCheckpointX(41), null);
@@ -64,5 +64,5 @@ test('blocked storage safely falls back to the level entrance', () => {
     setItem() { throw new Error('blocked'); },
   };
   assert.equal(readCheckpoint(8, storage), -5);
-  assert.equal(writeCheckpoint(78, 8, storage), false);
+  assert.equal(writeCheckpoint(50, 8, storage), false);
 });
