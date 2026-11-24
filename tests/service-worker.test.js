@@ -116,6 +116,7 @@ const productionManifest = {
 test('service-worker install pre-caches every built script and stylesheet', async () => {
   const worker = createWorker(productionManifest);
   worker.cacheData.set('hero-run-time-travel-v1', new Map());
+  worker.cacheData.set('another-app-cache-v1', new Map());
 
   await worker.dispatchInstall();
 
@@ -135,6 +136,8 @@ test('service-worker install pre-caches every built script and stylesheet', asyn
 
   await worker.dispatchActivate();
   assert.equal(worker.cacheData.has('hero-run-time-travel-v1'), false);
+  assert.equal(worker.cacheData.has('another-app-cache-v1'), true,
+    'activation must not delete caches owned by other applications on the same origin');
 });
 
 test('runtime same-origin GET assets are cached and served when offline', async () => {
