@@ -119,3 +119,32 @@ test('air dash holds its burst speed for the configured short window', () => {
   assert.equal(body.vx, 12);
   assert.ok(body.airDashTimer < 0.18 && body.airDashTimer > 0);
 });
+
+test('air dash direction stays locked when opposite movement is pressed', () => {
+  const body = createBody(0, 3);
+  body.facing = 1;
+  body.airDashDirection = 1;
+  body.airDashTimer = 0.18;
+  body.airDashSpeed = 12;
+
+  stepBody(body, { move: -1 }, [], 1 / 60);
+
+  assert.equal(body.facing, 1, 'dash should keep the launch facing direction');
+  assert.equal(body.vx, 12, 'opposite input must not reverse the dash');
+  assert.equal(body.airDashDirection, 1);
+});
+
+test('normal movement can change facing again after the dash ends', () => {
+  const body = createBody(0, 3);
+  body.facing = 1;
+  body.airDashDirection = 1;
+  body.airDashTimer = 1 / 60;
+  body.airDashSpeed = 12;
+
+  stepBody(body, { move: -1 }, [], 1 / 60);
+  stepBody(body, { move: -1 }, [], 1 / 60);
+
+  assert.equal(body.airDashTimer, 0);
+  assert.equal(body.airDashDirection, 0);
+  assert.equal(body.facing, -1);
+});
