@@ -172,3 +172,43 @@ test('sprint without a movement direction does not move the player', () => {
   assert.equal(body.x, 0);
   assert.equal(body.vx, 0);
 });
+
+test('pressing into a wall while falling enables controlled wall sliding', () => {
+  const wall = { x: 2, y: -1, width: 1, height: 8, solidSides: true };
+  const body = createBody(1.11, 4);
+  body.vy = -12;
+  for (let i = 0; i < 4; i++) {
+    stepBody(body, { move: 1 }, [wall], 1 / 60);
+  }
+  assert.equal(body.wallContactDirection, 1);
+  assert.equal(body.wallSliding, true);
+  assert.ok(body.vy >= -5.8, 'wall slide should limit downward speed');
+  assert.ok(body.vy < 0, 'wall slide must not lift the player');
+});
+
+test('jumping while touching a wall launches away from it', () => {
+  const wall = { x: 2, y: -1, width: 1, height: 8, solidSides: true };
+  const body = createBody(1.11, 3);
+  body.vy = -2;
+  stepBody(body, { move: 1 }, [wall], 1 / 60);
+  assert.equal(body.wallContactDirection, 1);
+
+  stepBody(body, { move: 1, jumpPressed: true }, [wall], 1 / 60);
+  assert.ok(body.vx < 0, 'wall jump should launch horizontally away from the wall');
+  assert.ok(body.vy > 0, 'wall jump should launch upward');
+  assert.equal(body.facing, -1);
+  assert.equal(body.wallSliding, false);
+});
+
+test('wall slide requires pressing toward the wall and does not trigger on open air', () => {
+  const wall = { x: 2, y: -1, width: 1, height: 8, solidSides: true };
+  const body = createBody(1.11, 4);
+  body.vy = -8;
+  stepBody(body, { move: -1 }, [wall], 1 / 60);
+  assert.equal(body.wallSliding, false);
+
+  const openAir = createBody(0, 4);
+  openAir.vy = -8;
+  stepBody(openAir, { move: 1, jumpPressed: true }, [], 1 / 60);
+  assert.ok(openAir.vy < 0, 'jumping without a wall should not create a wall jump');
+});
