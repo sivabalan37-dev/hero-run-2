@@ -22,6 +22,10 @@ test('all forty campaign levels build playable stage structures', () => {
     const { scene, stage } = buildStage(levelNumber);
     try {
       assert.ok(stage.exitX > 0, `level ${levelNumber} has a positive exit position`);
+      if (levelNumber >= 8) {
+        assert.ok(stage.group.children.some(object => object.position.x >= stage.exitX + 8),
+          `level ${levelNumber} has background scenery near its far end`);
+      }
       assert.ok(stage.checkpointX > 0 && stage.checkpointX < stage.exitX,
         `level ${levelNumber} checkpoint is before its exit`);
       assert.ok(stage.platforms.length >= 5, `level ${levelNumber} has a ground route and raised platforms`);
