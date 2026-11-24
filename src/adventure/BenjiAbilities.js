@@ -35,6 +35,15 @@ export function getBenjiFormStats(form) {
   return BENJI_FORM_CONFIG[form] || BENJI_FORM_CONFIG.normal;
 }
 
+function isWithinShockPulse(body, enemy) {
+  const heroCenterY = (Number.isFinite(body.y) ? body.y : 0) + (Number.isFinite(body.height) ? body.height * 0.5 : 0.95);
+  const enemyLocalCenterY = enemy.isBoss
+    ? 1.815
+    : enemy.enemyType === 'drone-scout' ? 1.05 : 0.62;
+  const enemyWorldCenterY = enemyLocalCenterY + (Number.isFinite(enemy.group?.position?.y) ? enemy.group.position.y : 0);
+  return Math.abs(heroCenterY - enemyWorldCenterY) <= 2.2;
+}
+
 function damageEnemy(enemy, damage, knockback = 0, originX = 0) {
   const direction = Math.sign(enemy?.x - originX) || 1;
   return applyEnemyHit(enemy, {
@@ -75,7 +84,7 @@ export function applyBenjiSpecial(form, body, enemies = []) {
     knockback = 0.35;
     for (const enemy of enemies) {
       const distanceX = Math.abs(enemy.x - body.x);
-      if (distanceX <= 4.35 && body.y <= 2.7) targets.push(enemy);
+      if (distanceX <= 4.35 && isWithinShockPulse(body, enemy)) targets.push(enemy);
     }
   } else if (form === 'titan') {
     ability = 'stomp';
