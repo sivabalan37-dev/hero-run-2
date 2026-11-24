@@ -4,7 +4,7 @@ import { createHero } from './Hero.js';
 import { SunnyNeighborhoodLevel } from './SunnyNeighborhoodLevel.js';
 import { stepBody } from './PlatformerPhysics.js';
 import { ToyStarPool } from './Combat.js';
-import { applyBenjiSpecial, getBenjiFormStats } from './BenjiAbilities.js';
+import { applyBenjiSpecial, getBenjiDamageTaken, getBenjiFormStats } from './BenjiAbilities.js';
 import { applyNobiAirDash } from './NobiAbilities.js';
 import {
   getUnlockedCharacters,
@@ -777,8 +777,8 @@ export class AdventureGame {
   damageHero(source = null) {
     if (this.hero.invulnerable > 0) return;
     const benjiForm = this.hero.characterId === 'benji' ? this.hero.forms[this.hero.formIndex] : null;
-    const damageMultiplier = benjiForm ? getBenjiFormStats(benjiForm).damageMultiplier : 1;
-    this.hero.health = Math.max(0, this.hero.health - Math.round(25 * damageMultiplier));
+    const damageTaken = benjiForm ? getBenjiDamageTaken(25, benjiForm) : 25;
+    this.hero.health = Math.max(0, this.hero.health - damageTaken);
     this.hero.invulnerable = 1.1;
     this.audio.hit();
     this.toast(source?.isBoss
