@@ -5,6 +5,7 @@ const KEY_ACTIONS = new Map([
   ['KeyJ', 'attack'], ['KeyK', 'special'],
   ['KeyC', 'switch'], ['KeyT', 'transform'],
   ['ShiftLeft', 'sprint'], ['ShiftRight', 'sprint'],
+  ['KeyS', 'crouch'], ['ArrowDown', 'crouch'],
 ]);
 
 export class AdventureInput {
@@ -16,7 +17,7 @@ export class AdventureInput {
     this.onKeyDown = (event) => {
       const action = KEY_ACTIONS.get(event.code);
       if (!action) return;
-      if (action === 'jump' || action === 'left' || action === 'right' || action === 'sprint') event.preventDefault();
+      if (action === 'jump' || action === 'left' || action === 'right' || action === 'sprint' || action === 'crouch') event.preventDefault();
       const wasDown = this.isDown(action);
       if (!wasDown) this.pressed.add(action);
       this.keys.add(event.code);
