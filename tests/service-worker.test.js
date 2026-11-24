@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 
-const CACHE_NAME = 'hero-run-time-travel-v2';
+const CACHE_NAME = 'hero-run-time-travel-v3';
 const ORIGIN = 'https://hero-run.test';
 const workerSource = await readFile(new URL('../public/service-worker.js', import.meta.url), 'utf8');
 
@@ -14,6 +14,7 @@ function response(id) {
 function createWorker(manifest = {}) {
   const listeners = new Map();
   const cacheData = new Map();
+  let skipWaitingCalls = 0;
   let fetchImplementation = async url => {
     if (url === './.vite/manifest.json') {
       return { ok: true, async json() { return manifest; } };
@@ -60,7 +61,7 @@ function createWorker(manifest = {}) {
   const self = {
     location: { origin: ORIGIN },
     clients: { async claim() {} },
-    async skipWaiting() {},
+    async skipWaiting() { skipWaitingCalls++; },
     addEventListener(type, callback) {
       listeners.set(type, callback);
     },
@@ -82,6 +83,8 @@ function createWorker(manifest = {}) {
       listeners.get('install')({ waitUntil(value) { pending = value; } });
       await pending;
     },
+    async dispatchMessage(data) { listeners.get('message')({ data }); },
+    getSkipWaitingCalls() { return skipWaitingCalls; },
     async dispatchActivate() {
       let pending;
       listeners.get('activate')({ waitUntil(value) { pending = value; } });
@@ -116,12 +119,14 @@ const productionManifest = {
 test('service-worker install pre-caches every built script and stylesheet', async () => {
   const worker = createWorker(productionManifest);
   worker.cacheData.set('hero-run-time-travel-v1', new Map());
+  worker.cacheData.set('hero-run-time-travel-v2', new Map());
   worker.cacheData.set('another-app-cache-v1', new Map());
 
   await worker.dispatchInstall();
 
   const cache = worker.cacheData.get(CACHE_NAME);
   assert.ok(cache);
+  assert.equal(worker.getSkipWaitingCalls(), 0, 'new release must wait for player approval');
   for (const path of [
     'index.html',
     'manifest.webmanifest',
@@ -136,6 +141,7 @@ test('service-worker install pre-caches every built script and stylesheet', asyn
 
   await worker.dispatchActivate();
   assert.equal(worker.cacheData.has('hero-run-time-travel-v1'), false);
+  assert.equal(worker.cacheData.has('hero-run-time-travel-v2'), false);
   assert.equal(worker.cacheData.has('another-app-cache-v1'), true,
     'activation must not delete caches owned by other applications on the same origin');
 });
@@ -198,4 +204,28 @@ test('offline navigation falls back to the cached app shell', async () => {
     mode: 'navigate',
   });
   assert.equal(result.id, new URL('./index.html', ORIGIN).href);
+});
+
+
+test('waiting service worker activates only after the update approval message', async () => {
+  const worker = createWorker(productionManifest);
+  await worker.dispatchInstall();
+  assert.equal(worker.getSkipWaitingCalls(), 0);
+  await worker.dispatchMessage({ type: 'SKIP_WAITING' });
+  assert.equal(worker.getSkipWaitingCalls(), 1);
+  await worker.dispatchMessage({ type: 'UNRELATED_MESSAGE' });
+  assert.equal(worker.getSkipWaitingCalls(), 1);
+});
+
+test('active service worker serves assets from its own release cache', async () => {
+  const worker = createWorker(productionManifest);
+  const url = new URL('./index.html', ORIGIN).href;
+  worker.cacheData.set('hero-run-time-travel-v2', new Map([[url, response('old-release')]]));
+  await worker.dispatchInstall();
+  const result = await worker.dispatchFetch({
+    url,
+    method: 'GET',
+    mode: 'navigate',
+  });
+  assert.notEqual(result.id, 'old-release', 'new worker must not read another release cache');
 });
