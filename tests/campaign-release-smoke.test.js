@@ -36,6 +36,7 @@ test('all authored encounter layouts have safe normalized platform, enemy and co
 });
 
 test('encounter layouts safely reject levels outside their authored range', () => {
+  assert.equal(getLevelDesign(1), null);
   assert.equal(getLevelDesign(7), null);
   assert.equal(getLevelDesign(41), null);
 });
