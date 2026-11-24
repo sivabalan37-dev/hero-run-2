@@ -174,3 +174,17 @@ test('Shift keys hold sprint without generating repeated press transitions', () 
   assert.equal(input.isDown('sprint'), false);
   input.destroy();
 });
+
+
+test('S and ArrowDown hold crouch without changing horizontal movement', () => {
+  const { input, windowTarget } = createInput();
+  windowTarget.dispatch('keydown', { code: 'KeyS', preventDefault() {} });
+  assert.equal(input.isDown('crouch'), true);
+  assert.equal(input.movement(), 0);
+  windowTarget.dispatch('keydown', { code: 'ArrowDown', preventDefault() {} });
+  windowTarget.dispatch('keyup', { code: 'KeyS' });
+  assert.equal(input.isDown('crouch'), true, 'the second crouch alias should remain held');
+  windowTarget.dispatch('keyup', { code: 'ArrowDown' });
+  assert.equal(input.isDown('crouch'), false);
+  input.destroy();
+});
