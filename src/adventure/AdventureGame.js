@@ -955,6 +955,7 @@ export class AdventureGame {
     document.removeEventListener('visibilitychange', this.onVisibility);
     this.projectiles.destroy();
     this.impactParticles.destroy();
+    this.audio.destroy();
     this.hero.destroy();
     this.level.destroy();
     this.renderer.dispose();
