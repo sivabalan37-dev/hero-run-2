@@ -42,3 +42,13 @@ test('title reward screen only equips unlocked achievement rewards and persists 
   assert.match(game, /REMOVE EQUIPPED TITLE/);
   assert.match(game, /removeEventListener\('click', this\.onOpenRewards\)/);
 });
+
+
+test('final level completion displays a distinct campaign victory and summary', () => {
+  assert.match(game, /getCampaignSummary\(this\.progress\)/);
+  assert.match(game, /campaignSummary\.campaignComplete/);
+  assert.match(game, /CAMPAIGN COMPLETE!/);
+  assert.match(game, /REPLAY FINAL LEVEL/);
+  assert.match(game, /campaignSummary\.totalStars/);
+  assert.match(game, /campaignSummary\.completedBossLevels/);
+});
