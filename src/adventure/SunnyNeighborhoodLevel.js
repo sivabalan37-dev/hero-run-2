@@ -251,7 +251,7 @@ export class SunnyNeighborhoodLevel {
       this.addPlatform(31.5, 1.7, 3.8, 0.5);
       this.addPlatform(38.2, 1.9, 3.8, 0.5);
       this.addPlatform(43.2, 1.65, 3.2, 0.5);
-    } else {
+    } else if (!this.design) {
       this.addPlatform(5.5, 1.7, 3.8, 0.5);
       this.addPlatform(11.4, 2.45, 3.6, 0.5);
       this.addPlatform(19.8, 1.65, 3.8, 0.5);
