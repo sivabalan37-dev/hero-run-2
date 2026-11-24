@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   applyBenjiSpecial,
   getBenjiFormStats,
+  getBenjiDamageTaken,
 } from '../src/adventure/BenjiAbilities.js';
 
 function enemy(x, health = 2, enemyType = 'robo-bug', isBoss = false) {
@@ -34,6 +35,19 @@ test('Benji forms provide distinct movement, cooldown and defense profiles', () 
   assert.ok(getBenjiFormStats('titan').movement.moveSpeed < getBenjiFormStats('normal').movement.moveSpeed);
   assert.equal(getBenjiFormStats('titan').damageMultiplier, 0.5);
   assert.equal(getBenjiFormStats('unknown').damageMultiplier, 1);
+});
+
+test('Titan applies its exact 50 percent damage reduction without rounding', () => {
+  assert.equal(getBenjiDamageTaken(25, 'titan'), 12.5);
+  assert.equal(getBenjiDamageTaken(25, 'normal'), 25);
+  assert.equal(getBenjiDamageTaken(25, 'blaze'), 25);
+  assert.equal(getBenjiDamageTaken(25, 'shock'), 25);
+});
+
+test('Benji damage calculation safely handles invalid and negative base damage', () => {
+  assert.equal(getBenjiDamageTaken(-5, 'titan'), 0);
+  assert.equal(getBenjiDamageTaken(Number.NaN, 'titan'), 0);
+  assert.equal(getBenjiDamageTaken(Number.POSITIVE_INFINITY, 'titan'), 0);
 });
 
 test('Blaze strikes enemies in front and does not hit enemies behind Benji', () => {
