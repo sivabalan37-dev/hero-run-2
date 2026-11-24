@@ -57,6 +57,12 @@ test('all forty campaign levels build playable stage structures', () => {
         assert.ok(enemy.minX <= enemy.x && enemy.x <= enemy.maxX,
           `level ${levelNumber} enemy starts inside its patrol bounds`);
       }
+      const patrols = stage.enemies.filter(enemy => !enemy.isBoss)
+        .sort((a, b) => a.minX - b.minX);
+      for (let i = 1; i < patrols.length; i++) {
+        assert.ok(patrols[i].minX - patrols[i - 1].maxX >= 1.5,
+          `level ${levelNumber} regular enemy patrols have room between them`);
+      }
       const bosses = stage.enemies.filter(enemy => enemy.isBoss);
       if (stage.isBossLevel) {
         const boss = bosses[0];
