@@ -9,7 +9,7 @@
 
 - Three.js WebGL 2 renderer, responsive orthographic side camera and landscape-aware resizing.
 - Device-aware renderer pixel-ratio caps: coarse-pointer phones and devices reporting 4 GB RAM or 4 CPU threads or fewer use a reduced resolution ceiling to lower GPU fill cost; desktop quality presets remain unchanged. Automated coverage is included in `tests/graphics-quality.test.js`.
-- Fixed 60 Hz AABB platform movement, gravity, horizontal bounds, landing/underside collision, one-way raised platforms, coyote time, jump buffering and hold-to-sprint movement (Shift on keyboard or SPRINT on touch).
+- Fixed 60 Hz AABB platform movement, gravity, horizontal bounds, landing/underside collision, one-way raised platforms, coyote time, jump buffering, hold-to-sprint movement (Shift on keyboard or SPRINT on touch), wall jump and controlled wall slide. Wall contact is detected against solid-sided platforms; jumping launches away from the contacted wall, while pressing into a wall during a fall caps downward speed.
 - Procedural Shin, Nobi and Benji character models with a shared movement/animation interface.
 - Character progression: Shin starts unlocked; Nobi unlocks after 3 distinct completed levels; Benji unlocks after 6.
 - Character selection via C / HERO control, with selection persisted in campaign progress.
@@ -170,6 +170,14 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - Added unit coverage for all Benji form damage modifiers and for invalid/negative damage inputs.
 - CI validation is pending; actual combat balance and physical-device playtesting remain outstanding.
 
+
+## Wall jump and wall slide
+
+- Added solid-wall contact tracking to the platform physics body.
+- Pressing jump while airborne and touching a solid wall launches the hero upward and away from that wall; facing changes to the launch direction.
+- Holding movement into the wall while falling enables controlled wall sliding with a 5.8 units/second terminal fall speed.
+- Wall sliding does not activate in open air or when moving away from the wall. Added three regression tests for contact, launch direction and safe fall behavior.
+- Automated validation: 198/198 Node tests passed, production build and bundle checks passed. Physical-device wall-jump feel remains NOT TESTED.
 
 ## Sprint movement
 
