@@ -84,3 +84,4 @@ export class AudioManager {
       // Audio teardown must not interrupt renderer and scene cleanup.
     }
   }
+}
