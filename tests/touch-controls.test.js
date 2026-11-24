@@ -10,7 +10,7 @@ const [html, styles, input] = await Promise.all([
 
 test('mobile touch controls expose every supported gameplay action', () => {
   const actions = [...html.matchAll(/data-action="([^"]+)"/g)].map(match => match[1]);
-  for (const action of ['left', 'right', 'jump', 'attack', 'special', 'switch', 'transform']) {
+  for (const action of ['left', 'right', 'jump', 'attack', 'special', 'switch', 'transform', 'sprint']) {
     assert.ok(actions.includes(action), `touch controls are missing ${action}`);
     assert.ok(input.includes(`'${action}'`), `input handler does not support ${action}`);
   }
@@ -33,4 +33,11 @@ test('touch controls are hidden on fine pointers and enabled for coarse pointers
   assert.match(input, /pointerup/);
   assert.match(input, /pointercancel/);
   assert.match(input, /lostpointercapture/);
+});
+
+test('sprint is available as a held touch action and in the tutorial', () => {
+  assert.match(html, /data-action="sprint"[^>]*aria-label="Sprint"/);
+  assert.match(html, /<strong>Sprint<\/strong><span>Hold Shift or SPRINT<\/span>/);
+  assert.match(input, /\['ShiftLeft', 'sprint'\]/);
+  assert.match(input, /\['ShiftRight', 'sprint'\]/);
 });
