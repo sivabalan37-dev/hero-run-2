@@ -21,6 +21,7 @@ import { ImpactParticlePool } from './ImpactParticles.js';
 import { loadSettings, saveSettings } from './Settings.js';
 import { getAchievementProgress } from './Achievements.js';
 import { getEquippedTitle, getTitleRewards, selectAchievementTitle } from './Rewards.js';
+import { getCampaignSummary } from './CampaignSummary.js';
 
 const FIXED_STEP = 1 / 60;
 const CHECKPOINT_KEY = 'hero-run-time-travel-save-v1';
@@ -750,12 +751,17 @@ export class AdventureGame {
     if (benjiUnlocked) message += ' Benji is now unlocked!';
     const newlyUnlockedAchievements = getAchievementProgress(this.progress).filter(item => item.unlocked && !previouslyUnlockedAchievements.has(item.id));
     if (newlyUnlockedAchievements.length) message += ` Achievement unlocked: ${newlyUnlockedAchievements.map(item => item.title).join(', ')}.`;
-    const nextIsPlayable = PLAYABLE_LEVELS.includes(nextLevel);
-    if (nextIsPlayable) {
+    const campaignSummary = getCampaignSummary(this.progress);
+    if (campaignSummary.campaignComplete) {
+      const finalStars = '★'.repeat(bestStars) + '☆'.repeat(3 - bestStars);
+      message += ` Final rating: ${finalStars}. All 40 levels are cleared, all ${campaignSummary.totalStars}/${campaignSummary.maxStars} campaign stars are recorded, ${campaignSummary.totalCoins} campaign coins collected, and ${campaignSummary.completedBossLevels}/${campaignSummary.totalBossLevels} bosses defeated.`;
+      message += ' You restored the timeline and completed the Hero Run adventure!';
+      this.showOverlay('CAMPAIGN COMPLETE!', 'THE TIMELINE IS SAVED', message, 'REPLAY FINAL LEVEL', '40 / 40 LEVELS · CAMPAIGN VICTORY');
+    } else if (PLAYABLE_LEVELS.includes(nextLevel)) {
       message += ` Next: ${nextInfo.title}.`;
       this.showOverlay('LEVEL COMPLETE!', 'Time Shard recovered', message, `PLAY LEVEL ${nextLevel}`);
     } else {
-      message += ' Your campaign progress is saved. The next stage is not built yet; you can replay the latest playable level.';
+      message += ' Your campaign progress is saved. Replay any unlocked level from Level Select.';
       this.showOverlay('LEVEL COMPLETE!', 'Time Shard recovered', message, 'REPLAY LEVEL');
     }
   }
