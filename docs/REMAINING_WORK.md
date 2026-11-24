@@ -73,7 +73,7 @@ Distance-aware enemy visual culling and pooled effects have automated coverage, 
 - [ ] Resolve all release-blocking defects and re-run the complete automated suite.
 - [ ] Complete browser, offline-PWA and physical-Android acceptance checks.
 - [ ] Review app permissions, offline behavior, privacy and release configuration.
-- [ ] Review and merge the feature branch into `main) only after acceptance is complete.
+- [ ] Review and merge the feature branch into `main` only after acceptance is complete.
 - [ ] Produce release notes and verified distribution artifacts.
 
 ## Completed foundation (not counted as pending)
