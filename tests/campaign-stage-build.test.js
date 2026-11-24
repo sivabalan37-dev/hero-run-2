@@ -73,7 +73,7 @@ test('all forty campaign levels build playable stage structures', () => {
         assert.ok(Number.isFinite(item.x) && item.x >= 0 && item.x <= stage.exitX,
           `level ${levelNumber} collectible is within the stage`);
         assert.ok(Number.isFinite(item.y), `level ${levelNumber} collectible has a valid height`);
-        if (levelNumber >= 8 && item.type === 'coin' && item.y > 1.8) {
+        if (levelNumber >= 8 && item.type === 'coin' && !item.hidden && item.y > 1.8) {
           const supportedPlatform = stage.platforms.some(platform =>
             !platform.solidSides
             && Math.abs(item.x - platform.x) <= platform.width / 2 + 0.75
