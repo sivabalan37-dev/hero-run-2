@@ -51,7 +51,7 @@ The production build may emit a non-blocking warning because the minified JavaSc
 ## Not yet tested
 
 - Actual interactive WebGL gameplay in desktop or mobile browsers.
-- Touch controls and landscape behavior on a physical phone.
+- Touch controls and landscape behavior on a physical phone (responsive narrow-screen layout has been improved in CSS, but still needs hands-on verification).
 - Offline restart after installing/loading the PWA.
 - Mobile performance, draw-call/triangle budgets and sustained frame rate.
 - Capacitor Android build, APK installation and physical-device testing.
@@ -67,7 +67,7 @@ The production build may emit a non-blocking warning because the minified JavaSc
 - IndexedDB fallback/backup, Capacitor configuration and verified Android release.
 - Browser/device acceptance tests and mobile performance profiling.
 
-The old endless-runner modules remain under `src/game/` for reference. They are not loaded by the new browser entry point.\n\n## Branch and release status\n\n- The current campaign implementation is on `feature/time-travel-adventure-threejs`.\n- At the time of this status update, `main` points to `b85ea9339dce1c88557d2db9eb1e8b6bf9d92b46`, while the campaign branch points to `fb6d1a1f5db361e9ce661a2f9bfaf5e29a3c5952`. The campaign branch has **not** been promoted to `main`.\n- Do not treat the campaign as released until the branch is reviewed/merged and the physical-device acceptance checks below are completed.
+The old endless-runner modules remain under `src/game/` for reference. They are not loaded by the new browser entry point.\n\n## Mobile touch layout update\n\n- On narrow screens, movement controls remain grouped on the left while action controls use a compact three-column grid on the right. Buttons shrink and wrap to avoid the previous fixed-width row overflowing small portrait screens.\n- This is a responsive CSS improvement only; real-device touch, safe-area and landscape testing remain outstanding.\n\n## Branch and release status\n\n- The current campaign implementation is on `feature/time-travel-adventure-threejs`.\n- `main` remains on the earlier baseline; the campaign branch contains the newer adventure implementation and has **not** been promoted to `main`.\n- Do not treat the campaign as released until the branch is reviewed/merged and the physical-device acceptance checks below are completed.
 
 
 ## 40-stage layout expansion
