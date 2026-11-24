@@ -51,6 +51,9 @@ export function createProgressState(raw = null) {
     totalCoins,
     currentLevel: nextSequentialLevel(completedLevels),
     selectedCharacter,
+    equippedTitle: typeof safe.equippedTitle === 'string' && safe.equippedTitle.length <= 64
+      ? safe.equippedTitle
+      : null,
   };
 }
 
@@ -120,6 +123,7 @@ export function saveCampaignProgress(progress, storage, key = 'hero-run-campaign
     if (normalizedLevels.length !== progress.completedLevels.length) return false;
     const safe = createProgressState(progress);
     if (safe.selectedCharacter !== progress.selectedCharacter) return false;
+    if (safe.equippedTitle !== progress.equippedTitle) return false;
     target.setItem(key, JSON.stringify(safe));
     return true;
   } catch {
