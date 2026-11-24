@@ -36,8 +36,10 @@ export class AdventureInput {
       const pointer = this.pointers.get(event.pointerId);
       if (!pointer) return;
       this.pointers.delete(event.pointerId);
-      const stillHeld = [...this.pointers.values()].some(item => item.action === pointer.action);
-      if (!stillHeld) pointer.button.classList.remove('pressed');
+      pointer.button.classList.remove('pressed');
+      for (const item of this.pointers.values()) {
+        if (item.action === pointer.action) item.button.classList.add('pressed');
+      }
     };
     window.addEventListener('keydown', this.onKeyDown, { passive: false });
     window.addEventListener('keyup', this.onKeyUp);
