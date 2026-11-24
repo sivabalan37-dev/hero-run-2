@@ -99,3 +99,10 @@ For every failed check, record:
 ## Release boundary
 
 This repository currently builds a web PWA, not a signed Android APK. APK generation, installation, signing and native Android lifecycle testing remain separate work and must not be marked complete until a native wrapper/build pipeline is added and tested.
+
+
+## Native Android build workflow
+
+The repository now includes a Capacitor Android wrapper configuration and a GitHub Actions workflow that produces a **debug APK**. Open the repository's **Actions** tab, select **Build Hero Run Android debug APK**, and run the workflow manually, or use the artifact produced by a feature-branch push. Download the artifact named `hero-run-android-debug-apk`; it contains `app-debug.apk`.
+
+The debug APK uses Android's standard debug signing key and is intended for installation/testing. It does not count as a privately signed production release. A release APK/AAB still needs a private keystore and protected CI secrets. Do not upload a debug APK to the Play Store.
