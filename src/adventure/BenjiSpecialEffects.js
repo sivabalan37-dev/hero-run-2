@@ -15,3 +15,8 @@ export function getBenjiSpecialVisualState(ability, elapsed = 0) {
   }
   return { visible: progress < 1, progress, scale: 0.5 + progress * 2.1, opacity: fade * 0.9, rotation: progress * 0.2 };
 }
+
+/** Return the local horizontal offset for a flame strike in Benji's facing direction. */
+export function getBenjiFlameOffset(facing = 1) {
+  return (Number.isFinite(facing) && facing < 0 ? -1 : 1) * 1.15;
+}
