@@ -53,10 +53,10 @@ npm run dev
 
 ## Validation and release status
 
-The latest completed validation passed 187 unit tests, the Vite production build, PWA asset-manifest checks and the JavaScript chunk-budget guard. The initial entry is about 3.33 KB (1.55 KB gzip); the deferred adventure code is about 100.93 KB (29.31 KB gzip); and the separate Three.js vendor file is about 562.65 KB (140.75 KB gzip). The vendor file still triggers Vite's non-blocking 500 KB advisory. See [the successful validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45394560605) and [GitHub Actions](https://github.com/sivabalan37-dev/hero-run-2/actions). The chunk guard can be run locally with `npm run verify:build` after `npm run build`.
+The latest completed validation passed 191 unit tests, the Vite production build, PWA asset-manifest checks and the JavaScript chunk-budget guard. The initial entry is about 3.33 KB (1.55 KB gzip); the deferred adventure code is about 100.93 KB (29.31 KB gzip); and the separate Three.js vendor file is about 562.65 KB (140.75 KB gzip). The vendor file still triggers Vite's non-blocking 500 KB advisory. See [the successful validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45418119154) and [GitHub Actions](https://github.com/sivabalan37-dev/hero-run-2/actions). The chunk guard can be run locally with `npm run verify:build` after `npm run build`.
 
 Automated checks are not a substitute for hands-on playtesting. Physical-device touch controls, sustained mobile performance, offline relaunch after PWA installation, and Android packaging/installation still require device verification.
 
-See [implementation status](docs/IMPLEMENTATION_STATUS.md), [roadmap](docs/IMPLEMENTATION_ROADMAP.md), [time-travel adventure specification](docs/TIME_TRAVEL_ADVENTURE_SPEC.md), [Android device testing guide](ANDROID_TESTING_GUIDE.md), and [release checklist](RELEASE_CHECKLIST.md).
+See [implementation status](docs/IMPLEMENTATION_STATUS.md), [roadmap](docs/IMPLEMENTATION_ROADMAP.md), [time-travel adventure specification](docs/TIME_TRAVEL_ADVENTURE_SPEC.md), [Android device testing guide](ANDROID_TESTING_GUIDE.md), [remaining work plan](docs/REMAINING_WORK.md), and [release checklist](RELEASE_CHECKLIST.md).
 
 The development branch is `feature/time-travel-adventure-threejs`. These changes are not represented as merged into `main`.
