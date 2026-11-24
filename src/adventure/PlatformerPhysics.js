@@ -12,7 +12,8 @@ export const PHYSICS = Object.freeze({
 export function createBody(x = 0, y = 0) {
   return {
     x, y, vx: 0, vy: 0,
-    width: 0.78, height: 1.9,
+    width: 0.78, height: 1.9, standingHeight: 1.9, crouchHeight: 1.12, crouching: false,
+    slideTimer: 0, slideDirection: 0, slideSpeed: 0,
     grounded: false,
     coyoteTimer: 0,
     jumpBuffer: 0,
@@ -37,6 +38,15 @@ function overlapsX(body, platform) {
     body.x - body.width / 2 < platform.x + platform.width / 2;
 }
 
+function canFitHeight(body, height, platforms) {
+  const top = body.y + height;
+  return !platforms.some(platform =>
+    overlapsX(body, platform) &&
+    body.y < platform.y + platform.height - 0.02 &&
+    top > platform.y + 0.02
+  );
+}
+
 /** Fixed-step AABB platform physics. Body y is the character's feet. */
 export function stepBody(body, input, platforms, dt, bounds = null, tuning = null) {
   if (!(dt > 0) || dt > 0.05) throw new RangeError('Physics dt must be between 0 and 0.05 seconds');
@@ -45,6 +55,19 @@ export function stepBody(body, input, platforms, dt, bounds = null, tuning = nul
   const acceleration = Number.isFinite(tuning?.acceleration) ? Math.max(0, Math.min(200, tuning.acceleration)) : PHYSICS.acceleration;
   const jumpSpeed = Number.isFinite(tuning?.jumpSpeed) ? Math.max(0, Math.min(20, tuning.jumpSpeed)) : PHYSICS.jumpSpeed;
 
+  const wasCrouching = Boolean(body.crouching);
+  if (input.crouch) {
+    body.crouching = true;
+    body.height = body.crouchHeight || 1.12;
+  } else if (body.crouching && canFitHeight(body, body.standingHeight || 1.9, platforms)) {
+    body.crouching = false;
+    body.height = body.standingHeight || 1.9;
+  }
+  if (body.crouching && !wasCrouching && body.grounded && Math.abs(body.vx) > 3.2) {
+    body.slideTimer = 0.38;
+    body.slideDirection = Math.sign(body.vx);
+    body.slideSpeed = Math.min(12.5, Math.max(6.5, Math.abs(body.vx) * 1.35));
+  }
   if (input.jumpPressed) body.jumpBuffer = PHYSICS.jumpBufferSeconds;
   else body.jumpBuffer = Math.max(0, body.jumpBuffer - dt);
 
@@ -60,10 +83,18 @@ export function stepBody(body, input, platforms, dt, bounds = null, tuning = nul
     body.vx = dashDirection * Math.max(moveSpeed, body.airDashSpeed || 12);
   } else {
     body.airDashDirection = 0;
-    if (move) body.facing = Math.sign(move);
-    const sprintMultiplier = input.sprint && move !== 0 ? 1.35 : 1;
-    const targetSpeed = move * Math.min(20, moveSpeed * sprintMultiplier);
-    body.vx = approach(body.vx, targetSpeed, (move ? acceleration : PHYSICS.friction) * dt);
+    if (move && body.slideTimer <= 0) body.facing = Math.sign(move);
+    if (body.slideTimer > 0 && body.grounded) {
+      body.vx = body.slideDirection * body.slideSpeed * (body.slideTimer / 0.38);
+      body.slideTimer = Math.max(0, body.slideTimer - dt);
+      if (body.slideTimer === 0) body.slideSpeed = 0;
+    } else {
+      body.slideTimer = 0;
+      const sprintMultiplier = input.sprint && move !== 0 && !body.crouching ? 1.35 : 1;
+      const crouchMultiplier = body.crouching ? 0.55 : 1;
+      const targetSpeed = move * Math.min(20, moveSpeed * sprintMultiplier * crouchMultiplier);
+      body.vx = approach(body.vx, targetSpeed, (move ? acceleration : PHYSICS.friction) * dt);
+    }
   }
 
   // Only solid-sided blocks stop horizontal motion; raised platforms are one-way ledges.
