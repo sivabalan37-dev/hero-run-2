@@ -36,17 +36,20 @@
 - Per-level checkpoint save and safe fallback if storage is unavailable/corrupt.
 - HUD, menu, pause/resume, character controls, basic damage/respawn and level-completion progression.
 - Production PWA manifest and same-origin service-worker cache.
-- CI workflow for Node tests, production build and PWA output checks.
+- CI workflow for Node tests, production build, PWA output checks and JavaScript chunk budgets.
+- Dynamic adventure-engine loading keeps the initial JavaScript entry near 3.33 KB (1.55 KB gzip); the deferred application code is about 100.93 KB (29.31 KB gzip).
+- Three.js is isolated into a separately cached vendor chunk at about 562.65 KB (140.75 KB gzip). This still produces Vite's non-blocking 500 KB advisory but no longer enlarges the application chunk.
 
 ## Automated validation
 
 Latest completed validation:
-- **PASS:** 151 of 151 Node unit tests.
+- **PASS:** 171 of 171 Node unit tests.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
-- **Verified run:** [GitHub Actions · mobile renderer quality validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45383556051).
+- **PASS:** production entry and deferred application chunk budgets; Three.js vendor split is present.
+- **Verified run:** [GitHub Actions · production chunk-budget validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45392054858).
 
-The production build may emit a non-blocking warning because the minified JavaScript bundle exceeds Vite's 500 kB advisory threshold.
+The Three.js vendor chunk remains above Vite's 500 kB advisory threshold (562.65 kB minified, 140.75 kB gzip). This is an advisory, not a failed build.
 
 ## Not yet tested
 
