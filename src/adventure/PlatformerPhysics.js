@@ -59,7 +59,8 @@ export function stepBody(body, input, platforms, dt, bounds = null, tuning = nul
   } else {
     body.airDashDirection = 0;
     if (move) body.facing = Math.sign(move);
-    const targetSpeed = move * moveSpeed;
+    const sprintMultiplier = input.sprint && move !== 0 ? 1.35 : 1;
+    const targetSpeed = move * Math.min(20, moveSpeed * sprintMultiplier);
     body.vx = approach(body.vx, targetSpeed, (move ? acceleration : PHYSICS.friction) * dt);
   }
 
