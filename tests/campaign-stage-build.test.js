@@ -68,6 +68,10 @@ test('all forty campaign levels build playable stage structures', () => {
         const boss = bosses[0];
         assert.ok(boss.minX >= stage.checkpointX && boss.maxX < stage.exitX,
           `level ${levelNumber} boss patrol stays inside the checkpoint-to-exit arena`);
+        assert.ok(boss.minX - stage.checkpointX >= 4,
+          `level ${levelNumber} boss patrol leaves a safe buffer after the checkpoint`);
+        assert.ok(boss.x - stage.checkpointX >= 6,
+          `level ${levelNumber} boss starts far enough ahead of the checkpoint`);
       }
       assert.equal(bosses.length, stage.isBossLevel ? 1 : 0,
         `level ${levelNumber} has the expected boss count`);
