@@ -793,7 +793,8 @@ export class AdventureGame {
     const movementTuning = benjiForm ? getBenjiFormStats(benjiForm).movement : null;
     const glide = this.hero.characterId === 'nobi' && !body.grounded && this.input.isDown('jump');
     const sprint = this.input.isDown('sprint');
-    stepBody(body, { move, jumpPressed, glide, sprint }, this.level.platforms, dt, { minX: -9, maxX: this.level.exitX + 2 }, movementTuning);
+    const crouch = this.input.isDown('crouch');
+    stepBody(body, { move, jumpPressed, glide, sprint, crouch }, this.level.platforms, dt, { minX: -9, maxX: this.level.exitX + 2 }, movementTuning);
     this.level.update(dt, body);
     for (const enemy of this.level.enemies) {
       if (!enemy.isBoss) continue;
