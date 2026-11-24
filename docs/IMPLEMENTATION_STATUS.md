@@ -3,6 +3,7 @@
 **Project:** HERO RUN: TIME-TRAVEL ADVENTURE  
 **Engine:** Three.js 0.187.0  
 **Development branch:** `feature/time-travel-adventure-threejs`  
+**App version:** 1.0.1  
 **Updated:** 2026-11-24
 
 ## Implemented in this branch
@@ -37,6 +38,7 @@
 - Per-level checkpoint save and safe fallback if storage is unavailable/corrupt.
 - HUD, menu, pause/resume, character controls, basic damage/respawn and level-completion progression.
 - Production PWA manifest and Vite asset manifest; the service worker pre-caches every built JavaScript, CSS and static asset on installation, runtime-caches same-origin GET assets, and preserves cache entries owned by other apps on the same origin.
+- Versioned PWA update center (app version 1.0.1): the menu can check for a new service-worker release, display when the new build is ready, and wait for the player's UPDATE NOW approval before activation/reload. Each release has its own cache namespace, so the active worker continues serving its complete previous cache until the new worker takes control.
 - CI workflow for Node tests, production build, PWA output checks and JavaScript chunk budgets.
 - Dynamic adventure-engine loading keeps the initial JavaScript entry near 3.33 KB (1.55 KB gzip); the deferred application code is about 100.93 KB (29.31 KB gzip).
 - Three.js is isolated into a separately cached vendor chunk at about 562.65 KB (140.75 KB gzip). This still produces Vite's non-blocking 500 KB advisory but no longer enlarges the application chunk.
@@ -44,15 +46,16 @@
 ## Automated validation
 
 Latest completed validation:
-- **PASS:** 203 of 203 Node unit tests.
+- **PASS:** 210 of 210 Node unit tests.
 - **PASS:** Vite production build.
 - **PASS:** service worker, PWA manifest and Vite asset manifest copied into the production output.
-- **PASS:** service-worker install precaching, offline asset reuse, navigation fallback and cache isolation.
+- **PASS:** service-worker install precaching, offline asset reuse, navigation fallback, release-cache isolation and player-approved activation.
+- **PASS:** update-manager initialization, manual update checks, waiting-release UI state, approval/reload flow and failed-network handling.
 - **PASS:** keyboard aliases, independent simultaneous touch pointers, same-action multi-pointer release, blur cleanup and input listener teardown.
 - **PASS:** touch-control action coverage including CROUCH, phone target dimensions, coarse/fine pointer visibility and pointer-event handling.
 - **PASS:** production entry and deferred application chunk budgets; Three.js vendor split is present.
 - **PASS:** GitHub Actions updated to Node 24-compatible action releases.
-- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45419606722).
+- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45424687621).
 
 The Three.js vendor chunk remains above Vite's 500 kB advisory threshold (562.65 kB minified, 140.75 kB gzip). This is an advisory, not a failed build.
 
