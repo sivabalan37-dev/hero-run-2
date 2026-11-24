@@ -282,9 +282,6 @@ export class AdventureGame {
 
   openAchievements() {
     if (['running', 'paused', 'gameover'].includes(this.state)) return;
-    this.ui.titlesButton.classList.add('hidden');
-    this.ui.titlesPanel.classList.add('hidden');
-    this.ui.titlesBack.classList.add('hidden');
     this.renderAchievements();
     this.ui.message.classList.add('hidden');
     this.ui.start.classList.add('hidden');
@@ -352,9 +349,6 @@ export class AdventureGame {
 
   openTutorial() {
     if (['running', 'paused', 'gameover'].includes(this.state)) return;
-    this.ui.titlesButton.classList.add('hidden');
-    this.ui.titlesPanel.classList.add('hidden');
-    this.ui.titlesBack.classList.add('hidden');
     this.ui.message.classList.add('hidden');
     this.ui.start.classList.add('hidden');
     this.ui.levelSelect.classList.add('hidden');
@@ -402,8 +396,6 @@ export class AdventureGame {
     this.ui.rewardsPanel.classList.add('hidden');
     this.ui.rewardsBack.classList.add('hidden');
     const menuOnly = this.state === 'paused' || this.state === 'gameover';
-    this.ui.titlesPanel.classList.add('hidden');
-    this.ui.titlesBack.classList.add('hidden');
     this.ui.achievementsButton.classList.toggle('hidden', menuOnly);
     this.ui.rewardsButton.classList.toggle('hidden', menuOnly);
     this.ui.settingsButton.classList.toggle('hidden', menuOnly);
@@ -417,9 +409,6 @@ export class AdventureGame {
 
   openLevelSelection() {
     if (this.state === 'paused' || this.state === 'gameover' || this.state === 'running') return;
-    this.ui.titlesButton.classList.add('hidden');
-    this.ui.titlesPanel.classList.add('hidden');
-    this.ui.titlesBack.classList.add('hidden');
     this.renderLevelSelection();
     this.ui.title.textContent = 'CHOOSE YOUR LEVEL';
     this.ui.message.classList.add('hidden');
