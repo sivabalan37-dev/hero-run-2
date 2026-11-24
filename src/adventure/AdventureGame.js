@@ -24,31 +24,9 @@ import { getEquippedTitle, getTitleRewards, selectAchievementTitle } from './Rew
 import { getCampaignSummary } from './CampaignSummary.js';
 import { getRenderPixelRatio } from './GraphicsQuality.js';
 
+import { readCheckpoint, writeCheckpoint } from './CheckpointSave.js';
+
 const FIXED_STEP = 1 / 60;
-const CHECKPOINT_KEY = 'hero-run-time-travel-save-v1';
-
-function readCheckpoint(levelNumber) {
-  try {
-    const value = JSON.parse(localStorage.getItem(CHECKPOINT_KEY) || 'null');
-    const savedLevel = Number.isInteger(value?.levelNumber) ? value.levelNumber : 1;
-    if (value?.version === 1 && savedLevel === levelNumber && Number.isFinite(value.checkpointX)) {
-      return Math.max(-5, Math.min(220, value.checkpointX));
-    }
-  } catch { /* Treat corrupt or blocked checkpoint storage as a fresh checkpoint. */ }
-  return -5;
-}
-
-function writeCheckpoint(checkpointX, levelNumber) {
-  try {
-    localStorage.setItem(CHECKPOINT_KEY, JSON.stringify({
-      version: 1,
-      levelNumber,
-      checkpointX,
-      savedAt: Date.now(),
-    }));
-    return true;
-  } catch { return false; }
-}
 
 export class AdventureGame {
   constructor({ mount }) {
