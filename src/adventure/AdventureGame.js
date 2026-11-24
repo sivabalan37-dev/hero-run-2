@@ -22,6 +22,7 @@ import { loadSettings, saveSettings } from './Settings.js';
 import { getAchievementProgress } from './Achievements.js';
 import { getEquippedTitle, getTitleRewards, selectAchievementTitle } from './Rewards.js';
 import { getCampaignSummary } from './CampaignSummary.js';
+import { getRenderPixelRatio } from './GraphicsQuality.js';
 
 const FIXED_STEP = 1 / 60;
 const CHECKPOINT_KEY = 'hero-run-time-travel-save-v1';
@@ -224,8 +225,15 @@ export class AdventureGame {
   }
 
   getPixelRatio() {
-    const caps = { low: 1, medium: 1.5, high: 2 };
-    return Math.min(window.devicePixelRatio || 1, caps[this.settings.graphicsQuality] || 1.5);
+    const coarsePointer = typeof window.matchMedia === 'function'
+      && window.matchMedia('(pointer: coarse)').matches;
+    return getRenderPixelRatio({
+      quality: this.settings.graphicsQuality,
+      devicePixelRatio: window.devicePixelRatio || 1,
+      coarsePointer,
+      deviceMemory: navigator.deviceMemory,
+      hardwareConcurrency: navigator.hardwareConcurrency,
+    });
   }
 
   applyGraphicsSettings() {
