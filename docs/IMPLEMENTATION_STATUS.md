@@ -143,3 +143,10 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - Shock pulse now checks both horizontal radius and vertical separation from each enemy's combat center, so a high jump no longer hits ground-level enemies across an unrealistic vertical gap while hovering drones and bosses remain reachable within the pulse height.
 - Added regression coverage for a jumping Benji hitting a hovering drone without hitting a ground-level enemy at the same horizontal distance.
 - Automated CI validation is pending; real-device combat balance and visual testing remain outstanding.
+
+
+## Titan exact damage-reduction fix
+
+- Titan's 50% incoming-damage reduction now applies the exact fractional amount instead of rounding a 25-point hit up from 12.5 to 13.
+- Added unit coverage for all Benji form damage modifiers and for invalid/negative damage inputs.
+- CI validation is pending; actual combat balance and physical-device playtesting remain outstanding.
