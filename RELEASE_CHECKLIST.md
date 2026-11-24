@@ -23,6 +23,10 @@
 - [ ] Test all five boss encounters, phase changes, attack warnings and exit gates.
 - [ ] Test pause/resume and automatic pause when the page becomes hidden.
 
+## Android device guide
+
+Use [ANDROID_TESTING_GUIDE.md](ANDROID_TESTING_GUIDE.md) to record the phone/browser build and follow the complete manual test sequence. The items below must remain unchecked until completed on a real device.
+
 ## Browser and device verification
 
 - [ ] Test gameplay in a current desktop browser.
@@ -30,7 +34,7 @@
 - [ ] Check sustained frame rate and memory use on a lower-powered phone.
 - [ ] Install the PWA, then verify it can relaunch offline after one successful online load.
 - [ ] Confirm the hosted build is served over HTTPS.
-- [ ] Verify Android packaging and APK installation if a native Android release is planned.
+- [ ] Verify Android packaging and APK installation if a native Android release is planned. The current project workflow builds a PWA only; no APK is available yet.
 
 ## Release claims
 
