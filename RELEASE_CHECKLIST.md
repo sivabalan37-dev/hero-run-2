@@ -7,6 +7,7 @@
 - [ ] Run `npm run build` and confirm the production `dist/` output is generated.
 - [ ] Confirm `dist/manifest.webmanifest` and `dist/service-worker.js` are present.
 - [ ] Run `npm run verify:build` and confirm the initial entry, deferred application chunk and separate Three.js vendor chunk meet their size/layout checks.
+- [ ] Confirm the production build displays the current app version from `package.json`.
 
 ## Adventure gameplay
 
@@ -24,6 +25,14 @@
 - [ ] Verify locked/unlocked character and level-selection rules.
 - [ ] Test all five boss encounters, phase changes, attack warnings and exit gates.
 - [ ] Test pause/resume and automatic pause when the page becomes hidden.
+
+## PWA update flow
+
+- [ ] On a hosted HTTPS build, check for updates from the main menu.
+- [ ] Verify a new service worker downloads into a separate cache while the active release remains usable.
+- [ ] Verify UPDATE NOW is shown only when a new worker is waiting.
+- [ ] Approve the update, confirm the game reloads under the new worker and saved campaign progress remains intact.
+- [ ] For every release, increment both `package.json` version and the `CACHE_NAME` in `public/service-worker.js`.
 
 ## Android device guide
 
