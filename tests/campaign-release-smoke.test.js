@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { getLevelInfo, PLAYABLE_LEVELS, WORLDS } from '../src/adventure/LevelCatalog.js';
 import { getLevelDesign, AUTHORED_LEVEL_NUMBERS } from '../src/adventure/LevelDesigns.js';
 
+// These checks guard campaign data before device-level gameplay QA.
+
 test('every campaign level has valid catalog metadata and belongs to exactly one world', () => {
   assert.equal(PLAYABLE_LEVELS.length, 40);
   for (let level = 1; level <= 40; level += 1) {
