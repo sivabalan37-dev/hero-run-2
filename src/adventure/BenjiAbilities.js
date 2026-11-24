@@ -35,6 +35,12 @@ export function getBenjiFormStats(form) {
   return BENJI_FORM_CONFIG[form] || BENJI_FORM_CONFIG.normal;
 }
 
+/** Calculate incoming damage without rounding away a form's exact defense modifier. */
+export function getBenjiDamageTaken(baseDamage, form = 'normal') {
+  const damage = Number.isFinite(baseDamage) ? Math.max(0, baseDamage) : 0;
+  return damage * getBenjiFormStats(form).damageMultiplier;
+}
+
 function isWithinShockPulse(body, enemy) {
   const heroCenterY = (Number.isFinite(body.y) ? body.y : 0) + (Number.isFinite(body.height) ? body.height * 0.5 : 0.95);
   const enemyLocalCenterY = enemy.isBoss
