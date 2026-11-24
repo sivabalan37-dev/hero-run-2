@@ -35,7 +35,7 @@
 - Campaign level-selection screen groups all 40 stages into five worlds, marks completed stages with saved star ratings, allows completed-level replays, and disables stages that have not yet been unlocked. Level unlock rules are covered by campaign-progress unit tests.
 - Per-level checkpoint save and safe fallback if storage is unavailable/corrupt.
 - HUD, menu, pause/resume, character controls, basic damage/respawn and level-completion progression.
-- Production PWA manifest and same-origin service-worker cache.
+- Production PWA manifest and Vite asset manifest; the service worker pre-caches every built JavaScript, CSS and static asset on installation, runtime-caches same-origin GET assets, and preserves cache entries owned by other apps on the same origin.
 - CI workflow for Node tests, production build, PWA output checks and JavaScript chunk budgets.
 - Dynamic adventure-engine loading keeps the initial JavaScript entry near 3.33 KB (1.55 KB gzip); the deferred application code is about 100.93 KB (29.31 KB gzip).
 - Three.js is isolated into a separately cached vendor chunk at about 562.65 KB (140.75 KB gzip). This still produces Vite's non-blocking 500 KB advisory but no longer enlarges the application chunk.
@@ -43,11 +43,13 @@
 ## Automated validation
 
 Latest completed validation:
-- **PASS:** 171 of 171 Node unit tests.
+- **PASS:** 175 of 175 Node unit tests.
 - **PASS:** Vite production build.
-- **PASS:** service worker and manifest copied into the production output.
+- **PASS:** service worker, PWA manifest and Vite asset manifest copied into the production output.
+- **PASS:** service-worker install precaching, offline asset reuse, navigation fallback and cache isolation.
 - **PASS:** production entry and deferred application chunk budgets; Three.js vendor split is present.
-- **Verified run:** [GitHub Actions · production chunk-budget validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45392054858).
+- **PASS:** GitHub Actions updated to Node 24-compatible action releases.
+- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45392749487).
 
 The Three.js vendor chunk remains above Vite's 500 kB advisory threshold (562.65 kB minified, 140.75 kB gzip). This is an advisory, not a failed build.
 
