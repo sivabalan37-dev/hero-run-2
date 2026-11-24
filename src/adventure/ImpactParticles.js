@@ -45,9 +45,10 @@ export class ImpactParticlePool {
     const life = boss ? 0.48 : 0.34;
     const color = boss ? PARTICLE_COLORS[4] : null;
     let spawned = 0;
+    const startIndex = this.nextSpawnIndex;
 
     for (let offset = 0; offset < this.items.length && spawned < count; offset++) {
-      const index = (this.nextSpawnIndex + offset) % this.items.length;
+      const index = (startIndex + offset) % this.items.length;
       const item = this.items[index];
       if (item.active) continue;
 
