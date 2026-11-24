@@ -121,3 +121,11 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - The victory summary reports all 40 levels, saved campaign stars, campaign coins and completed world-boss stages.
 - The main action replays the final level without resetting or farming saved campaign rewards.
 - Added pure campaign-summary calculations and tests for fresh, partial, complete and replayed campaigns.
+
+
+## Nobi air-dash direction fix
+
+- Nobi's air dash now records its launch direction and keeps that direction for the complete dash window, even if the player presses the opposite movement control.
+- Normal directional steering resumes after the dash timer expires.
+- Added regression coverage for locked direction, launch-direction capture and normal steering after the dash.
+- Automated CI validation is required before treating this change as verified; physical-device gameplay testing is still outstanding.
