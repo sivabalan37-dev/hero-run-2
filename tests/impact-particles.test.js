@@ -30,3 +30,35 @@ test('impact particles expire and hide their pooled meshes', () => {
   assert.equal(pool.items.filter(item => item.mesh.visible).length, 0);
   pool.destroy();
 });
+
+test('impact burst spawning avoids temporary filtered arrays and velocity objects', () => {
+  const pool = new ImpactParticlePool(new THREE.Scene(), 10);
+  pool.items.filter = () => {
+    throw new Error('spawn must not allocate an available-items array');
+  };
+
+  assert.equal(pool.spawn(1, 2, false), 7);
+  assert.equal(pool.spawn(3, 4, false), 3);
+  assert.equal(pool.items.reduce((count, item) => count + Number(item.active), 0), 10);
+  assert.equal(pool.spawn(5, 6, true), 0);
+
+  const finalBurst = pool.items.slice(7);
+  for (let index = 0; index < finalBurst.length; index++) {
+    const expected = getImpactParticleVelocity(index, 3, 3.8);
+    assert.ok(Math.abs(finalBurst[index].vx - expected.x) < 1e-10);
+    assert.ok(Math.abs(finalBurst[index].vy - expected.y) < 1e-10);
+  }
+
+  pool.destroy();
+});
+
+test('impact particle pool wraps its allocation cursor after particles expire', () => {
+  const scene = new THREE.Scene();
+  const pool = new ImpactParticlePool(scene, 8);
+  assert.equal(pool.spawn(0, 0), 7);
+  pool.update(0.5);
+  assert.equal(pool.spawn(2, 3), 7);
+  assert.equal(pool.items.reduce((count, item) => count + Number(item.active), 0), 7);
+  pool.destroy();
+  assert.equal(scene.children.length, 0);
+});
