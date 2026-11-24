@@ -332,11 +332,16 @@ export class SunnyNeighborhoodLevel {
       route.length = 0;
       for (let i = 0; i < this.design.coinRatios.length; i++) {
         const ratio = this.design.coinRatios[i];
+        const x = this.exitX * ratio;
         const platform = this.design.platforms.reduce((nearest, candidate) =>
           Math.abs(candidate.xRatio - ratio) < Math.abs(nearest.xRatio - ratio) ? candidate : nearest,
           this.design.platforms[0]);
-        const y = i % 3 === 1 ? Math.max(2.45, platform.height + 0.65) : 1.4;
-        route.push([this.exitX * ratio, y]);
+        const platformX = this.exitX * platform.xRatio;
+        const coinCanReachPlatform = Math.abs(x - platformX) <= platform.width / 2 + 0.75;
+        const y = i % 3 === 1 && coinCanReachPlatform
+          ? Math.max(2.45, platform.height + 0.65)
+          : 1.4;
+        route.push([x, y]);
       }
     }
     for (const [x, y] of route) this.addCollectible('coin', x, y);
