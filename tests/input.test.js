@@ -156,3 +156,21 @@ test('destroy removes listeners and clears held input state', () => {
   assert.equal((root.listeners.get('pointerdown') || []).length, 0);
   assert.equal((windowTarget.listeners.get('keydown') || []).length, 0);
 });
+
+test('Shift keys hold sprint without generating repeated press transitions', () => {
+  const { input, windowTarget } = createInput();
+  windowTarget.dispatch('keydown', { code: 'ShiftLeft', preventDefault() {} });
+  assert.equal(input.isDown('sprint'), true);
+  assert.equal(input.wasPressed('sprint'), true);
+  input.endStep();
+
+  windowTarget.dispatch('keydown', { code: 'ShiftRight', preventDefault() {} });
+  assert.equal(input.isDown('sprint'), true);
+  assert.equal(input.wasPressed('sprint'), false);
+
+  windowTarget.dispatch('keyup', { code: 'ShiftLeft' });
+  assert.equal(input.isDown('sprint'), true, 'the second Shift key should keep sprint held');
+  windowTarget.dispatch('keyup', { code: 'ShiftRight' });
+  assert.equal(input.isDown('sprint'), false);
+  input.destroy();
+});
