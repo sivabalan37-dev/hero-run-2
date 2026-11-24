@@ -49,7 +49,7 @@ Latest completed validation:
 - **PASS:** service-worker install precaching, offline asset reuse, navigation fallback and cache isolation.
 - **PASS:** production entry and deferred application chunk budgets; Three.js vendor split is present.
 - **PASS:** GitHub Actions updated to Node 24-compatible action releases.
-- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45392749487).
+- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45392918103).
 
 The Three.js vendor chunk remains above Vite's 500 kB advisory threshold (562.65 kB minified, 140.75 kB gzip). This is an advisory, not a failed build.
 
