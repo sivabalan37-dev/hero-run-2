@@ -89,7 +89,7 @@ export class SunnyNeighborhoodLevel {
           j * 1.05, Math.sin(j) * 0.14, 0, cloud, false);
         puff.scale.y = 0.62;
       }
-      cloud.position.set(-10 + i * 7.8, 7.5 + (i % 3) * 1.25, -9);
+      cloud.position.set(-10 + i * ((this.exitX + 24) / 7), 7.5 + (i % 3) * 1.25, -9);
       this.group.add(cloud);
     }
 
@@ -107,7 +107,7 @@ export class SunnyNeighborhoodLevel {
             ? ['#a68acb', '#d68b9a', '#8298c8', '#d6a47d']
             : ['#ffd47a', '#f5a8a0', '#a8d5f5', '#f0c2e7'];
     for (let i = 0; i < 5; i++) {
-      const x = -12 + i * 12.5;
+      const x = -12 + i * ((this.exitX + 24) / 4);
       const house = new THREE.Group();
       const wallMat = standard(houseColors[i % houseColors.length]);
       mesh(new THREE.BoxGeometry(5.2, 3.2, 2.2), wallMat, 0, 1.6, 0, house);
@@ -126,7 +126,7 @@ export class SunnyNeighborhoodLevel {
     const treeTrunk = standard(this.worldIndex === 0 ? '#87553b' : worldTheme.accent);
     const treeLeaves = [standard('#42a65e'), standard('#78bd58'), standard('#2f8f5a')];
     for (let i = 0; i < 18; i++) {
-      const x = -13 + i * 3.1;
+      const x = -13 + i * ((this.exitX + 26) / 17);
       mesh(new THREE.CylinderGeometry(0.16, 0.22, 1.4, 7), treeTrunk, x, 0.65, -3.9, this.group);
       mesh(new THREE.IcosahedronGeometry(0.95 + (i % 3) * 0.12, 1), treeLeaves[i % 3],
         x, 1.85, -3.9, this.group);
@@ -181,7 +181,7 @@ export class SunnyNeighborhoodLevel {
   buildWorldLandmarks(theme) {
     const materials = [theme.accent, theme.ground, theme.enemy].map(color => standard(color, 0.55, 0.25));
     for (let i = 0; i < 7; i++) {
-      const x = -8 + i * 11.5;
+      const x = -8 + i * ((this.exitX + 20) / 6);
       if (this.worldIndex === 1) {
         const pillar = mesh(new THREE.BoxGeometry(2.2, 5.5 + (i % 3), 1.2), materials[i % 3], x, 2.7, -8, this.group);
         mesh(new THREE.BoxGeometry(2.8, 0.35, 1.5), materials[(i + 1) % 3], x, 5.5 + (i % 3), -8, this.group);
