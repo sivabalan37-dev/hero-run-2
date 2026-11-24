@@ -6,6 +6,7 @@
 - [ ] Run `npm test` and confirm every test passes.
 - [ ] Run `npm run build` and confirm the production `dist/` output is generated.
 - [ ] Confirm `dist/manifest.webmanifest` and `dist/service-worker.js` are present.
+- [ ] Run `npm run verify:build` and confirm the initial entry, deferred application chunk and separate Three.js vendor chunk meet their size/layout checks.
 
 ## Adventure gameplay
 
