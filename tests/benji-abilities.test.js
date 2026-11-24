@@ -5,9 +5,11 @@ import {
   getBenjiFormStats,
 } from '../src/adventure/BenjiAbilities.js';
 
-function enemy(x, health = 2) {
+function enemy(x, health = 2, enemyType = 'robo-bug', isBoss = false) {
   return {
     x,
+    enemyType,
+    isBoss,
     minX: x - 3,
     maxX: x + 3,
     health,
@@ -55,6 +57,17 @@ test('Shock pulse damages multiple enemies inside its radius only', () => {
   assert.equal(result.hits, 2);
   assert.equal(result.defeated, 2);
   assert.equal(far.health, 2);
+});
+
+test('Shock pulse respects vertical separation while still reaching hovering targets', () => {
+  const groundTarget = enemy(1.5);
+  const drone = enemy(-2, 2, 'drone-scout');
+  const airborne = groundedHero({ y: 2.2 });
+  const result = applyBenjiSpecial('shock', airborne, [groundTarget, drone]);
+
+  assert.equal(result.hits, 1);
+  assert.equal(groundTarget.health, 2);
+  assert.equal(drone.health, 0);
 });
 
 test('Titan stomp requires landing and deals heavy area damage with knockback', () => {
