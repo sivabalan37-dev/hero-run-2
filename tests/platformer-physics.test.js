@@ -212,3 +212,50 @@ test('wall slide requires pressing toward the wall and does not trigger on open 
   stepBody(openAir, { move: 1, jumpPressed: true }, [], 1 / 60);
   assert.ok(openAir.vy < 0, 'jumping without a wall should not create a wall jump');
 });
+
+
+test('crouching lowers the collision body without moving the feet', () => {
+  const body = createBody(0, 0);
+  body.grounded = true;
+  const feet = body.y;
+  stepBody(body, { move: 0, crouch: true }, floor, 1 / 60);
+  assert.equal(body.crouching, true);
+  assert.equal(body.height, body.crouchHeight);
+  assert.equal(body.y, feet);
+});
+
+test('standing remains blocked while a low ceiling overlaps the standing height', () => {
+  const ceiling = { x: 0, y: 1.45, width: 4, height: 1, solidSides: true };
+  const body = createBody(0, 0);
+  body.grounded = true;
+  stepBody(body, { move: 0, crouch: true }, [...floor, ceiling], 1 / 60);
+  assert.equal(body.height, body.crouchHeight);
+  stepBody(body, { move: 0, crouch: false }, [...floor, ceiling], 1 / 60);
+  assert.equal(body.crouching, true);
+  assert.equal(body.height, body.crouchHeight);
+  stepBody(body, { move: 0, crouch: false }, floor, 1 / 60);
+  assert.equal(body.crouching, false);
+  assert.equal(body.height, body.standingHeight);
+  assert.equal(body.y, 0);
+});
+
+test('ground slide starts from running momentum and remains within its speed cap', () => {
+  const body = createBody(0, 0);
+  body.grounded = true;
+  body.vx = 7;
+  stepBody(body, { move: 1, crouch: true }, floor, 1 / 60);
+  assert.ok(body.slideTimer > 0);
+  assert.equal(body.slideDirection, 1);
+  assert.ok(body.vx <= 12.5);
+  assert.ok(body.vx > 7);
+  for (let i = 0; i < 30; i++) stepBody(body, { move: 1, crouch: true }, floor, 1 / 60);
+  assert.equal(body.slideTimer, 0);
+  assert.ok(body.vx <= 7.2 * 0.55 + 0.1);
+});
+
+test('crouch does not trigger a ground slide in mid-air', () => {
+  const body = createBody(0, 4);
+  body.vx = 7;
+  stepBody(body, { move: 1, crouch: true }, [], 1 / 60);
+  assert.equal(body.slideTimer, 0);
+});
