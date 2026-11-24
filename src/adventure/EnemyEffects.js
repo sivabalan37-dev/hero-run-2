@@ -6,6 +6,15 @@ const COLORS = Object.freeze({
   bossReady: '#75f0c0',
 });
 
+export const ENEMY_VISUAL_WAKE_DISTANCE = 32;
+
+/** Skip expensive animation calculations for enemies well outside the camera area. */
+export function shouldUpdateEnemyVisuals(enemyX, heroX, maxDistance = ENEMY_VISUAL_WAKE_DISTANCE) {
+  if (!Number.isFinite(enemyX) || !Number.isFinite(heroX)
+    || !Number.isFinite(maxDistance) || maxDistance < 0) return true;
+  return Math.abs(enemyX - heroX) <= maxDistance;
+}
+
 /**
  * Pure, allocation-light visual state for enemy and boss animation.
  * elapsed is level-local seconds, so effects remain deterministic in tests.
