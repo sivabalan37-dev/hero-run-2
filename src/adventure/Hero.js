@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createBody } from './PlatformerPhysics.js';
 import { getAttackPose } from './HeroAnimation.js';
-import { getBenjiSpecialVisualState } from './BenjiSpecialEffects.js';
+import { getBenjiFlameOffset, getBenjiSpecialVisualState } from './BenjiSpecialEffects.js';
 import { getBenjiFormTransitionVisualState } from './BenjiFormTransition.js';
 
 const material = (color, roughness = 0.72, metalness = 0) =>
@@ -297,8 +297,9 @@ export class BenjiHero extends BaseHero {
     }
   }
 
-  triggerSpecialEffect(ability) {
+  triggerSpecialEffect(ability, facing = this.body.facing) {
     if (!this.specialEffects?.[ability]) return false;
+    if (ability === 'flame') this.specialEffects.flame.position.x = getBenjiFlameOffset(facing);
     this.specialEffectAbility = ability;
     this.specialEffectTimer = 0;
     for (const [name, effect] of Object.entries(this.specialEffects)) effect.visible = name === ability;
