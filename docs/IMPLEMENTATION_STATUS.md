@@ -3,11 +3,12 @@
 **Project:** HERO RUN: TIME-TRAVEL ADVENTURE  
 **Engine:** Three.js 0.187.0  
 **Development branch:** `feature/time-travel-adventure-threejs`  
-**Updated:** 2026-11-23
+**Updated:** 2026-11-24
 
 ## Implemented in this branch
 
 - Three.js WebGL 2 renderer, responsive orthographic side camera and landscape-aware resizing.
+- Device-aware renderer pixel-ratio caps: coarse-pointer phones and devices reporting 4 GB RAM or 4 CPU threads or fewer use a reduced resolution ceiling to lower GPU fill cost; desktop quality presets remain unchanged. Automated coverage is included in `tests/graphics-quality.test.js`.
 - Fixed 60 Hz AABB platform movement, gravity, horizontal bounds, landing/underside collision, one-way raised platforms, coyote time and jump buffering.
 - Procedural Shin, Nobi and Benji character models with a shared movement/animation interface.
 - Character progression: Shin starts unlocked; Nobi unlocks after 3 distinct completed levels; Benji unlocks after 6.
@@ -39,13 +40,13 @@
 
 ## Automated validation
 
-Latest completed validation run (before the 40-stage layout expansion):
-- **PASS:** 100 of 100 Node unit tests, including Gadget Vision scan animation, five enemy archetypes, enemy/boss visual states, five boss attack transforms, pooled impact particle behavior, shared hero punch poses, all five boss attack profiles, boss HUD states, campaign catalog and stage construction.
+Latest completed validation:
+- **PASS:** 151 of 151 Node unit tests.
 - **PASS:** Vite production build.
 - **PASS:** service worker and manifest copied into the production output.
-- **Verified run:** [GitHub Actions · latest validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45165734612).
+- **Verified run:** [GitHub Actions · mobile renderer quality validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45383556051).
 
-The production build emits a non-blocking warning because the minified JavaScript bundle exceeds Vite's 500 kB advisory threshold.
+The production build may emit a non-blocking warning because the minified JavaScript bundle exceeds Vite's 500 kB advisory threshold.
 
 ## Not yet tested
 
