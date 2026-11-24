@@ -35,6 +35,7 @@ Record any console errors, black screens, missing textures or sound problems.
 ## 3. Touch controls
 
 - [ ] Hold LEFT and JUMP at the same time; confirm both actions register.
+- [ ] Hold RIGHT and SPRINT at the same time; confirm sprint increases movement speed and releasing SPRINT returns to normal speed.
 - [ ] Hold RIGHT and STAR at the same time.
 - [ ] Hold LEFT and RIGHT together; confirm movement cancels rather than sticking.
 - [ ] Press and release each action button; confirm its pressed visual state clears.
