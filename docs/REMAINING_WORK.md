@@ -12,7 +12,8 @@ There are **7 major remaining work areas**. Some involve code; others require re
 
 ## 1. Close gameplay-spec gaps and finish content polish
 
-- [ ] Review the movement requirements against the current physics: sprint, wall jump/slide and crouch/slide are in the product specification but are not currently listed as implemented.
+- [x] Add hold-to-sprint movement using Shift and a touch control; speed remains bounded by the physics cap.
+- [ ] Implement and test wall jump/slide and crouch/slide, which remain in the product specification but are not currently implemented.
 - [ ] Confirm whether double-jump should be available to every hero or remain a Nobi-specific aerial ability; the current implementation gives Nobi the extra mid-air jump.
 - [ ] Decide whether to add the six enemy families named in the product specification. The current campaign uses five different archetypes: Robo Bug, Clockwork Charger, Vine Sweeper, Drone Scout and Time Sentinel.
 - [ ] Decide whether star fragments, chests, best-time records and a local leaderboard are release requirements; they appear in the product specification but are not part of the current implemented feature list.
@@ -77,6 +78,8 @@ Distance-aware enemy visual culling and pooled effects have automated coverage, 
 - [ ] Produce release notes and verified distribution artifacts.
 
 ## Completed foundation (not counted as pending)
+
+- Hold-to-sprint movement with keyboard and touch input, covered by physics and input tests.
 
 - 40 campaign levels with five boss stages.
 - Three playable heroes and Benji's four forms.
