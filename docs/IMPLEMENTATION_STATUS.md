@@ -9,7 +9,7 @@
 
 - Three.js WebGL 2 renderer, responsive orthographic side camera and landscape-aware resizing.
 - Device-aware renderer pixel-ratio caps: coarse-pointer phones and devices reporting 4 GB RAM or 4 CPU threads or fewer use a reduced resolution ceiling to lower GPU fill cost; desktop quality presets remain unchanged. Automated coverage is included in `tests/graphics-quality.test.js`.
-- Fixed 60 Hz AABB platform movement, gravity, horizontal bounds, landing/underside collision, one-way raised platforms, coyote time, jump buffering, hold-to-sprint movement (Shift on keyboard or SPRINT on touch), wall jump and controlled wall slide. Wall contact is detected against solid-sided platforms; jumping launches away from the contacted wall, while pressing into a wall during a fall caps downward speed.
+- Fixed 60 Hz AABB platform movement, gravity, horizontal bounds, landing/underside collision, one-way raised platforms, coyote time, jump buffering, hold-to-sprint movement (Shift on keyboard or SPRINT on touch), crouching and a short ground slide (S / Down Arrow or CROUCH on touch), wall jump and controlled wall slide. Crouching reduces the collision height while keeping the feet fixed; standing is deferred while an overhead platform blocks the full height. A slide starts from running momentum, lasts 0.38 seconds and is speed-capped. Wall contact is detected against solid-sided platforms; jumping launches away from the contacted wall, while pressing into a wall during a fall caps downward speed.
 - Procedural Shin, Nobi and Benji character models with a shared movement/animation interface.
 - Character progression: Shin starts unlocked; Nobi unlocks after 3 distinct completed levels; Benji unlocks after 6.
 - Character selection via C / HERO control, with selection persisted in campaign progress.
@@ -44,12 +44,12 @@
 ## Automated validation
 
 Latest completed validation:
-- **PASS:** 195 of 195 Node unit tests.
+- **PASS:** 203 of 203 Node unit tests.
 - **PASS:** Vite production build.
 - **PASS:** service worker, PWA manifest and Vite asset manifest copied into the production output.
 - **PASS:** service-worker install precaching, offline asset reuse, navigation fallback and cache isolation.
 - **PASS:** keyboard aliases, independent simultaneous touch pointers, same-action multi-pointer release, blur cleanup and input listener teardown.
-- **PASS:** touch-control action coverage, phone target dimensions, coarse/fine pointer visibility and pointer-event handling.
+- **PASS:** touch-control action coverage including CROUCH, phone target dimensions, coarse/fine pointer visibility and pointer-event handling.
 - **PASS:** production entry and deferred application chunk budgets; Three.js vendor split is present.
 - **PASS:** GitHub Actions updated to Node 24-compatible action releases.
 - **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45419606722).
