@@ -47,14 +47,15 @@ Requires Node.js 20.19+ or 22.12+.
 npm install
 npm test
 npm run build
+npm run verify:build
 npm run dev
 ```
 
 ## Validation and release status
 
-The latest recorded GitHub Actions validation completed successfully, including dependency installation, unit tests, the Vite production build and PWA output checks. See [GitHub Actions](https://github.com/sivabalan37-dev/hero-run-2/actions).
+The latest completed validation passed 171 unit tests, the Vite production build, PWA output checks and the JavaScript chunk-budget guard. The initial entry is about 3.33 KB (1.55 KB gzip); the deferred adventure code is about 100.93 KB (29.31 KB gzip); and the separate Three.js vendor file is about 562.65 KB (140.75 KB gzip). The vendor file still triggers Vite's non-blocking 500 KB advisory. See [the successful validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45392054858) and [GitHub Actions](https://github.com/sivabalan37-dev/hero-run-2/actions). The chunk guard can be run locally with `npm run verify:build` after `npm run build`.
 
-Automated checks are not a substitute for hands-on playtesting. Physical-device touch controls, sustained mobile performance, offline relaunch after PWA installation, and Android packaging/installation still require device verification. The production bundle has previously emitted a non-blocking chunk-size advisory.
+Automated checks are not a substitute for hands-on playtesting. Physical-device touch controls, sustained mobile performance, offline relaunch after PWA installation, and Android packaging/installation still require device verification.
 
 See [implementation status](docs/IMPLEMENTATION_STATUS.md), [roadmap](docs/IMPLEMENTATION_ROADMAP.md), [time-travel adventure specification](docs/TIME_TRAVEL_ADVENTURE_SPEC.md), and [release checklist](RELEASE_CHECKLIST.md).
 
