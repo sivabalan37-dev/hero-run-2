@@ -263,9 +263,27 @@ export class SunnyNeighborhoodLevel {
       const rooftopMat = standard('#5f647c');
       for (const x of [-2, 12, 27, 42, 55]) mesh(new THREE.BoxGeometry(7.5,0.35,4.8), rooftopMat, x, 3.8, -7.8, this.group);
     } else if (this.design) {
-      for (const platform of this.design.platforms) {
-        this.addPlatform(this.exitX * platform.xRatio, platform.height, platform.width, 0.5);
+      const authored = this.design.platforms.map(platform => ({
+        x: this.exitX * platform.xRatio,
+        height: platform.height,
+        width: platform.width,
+      }));
+      for (let i = 0; i < authored.length - 1; i++) {
+        const start = authored[i];
+        const end = authored[i + 1];
+        const segments = Math.max(1, Math.ceil((end.x - start.x) / 6));
+        for (let step = 0; step < segments; step++) {
+          const t = step / segments;
+          this.addPlatform(
+            start.x + (end.x - start.x) * t,
+            start.height + (end.height - start.height) * t,
+            start.width + (end.width - start.width) * t,
+            0.5,
+          );
+        }
       }
+      const last = authored[authored.length - 1];
+      this.addPlatform(last.x, last.height, last.width, 0.5);
     }
     const grass = standard(this.worldIndex === 0 ? '#75c95c' : ['#75c95c','#68b8a0','#6f9d52','#4166a8','#7d638d'][this.worldIndex]);
     const pathWidth = this.levelNumber >= 8 ? this.exitX + 12 : this.levelNumber === 7 ? 84 : this.levelNumber === 6 ? 76 : this.levelNumber === 5 ? 70 : this.levelNumber === 4 ? 62 : this.levelNumber === 3 ? 58 : 53;
