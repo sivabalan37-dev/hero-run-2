@@ -271,7 +271,7 @@ export class SunnyNeighborhoodLevel {
       for (let i = 0; i < authored.length - 1; i++) {
         const start = authored[i];
         const end = authored[i + 1];
-        const segments = Math.max(1, Math.ceil((end.x - start.x) / 6));
+        const segments = Math.max(1, Math.ceil((end.x - start.x) / 6), Math.ceil(Math.abs(end.height - start.height) / 0.5));
         for (let step = 0; step < segments; step++) {
           const t = step / segments;
           this.addPlatform(
