@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getEnemyVisualState } from '../src/adventure/EnemyEffects.js';
+import { getEnemyVisualState, shouldUpdateEnemyVisuals } from '../src/adventure/EnemyEffects.js';
 
 test('telegraph visual pulses with the enemy-specific warning color', () => {
   const state = getEnemyVisualState({
@@ -73,4 +73,17 @@ test('charger ring spins faster while charging', () => {
   const idle = getEnemyMotionState({ enemyType: 'clockwork-charger', state: 'patrol' }, 1);
   const charge = getEnemyMotionState({ enemyType: 'clockwork-charger', state: 'charge' }, 1);
   assert.ok(charge.chargerSpin > idle.chargerSpin);
+});
+
+test('distant enemy visual gate keeps nearby animation active and skips far-off animation', () => {
+  assert.equal(shouldUpdateEnemyVisuals(10, 0), true);
+  assert.equal(shouldUpdateEnemyVisuals(32, 0), true);
+  assert.equal(shouldUpdateEnemyVisuals(32.01, 0), false);
+  assert.equal(shouldUpdateEnemyVisuals(-40, 0), false);
+});
+
+test('invalid enemy positions never disable visual updates', () => {
+  assert.equal(shouldUpdateEnemyVisuals(Number.NaN, 0), true);
+  assert.equal(shouldUpdateEnemyVisuals(0, Number.POSITIVE_INFINITY), true);
+  assert.equal(shouldUpdateEnemyVisuals(0, 0, -1), true);
 });
