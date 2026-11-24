@@ -97,3 +97,26 @@ test('boss-specific strike envelopes have their own distance and jump windows', 
     assert.equal(pulse, expectedHit, `${bossName} envelope at hero y=${heroY}`);
   }
 });
+
+test('boss telegraph can be dodged by leaving the strike envelope before impact', () => {
+  const boss = makeBoss({ bossName: 'Neighborhood Guardian' });
+  stepBoss(boss, { x: 2, y: 0 }, 1 / 60);
+  assert.equal(boss.bossMode, 'telegraph');
+
+  for (let i = 0; i < 30; i++) {
+    stepBoss(boss, { x: 2, y: 0 }, 1 / 60);
+  }
+  stepBoss(boss, { x: 7, y: 0 }, 1 / 60);
+  assert.equal(boss.bossMode, 'strike');
+  assert.equal(boss.attackPulse, false);
+});
+
+test('boss attack envelope includes its exact horizontal and vertical limits', () => {
+  const boss = makeBoss({ bossName: 'Neighborhood Guardian' });
+  let pulse = false;
+  for (let i = 0; i < 180 && !pulse; i++) {
+    stepBoss(boss, { x: 3.5, y: 0.78 }, 1 / 60);
+    pulse = boss.attackPulse;
+  }
+  assert.equal(pulse, true);
+});
