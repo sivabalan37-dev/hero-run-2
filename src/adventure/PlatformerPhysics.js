@@ -21,6 +21,7 @@ export function createBody(x = 0, y = 0) {
     airJumpsRemaining: 0,
     airDashTimer: 0,
     airDashSpeed: 12,
+    airDashDirection: 0,
   };
 }
 
@@ -49,12 +50,16 @@ export function stepBody(body, input, platforms, dt, bounds = null, tuning = nul
   else body.coyoteTimer = Math.max(0, body.coyoteTimer - dt);
 
   const move = Math.max(-1, Math.min(1, input.move || 0));
-  if (move) body.facing = Math.sign(move);
-  const targetSpeed = move * moveSpeed;
-  if (body.airDashTimer > 0) {
+  const dashActive = body.airDashTimer > 0;
+  if (dashActive) {
+    const dashDirection = Math.sign(body.airDashDirection || body.facing || 1);
+    body.facing = dashDirection;
     body.airDashTimer = Math.max(0, body.airDashTimer - dt);
-    body.vx = (body.facing || 1) * Math.max(moveSpeed, body.airDashSpeed || 12);
+    body.vx = dashDirection * Math.max(moveSpeed, body.airDashSpeed || 12);
   } else {
+    body.airDashDirection = 0;
+    if (move) body.facing = Math.sign(move);
+    const targetSpeed = move * moveSpeed;
     body.vx = approach(body.vx, targetSpeed, (move ? acceleration : PHYSICS.friction) * dt);
   }
 
@@ -123,6 +128,7 @@ export function stepBody(body, input, platforms, dt, bounds = null, tuning = nul
     body.jumpBuffer = 0;
     body.airJumpsRemaining--;
     body.airDashTimer = 0;
+    body.airDashDirection = 0;
   }
   return body;
 }
