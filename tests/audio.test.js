@@ -29,3 +29,55 @@ test('muted audio does not try to create an audio context on resume', async () =
   await audio.resume();
   assert.equal(audio.context, null);
 });
+
+test('audio manager closes and detaches its Web Audio context during teardown', async () => {
+  const previousWindow = globalThis.window;
+  let closeCalls = 0;
+  const context = {
+    state: 'running',
+    async resume() {},
+    close() {
+      closeCalls++;
+      this.state = 'closed';
+      return Promise.resolve();
+    },
+  };
+  globalThis.window = {
+    AudioContext: class {
+      constructor() { return context; }
+    },
+  };
+
+  try {
+    const audio = new AudioManager();
+    await audio.resume();
+    assert.equal(audio.context, context);
+
+    audio.destroy();
+    assert.equal(audio.context, null);
+    await Promise.resolve();
+    assert.equal(closeCalls, 1);
+
+    audio.destroy();
+    assert.equal(closeCalls, 1, 'repeated teardown must not close the context twice');
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
+});
+
+test('audio teardown does not throw if the browser context close fails', () => {
+  const audio = new AudioManager();
+  let closeCalls = 0;
+  audio.context = {
+    state: 'running',
+    close() {
+      closeCalls++;
+      throw new Error('context already unavailable');
+    },
+  };
+
+  assert.doesNotThrow(() => audio.destroy());
+  assert.equal(audio.context, null);
+  assert.equal(closeCalls, 1);
+});
