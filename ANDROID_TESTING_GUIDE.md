@@ -1,8 +1,9 @@
 # Android Device Testing Guide
 
 **Project:** Hero Run: Time-Travel Adventure  
-**Build type:** Browser-based Three.js PWA  
-**Native APK:** Not currently produced by this repository
+**Build type:** Three.js PWA with Capacitor Android wrapper  
+**Android debug APK:** Built by the GitHub Actions workflow  
+**Production-signed APK/AAB:** Not yet configured
 
 This guide is for hands-on testing of a production HTTPS build on a physical Android phone. Automated Node tests do not replace these checks. Do not mark an item complete until it has been tested on a device.
 
