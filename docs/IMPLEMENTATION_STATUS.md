@@ -25,9 +25,9 @@
 - Boss indicators pulse during telegraphs and use pattern-specific warning colors. The HUD shows the boss name, phase and health, then displays the correct attack and dodge hint; defeated bosses show that the portal is open.
 - Enemy and boss visual feedback uses deterministic, delta-time-driven animation states: telegraph pulses, charger lean/compression, attack impact rings, boss-scale-preserving pulses and recovery motion. Impact rings are hidden outside active warning/attack windows.
 - Five boss attack effects have distinct shapes and animated strike signatures: the Neighborhood Guardian shock ring pulses outward, the Mechanical Headmaster dash streak surges, the Toy Forest Guardian vine arc sweeps, the Supreme Machine energy shell expands in a pulse, and the Ultimate Time Guardian wave stretches across the arena. Effects telegraph, animate during the strike and fade during recovery.
-- Boss audio cues are connected to combat state transitions. Each boss has a distinct warning tone and strike tone; the existing hit sound plays when the hero takes damage. Audio starts/resumes from the player's Start interaction.
+- Boss audio cues are connected to combat state transitions. Each boss has a distinct warning tone and strike tone; the existing hit sound plays when the hero takes damage. Audio starts/resumes from the player's Start interaction. The Web Audio context is closed and detached when the game instance is destroyed.
 - Projectile and Benji special hits share a hit-reaction system: bounded knockback, short AI hit-stun, a red impact pulse and boss recovery interruption. Hit responses are rejected while an enemy is already stunned, preventing rapid repeat-hit exploits.
-- Projectile hits trigger fixed-capacity pooled impact particle bursts. Standard enemies produce small golden/orange bursts; bosses produce larger purple bursts. Particle positions, velocities and fade are updated without allocating meshes during combat.
+- Projectile hits trigger fixed-capacity pooled impact particle bursts. Standard enemies produce small golden/orange bursts; bosses produce larger purple bursts. Particle positions, velocities and fade are updated without allocating meshes during combat. Burst allocation now scans the bounded pool without building temporary filtered arrays or velocity objects.
 - All three heroes now use a shared punch pose: the attacking arm drives forward, the opposite arm recoils and the torso leans into the attack. The pose eases in and out with the attack cooldown.
 - All 40 campaign stages now have distinct authored platform routes, collectible paths and enemy placements. Levels 1–7 retain their hand-built neighborhood layouts; levels 8–40 use 33 individually authored world-specific blueprints, with dedicated boss-stage layouts at levels 8, 16, 24, 32 and 40. Five boss gates are active at the end of each world.
 - Versioned campaign save for completed levels, selected character and total coins; malformed save data is rejected before writing.
@@ -43,7 +43,7 @@
 ## Automated validation
 
 Latest completed validation:
-- **PASS:** 183 of 183 Node unit tests.
+- **PASS:** 187 of 187 Node unit tests.
 - **PASS:** Vite production build.
 - **PASS:** service worker, PWA manifest and Vite asset manifest copied into the production output.
 - **PASS:** service-worker install precaching, offline asset reuse, navigation fallback and cache isolation.
@@ -51,7 +51,7 @@ Latest completed validation:
 - **PASS:** touch-control action coverage, phone target dimensions, coarse/fine pointer visibility and pointer-event handling.
 - **PASS:** production entry and deferred application chunk budgets; Three.js vendor split is present.
 - **PASS:** GitHub Actions updated to Node 24-compatible action releases.
-- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45393813477).
+- **Verified run:** [GitHub Actions · PWA, cache and chunk validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45394560605).
 
 The Three.js vendor chunk remains above Vite's 500 kB advisory threshold (562.65 kB minified, 140.75 kB gzip). This is an advisory, not a failed build.
 
@@ -70,11 +70,22 @@ The Three.js vendor chunk remains above Vite's 500 kB advisory threshold (562.65
 - More detailed boss-specific attack animation timing and broader music/ambient audio.
 - Remaining combat feedback polish, broader effects/audio, and further level-completion feedback.
 - Further Nobi aerial polish; Benji ability balancing and broader visual/audio polish.
-- Leaderboards, cinematics/dialogue and final victory flow.
+- Leaderboards and cinematics/dialogue.
 - IndexedDB fallback/backup, Capacitor configuration and verified Android release.
 - Browser/device acceptance tests and mobile performance profiling.
 
-The old endless-runner modules remain under `src/game/` for reference. They are not loaded by the new browser entry point.\n\n## Mobile touch layout update\n\n- On narrow screens, movement controls remain grouped on the left while action controls use a compact three-column grid on the right. Buttons shrink and wrap to avoid the previous fixed-width row overflowing small portrait screens.\n- This is a responsive CSS improvement only; real-device touch, safe-area and landscape testing remain outstanding.\n\n## Branch and release status\n\n- The current campaign implementation is on `feature/time-travel-adventure-threejs`.\n- `main` remains on the earlier baseline; the campaign branch contains the newer adventure implementation and has **not** been promoted to `main`.\n- Do not treat the campaign as released until the branch is reviewed/merged and the physical-device acceptance checks below are completed.
+The old endless-runner modules remain under `src/game/` for reference. They are not loaded by the new browser entry point.\n\n## Android device test plan
+
+- Added `ANDROID_TESTING_GUIDE.md` covering first launch, landscape/safe-area layout, multi-touch controls, core gameplay, performance observation, offline PWA relaunch and defect reporting.
+- The guide makes clear that this repository builds a web PWA; no native APK is produced by the current workflow. APK signing/install testing is not complete.
+
+## Performance and resource lifecycle
+
+- Impact-particle bursts now reuse a fixed circular scan of the existing pool. Spawning avoids a temporary filtered array and temporary velocity objects while keeping the deterministic burst directions and bounded capacity.
+- `AudioManager.destroy()` closes its Web Audio context safely, and `AdventureGame.destroy()` calls it during teardown so the browser can release audio resources.
+- Automated tests cover pool wraparound / partial capacity and audio-context closure / teardown failure handling.
+
+## Mobile touch layout update\n\n- On narrow screens, movement controls remain grouped on the left while action controls use a compact three-column grid on the right. Buttons shrink and wrap to avoid the previous fixed-width row overflowing small portrait screens.\n- This is a responsive CSS improvement only; real-device touch, safe-area and landscape testing remain outstanding.\n\n## Branch and release status\n\n- The current campaign implementation is on `feature/time-travel-adventure-threejs`.\n- `main` remains on the earlier baseline; the campaign branch contains the newer adventure implementation and has **not** been promoted to `main`.\n- Do not treat the campaign as released until the branch is reviewed/merged and the physical-device acceptance checks below are completed.
 
 
 ## 40-stage layout expansion
