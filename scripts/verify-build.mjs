@@ -5,6 +5,19 @@ import { basename, join, resolve, relative, isAbsolute } from 'node:path';
 const distDirectory = resolve('dist');
 const assetsDirectory = join(distDirectory, 'assets');
 const html = await readFile(join(distDirectory, 'index.html'), 'utf8');
+const manifest = JSON.parse(await readFile(join(distDirectory, '.vite/manifest.json'), 'utf8'));
+const manifestFiles = new Set();
+
+for (const entry of Object.values(manifest)) {
+  if (typeof entry.file === 'string') manifestFiles.add(entry.file);
+  for (const file of entry.css || []) manifestFiles.add(file);
+  for (const file of entry.assets || []) manifestFiles.add(file);
+}
+
+assert.ok(
+  [...manifestFiles].some(file => file.startsWith('assets/three-vendor-')),
+  'Vite asset manifest must include the isolated Three.js vendor chunk'
+);
 
 const scriptStart = html.indexOf('<script');
 assert.notEqual(scriptStart, -1, 'production HTML must contain a module script');
