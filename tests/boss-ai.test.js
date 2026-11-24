@@ -103,7 +103,7 @@ test('boss telegraph can be dodged by leaving the strike envelope before impact'
   stepBoss(boss, { x: 2, y: 0 }, 1 / 60);
   assert.equal(boss.bossMode, 'telegraph');
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 49; i++) {
     stepBoss(boss, { x: 2, y: 0 }, 1 / 60);
   }
   stepBoss(boss, { x: 7, y: 0 }, 1 / 60);
