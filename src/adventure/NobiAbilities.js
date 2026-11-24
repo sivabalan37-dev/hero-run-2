@@ -4,6 +4,7 @@ export function applyNobiAirDash(body) {
   const facing = Math.sign(body.facing || 1);
   body.facing = facing;
   body.airDashSpeed = 12;
+  body.airDashDirection = facing;
   body.airDashTimer = 0.18;
   body.vx = facing * body.airDashSpeed;
   body.vy = Math.max(body.vy, 2.4);
