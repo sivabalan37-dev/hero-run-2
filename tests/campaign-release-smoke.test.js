@@ -16,7 +16,7 @@ test('every campaign level has valid catalog metadata and belongs to exactly one
   }
 });
 
-test('all authored encounter layouts have safe normalized platform, enemy and coin data', () => {
+test('all 33 authored encounter layouts have safe normalized platform, enemy and coin data', () => {
   assert.deepEqual(AUTHORED_LEVEL_NUMBERS, Array.from({ length: 33 }, (_, index) => index + 8));
   for (let level = 8; level <= 40; level += 1) {
     const design = getLevelDesign(level);
