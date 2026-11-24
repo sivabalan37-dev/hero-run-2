@@ -14,7 +14,7 @@ The active entry point runs a side-scrolling action platformer from `src/adventu
 - Five enemy archetypes with different movement and attack behaviours.
 - Coins, hearts, hidden collectibles, Time Shards, checkpoints, portals and three-star level ratings.
 - Campaign level selection, saved progress, achievements, rewards, settings, pause/resume and HUD.
-- Fixed-step platform physics with sprint, wall jump and controlled wall slide; pooled projectiles and impact particles, combat feedback and boss health indicators.
+- Fixed-step platform physics with sprint, crouch, ground slide, wall jump and controlled wall slide; pooled projectiles and impact particles, combat feedback and boss health indicators.
 - Responsive Three.js WebGL 2 renderer, PWA manifest and service-worker precaching of every built JavaScript, CSS and static asset listed in Vite's asset manifest; additional same-origin GET assets are cached at runtime.
 
 ## Controls
@@ -23,6 +23,7 @@ The active entry point runs a side-scrolling action platformer from `src/adventu
 |---|---|
 | Move left/right | `A/D` or `←/→` |
 | Sprint | Hold `Shift` or the on-screen SPRINT button |
+| Crouch / slide | Hold `S`, `↓` or the on-screen CROUCH button; crouching while running starts a short slide |
 | Jump | `Space`, `W` or `↑` |
 | Attack | `J` |
 | Special ability | `K` |
@@ -54,7 +55,7 @@ npm run dev
 
 ## Validation and release status
 
-The latest completed validation passed 198 unit tests, the Vite production build, PWA asset-manifest checks and the JavaScript chunk-budget guard. The initial entry is about 3.33 KB (1.55 KB gzip); the deferred adventure code is about 100.93 KB (29.31 KB gzip); and the separate Three.js vendor file is about 562.65 KB (140.75 KB gzip). The vendor file still triggers Vite's non-blocking 500 KB advisory. See [the successful validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45421300313) and [GitHub Actions](https://github.com/sivabalan37-dev/hero-run-2/actions). The chunk guard can be run locally with `npm run verify:build` after `npm run build`.
+The latest completed validation passed 203 unit tests, the Vite production build, PWA asset-manifest checks and the JavaScript chunk-budget guard. The initial entry is about 3.33 KB (1.55 KB gzip); the deferred adventure code is about 100.93 KB (29.31 KB gzip); and the separate Three.js vendor file is about 562.65 KB (140.75 KB gzip). The vendor file still triggers Vite's non-blocking 500 KB advisory. See [the successful validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45422726694) and [GitHub Actions](https://github.com/sivabalan37-dev/hero-run-2/actions). The chunk guard can be run locally with `npm run verify:build` after `npm run build`.
 
 Automated checks are not a substitute for hands-on playtesting. Physical-device touch controls, sustained mobile performance, offline relaunch after PWA installation, and Android packaging/installation still require device verification.
 
