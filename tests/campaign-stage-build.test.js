@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { SunnyNeighborhoodLevel } from '../src/adventure/SunnyNeighborhoodLevel.js';
+import { getLevelCheckpointX } from '../src/adventure/CheckpointSave.js';
 
 function buildStage(levelNumber) {
   const scene = new THREE.Scene();
@@ -28,6 +29,8 @@ test('all forty campaign levels build playable stage structures', () => {
       }
       assert.ok(stage.checkpointX > 0 && stage.checkpointX < stage.exitX,
         `level ${levelNumber} checkpoint is before its exit`);
+      assert.equal(stage.checkpointX, getLevelCheckpointX(levelNumber),
+        `level ${levelNumber} save checkpoint matches its authored stage checkpoint`);
       assert.ok(stage.platforms.length >= 5, `level ${levelNumber} has a ground route and raised platforms`);
 
       if (levelNumber >= 8) {
