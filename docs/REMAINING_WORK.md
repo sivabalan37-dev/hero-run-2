@@ -2,7 +2,7 @@
 
 **Reviewed:** 2026-11-24  
 **Development branch:** `feature/time-travel-adventure-threejs`  
-**Current automated baseline:** 198/198 Node tests pass; production build and build checks pass.
+**Current automated baseline:** 203/203 Node tests pass; production build and build checks pass.
 
 This is a delivery checklist, not a promise that the game is release-ready. A feature is only complete when its implementation and the appropriate test evidence both exist.
 
@@ -14,7 +14,7 @@ There are **7 major remaining work areas**. Some involve code; others require re
 
 - [x] Add hold-to-sprint movement using Shift and a touch control; speed remains bounded by the physics cap.
 - [x] Implement and test wall jump and controlled wall slide; 3 physics regression tests cover launch direction, slide speed and open-air behavior.
-- [ ] Implement crouch/ground slide, including safe stand-up clearance checks and mobile controls.
+- [x] Implement crouch/ground slide with safe stand-up clearance checks, keyboard aliases and a mobile touch control; four physics and one input regression tests cover the behavior.
 - [ ] Confirm whether double-jump should be available to every hero or remain a Nobi-specific aerial ability; the current implementation gives Nobi the extra mid-air jump.
 - [ ] Decide whether to add the six enemy families named in the product specification. The current campaign uses five different archetypes: Robo Bug, Clockwork Charger, Vine Sweeper, Drone Scout and Time Sentinel.
 - [ ] Decide whether star fragments, chests, best-time records and a local leaderboard are release requirements; they appear in the product specification but are not part of the current implemented feature list.
@@ -82,6 +82,7 @@ Distance-aware enemy visual culling and pooled effects have automated coverage, 
 
 - Hold-to-sprint movement with keyboard and touch input, covered by physics and input tests.
 - Wall jump and controlled wall slide, covered by physics regression tests.
+- Crouch and ground slide with ceiling-clearance protection, bounded slide speed and keyboard/touch input, covered by physics, input and touch-control tests.
 
 - 40 campaign levels with five boss stages.
 - Three playable heroes and Benji's four forms.
@@ -90,11 +91,11 @@ Distance-aware enemy visual culling and pooled effects have automated coverage, 
 - Responsive touch controls and input cleanup.
 - Fixed-capacity projectile/impact pools and Web Audio teardown.
 - Distance-aware enemy animation culling.
-- 198 passing automated tests and a passing production build.
+- 203 passing automated tests and a passing production build.
 
 ## Latest validation evidence
 
-- [191-test and performance-culling validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45421300313)
+- [203-test crouch/slide validation](https://github.com/sivabalan37-dev/hero-run-2/actions/runs/45422726694)
 - [Physical Android testing guide](../ANDROID_TESTING_GUIDE.md)
 - [Implementation status](IMPLEMENTATION_STATUS.md)
 - [Release checklist](../RELEASE_CHECKLIST.md)
