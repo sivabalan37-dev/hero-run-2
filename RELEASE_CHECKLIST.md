@@ -27,6 +27,11 @@
 
 Use [ANDROID_TESTING_GUIDE.md](ANDROID_TESTING_GUIDE.md) to record the phone/browser build and follow the complete manual test sequence. The items below must remain unchecked until completed on a real device.
 
+## Performance regression coverage
+
+- [ ] Confirm distant-enemy animation culling preserves nearby telegraphs and gameplay AI; automated tests cover the culling boundary and stage integration.
+- [ ] Measure sustained frame rate, draw calls, triangles and memory on target Android devices; automated checks are not a substitute for device profiling.
+
 ## Browser and device verification
 
 - [ ] Test gameplay in a current desktop browser.
