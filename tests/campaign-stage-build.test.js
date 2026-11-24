@@ -30,6 +30,20 @@ test('all forty campaign levels build playable stage structures', () => {
         `level ${levelNumber} checkpoint is before its exit`);
       assert.ok(stage.platforms.length >= 5, `level ${levelNumber} has a ground route and raised platforms`);
 
+      if (levelNumber >= 8) {
+        const raised = stage.platforms.filter(platform => !platform.solidSides)
+          .sort((a, b) => a.x - b.x);
+        for (let i = 1; i < raised.length; i++) {
+          const previous = raised[i - 1];
+          const current = raised[i];
+          const edgeGap = current.x - current.width / 2 - (previous.x + previous.width / 2);
+          assert.ok(edgeGap <= 3.01,
+            `level ${levelNumber} raised platforms have a reachable horizontal gap`);
+          assert.ok(Math.abs((current.y + current.height) - (previous.y + previous.height)) <= 0.51,
+            `level ${levelNumber} raised platform heights change gradually`);
+        }
+      }
+
       const ground = stage.platforms[0];
       assert.ok(ground.solidSides, `level ${levelNumber} has a solid-sided ground route`);
       assert.ok(ground.x - ground.width / 2 <= 0, `level ${levelNumber} ground starts before the player`);
@@ -37,7 +51,18 @@ test('all forty campaign levels build playable stage structures', () => {
         `level ${levelNumber} ground reaches its exit`);
 
       assert.ok(stage.enemies.length >= 1, `level ${levelNumber} has an encounter`);
+      for (const enemy of stage.enemies) {
+        assert.ok(enemy.minX >= 0 && enemy.maxX <= stage.exitX,
+          `level ${levelNumber} enemy patrol remains inside the stage`);
+        assert.ok(enemy.minX <= enemy.x && enemy.x <= enemy.maxX,
+          `level ${levelNumber} enemy starts inside its patrol bounds`);
+      }
       const bosses = stage.enemies.filter(enemy => enemy.isBoss);
+      if (stage.isBossLevel) {
+        const boss = bosses[0];
+        assert.ok(boss.minX >= stage.checkpointX && boss.maxX < stage.exitX,
+          `level ${levelNumber} boss patrol stays inside the checkpoint-to-exit arena`);
+      }
       assert.equal(bosses.length, stage.isBossLevel ? 1 : 0,
         `level ${levelNumber} has the expected boss count`);
       assert.ok(stage.collectibles.some(item => item.type === 'shard'),
