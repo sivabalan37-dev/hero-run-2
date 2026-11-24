@@ -73,3 +73,16 @@ export class AudioManager {
     this.tone(notes[attackType] || 160, 0.2, 'triangle', 0.055);
   }
 }
+
+  destroy() {
+    const context = this.context;
+    this.context = null;
+    if (!context || context.state === 'closed' || typeof context.close !== 'function') return;
+
+    try {
+      const closing = context.close();
+      closing?.catch?.(() => {});
+    } catch {
+      // Audio teardown must not interrupt renderer and scene cleanup.
+    }
+  }
