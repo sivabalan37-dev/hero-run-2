@@ -129,3 +129,10 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - Normal directional steering resumes after the dash timer expires.
 - Added regression coverage for locked direction, launch-direction capture and normal steering after the dash.
 - Automated CI validation is required before treating this change as verified; physical-device gameplay testing is still outstanding.
+
+
+## Benji flame-effect facing fix
+
+- Blaze's flame visual now appears on the side Benji is facing, matching the forward-only attack hitbox.
+- Added tests for left/right facing and safe fallback handling.
+- CI validation is required before treating this update as verified; real-device visual testing remains outstanding.
