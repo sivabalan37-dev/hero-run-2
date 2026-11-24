@@ -112,3 +112,11 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - The selected title appears in the in-game hero HUD. Invalid or unearned title IDs are never displayed as equipped.
 - Automated coverage is included in `tests/titles.test.js` and `tests/titles-ui.test.js`.
 
+
+
+## Campaign victory flow
+
+- Clearing the final level now opens a dedicated Campaign Complete screen instead of a generic level-complete message.
+- The victory summary reports all 40 levels, saved campaign stars, campaign coins and completed world-boss stages.
+- The main action replays the final level without resetting or farming saved campaign rewards.
+- Added pure campaign-summary calculations and tests for fresh, partial, complete and replayed campaigns.
