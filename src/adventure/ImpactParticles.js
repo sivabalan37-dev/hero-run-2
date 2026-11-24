@@ -15,6 +15,7 @@ export function getImpactParticleVelocity(index, count = PARTICLE_COUNT, speed =
 export class ImpactParticlePool {
   constructor(scene, capacity = PARTICLE_COUNT) {
     this.scene = scene;
+    this.nextSpawnIndex = 0;
     this.geometry = new THREE.SphereGeometry(0.075, 6, 5);
     this.materials = Array.from({ length: capacity }, (_, index) => new THREE.MeshBasicMaterial({
       color: PARTICLE_COLORS[index % PARTICLE_COLORS.length],
@@ -31,24 +32,42 @@ export class ImpactParticlePool {
   }
 
   spawn(x, y, boss = false) {
-    const available = this.items.filter(item => !item.active);
-    const count = Math.min(boss ? 12 : 7, available.length);
+    const requested = boss ? 12 : 7;
+    let availableCount = 0;
+    for (const item of this.items) {
+      if (!item.active) availableCount++;
+    }
+
+    const count = Math.min(requested, availableCount);
+    if (count === 0) return 0;
+
     const speed = boss ? 5.1 : 3.8;
-    for (let i = 0; i < count; i++) {
-      const item = available[i];
-      const velocity = getImpactParticleVelocity(i, count, speed);
+    const life = boss ? 0.48 : 0.34;
+    const color = boss ? PARTICLE_COLORS[4] : null;
+    let spawned = 0;
+
+    for (let offset = 0; offset < this.items.length && spawned < count; offset++) {
+      const index = (this.nextSpawnIndex + offset) % this.items.length;
+      const item = this.items[index];
+      if (item.active) continue;
+
+      const angle = (spawned / count) * Math.PI * 2;
+      const variation = 0.72 + ((spawned * 7) % 5) * 0.11;
+      const velocity = speed * variation;
       item.active = true;
-      item.vx = velocity.x;
-      item.vy = velocity.y;
-      item.life = boss ? 0.48 : 0.34;
-      item.maxLife = item.life;
+      item.vx = Math.cos(angle) * velocity;
+      item.vy = Math.sin(angle) * velocity;
+      item.life = life;
+      item.maxLife = life;
       item.mesh.position.set(x, y, 1.45);
       item.mesh.scale.setScalar(boss ? 1.45 : 1);
-      item.mesh.material.color.set(boss ? PARTICLE_COLORS[4] : PARTICLE_COLORS[i % 4]);
+      item.mesh.material.color.set(color ?? PARTICLE_COLORS[spawned % 4]);
       item.mesh.visible = true;
       item.mesh.material.opacity = 1;
+      spawned++;
+      this.nextSpawnIndex = (index + 1) % this.items.length;
     }
-    return count;
+    return spawned;
   }
 
   update(dt) {
