@@ -1,11 +1,35 @@
 # Release checklist
 
-- [ ] Run `npm install` and confirm that it completes without dependency errors.
+## Automated checks
+
+- [ ] Run `npm install` and confirm dependency installation completes.
 - [ ] Run `npm test` and confirm every test passes.
-- [ ] Run `npm run build` and confirm `dist/` is generated.
-- [ ] Test lane switching, normal jump, double-jump, slide, attack and special attack.
-- [ ] Test collision damage, health pickup, coin/shard collection and each power-up.
-- [ ] Test game over, restart, pause and page-hidden auto-pause.
-- [ ] Test at least one desktop browser and one Android browser, including touch buttons.
-- [ ] Confirm GitHub Pages or the selected host serves the built site from HTTPS.
-- [ ] Review the online multiplayer limitation before announcing the game as multiplayer.
+- [ ] Run `npm run build` and confirm the production `dist/` output is generated.
+- [ ] Confirm `dist/manifest.webmanifest` and `dist/service-worker.js` are present.
+
+## Adventure gameplay
+
+- [ ] Test left/right movement, normal jump, coyote time and jump buffering.
+- [ ] Test Shin attack and special ability.
+- [ ] Test Nobi's extra mid-air jump, glide, air dash and Gadget Vision.
+- [ ] Test Benji's Normal, Blaze, Shock and Titan forms and each special.
+- [ ] Test all five enemy archetypes, damage, knockback and respawn.
+- [ ] Test coins, hearts, hidden collectibles, Time Shards and checkpoints.
+- [ ] Complete a level, verify its star rating and confirm progress persists after reload.
+- [ ] Verify locked/unlocked character and level-selection rules.
+- [ ] Test all five boss encounters, phase changes, attack warnings and exit gates.
+- [ ] Test pause/resume and automatic pause when the page becomes hidden.
+
+## Browser and device verification
+
+- [ ] Test gameplay in a current desktop browser.
+- [ ] Test landscape layout and simultaneous touch controls on a physical Android device.
+- [ ] Check sustained frame rate and memory use on a lower-powered phone.
+- [ ] Install the PWA, then verify it can relaunch offline after one successful online load.
+- [ ] Confirm the hosted build is served over HTTPS.
+- [ ] Verify Android packaging and APK installation if a native Android release is planned.
+
+## Release claims
+
+- [ ] Do not advertise online multiplayer unless a real networking/backend implementation has been added and tested.
+- [ ] Mark each test above only after it has been run; automated CI does not count as physical-device playtesting.
