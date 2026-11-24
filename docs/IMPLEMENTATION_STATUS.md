@@ -111,3 +111,12 @@ The old endless-runner modules remain under `src/game/` for reference. They are 
 - The equipped title is saved in the existing version-1 campaign save and defaults safely for older saves.
 - The selected title appears in the in-game hero HUD. Invalid or unearned title IDs are never displayed as equipped.
 - Automated coverage is included in `tests/titles.test.js` and `tests/titles-ui.test.js`.
+
+
+## Achievement title rewards
+
+- Added a Rewards & Titles menu that lists all 10 achievement titles, shows locked/unlocked/equipped states and lets players equip earned titles or remove the active title.
+- Equipped titles use the existing version-1 campaign record; older saves default to no equipped title.
+- The equipped title appears beneath the selected hero name in the in-game HUD.
+- Title selection validates the achievement unlock state; locked rewards cannot be equipped.
+- Added unit and UI-source coverage for reward unlocks, selection validation and save/load behavior.
