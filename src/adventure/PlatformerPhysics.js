@@ -22,6 +22,8 @@ export function createBody(x = 0, y = 0) {
     airDashTimer: 0,
     airDashSpeed: 12,
     airDashDirection: 0,
+    wallContactDirection: 0,
+    wallSliding: false,
   };
 }
 
@@ -92,11 +94,43 @@ export function stepBody(body, input, platforms, dt, bounds = null, tuning = nul
     if (body.x > maxX) { body.x = maxX; body.vx = Math.min(0, body.vx); }
   }
 
+  body.wallContactDirection = 0;
+  for (const platform of platforms) {
+    if (!platform.solidSides) continue;
+    const verticalOverlap = body.y < platform.y + platform.height &&
+      body.y + body.height > platform.y;
+    if (!verticalOverlap) continue;
+    const wallLeft = platform.x - platform.width / 2;
+    const wallRight = platform.x + platform.width / 2;
+    const bodyLeft = body.x - body.width / 2;
+    const bodyRight = body.x + body.width / 2;
+    if (Math.abs(bodyRight - wallLeft) <= 0.04) body.wallContactDirection = 1;
+    else if (Math.abs(bodyLeft - wallRight) <= 0.04) body.wallContactDirection = -1;
+  }
+
+  const wallJump = Boolean(input.jumpPressed && !body.grounded && body.wallContactDirection);
+  if (wallJump) {
+    body.vx = -body.wallContactDirection * Math.min(12, Math.max(7.5, moveSpeed * 1.15));
+    body.vy = jumpSpeed * 1.05;
+    body.facing = -body.wallContactDirection;
+    body.jumpBuffer = 0;
+    body.coyoteTimer = 0;
+    body.airDashTimer = 0;
+    body.airDashDirection = 0;
+  }
+
   const previousBottom = body.y;
   const previousTop = body.y + body.height;
   const gliding = Boolean(input.glide && !body.grounded && body.vy < 0);
+  body.wallSliding = Boolean(
+    !body.grounded &&
+    body.wallContactDirection &&
+    move * body.wallContactDirection > 0 &&
+    body.vy < 0 &&
+    !wallJump
+  );
   const gravity = gliding ? PHYSICS.gravity * 0.32 : PHYSICS.gravity;
-  const fallLimit = gliding ? 5.2 : PHYSICS.maxFallSpeed;
+  const fallLimit = gliding ? 5.2 : body.wallSliding ? 5.8 : PHYSICS.maxFallSpeed;
   body.vy = Math.max(-fallLimit, body.vy - gravity * dt);
   body.y += body.vy * dt;
   body.grounded = false;
