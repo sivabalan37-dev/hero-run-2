@@ -22,6 +22,7 @@ The active entry point runs a side-scrolling action platformer from `src/adventu
 | Action | Keyboard |
 |---|---|
 | Move left/right | `A/D` or `←/→` |
+| Sprint | Hold `Shift` or the on-screen SPRINT button |
 | Jump | `Space`, `W` or `↑` |
 | Attack | `J` |
 | Special ability | `K` |
