@@ -20,6 +20,7 @@ import { AudioManager } from '../game/Audio.js';
 import { ImpactParticlePool } from './ImpactParticles.js';
 import { loadSettings, saveSettings } from './Settings.js';
 import { getAchievementProgress } from './Achievements.js';
+import { getEquippedTitle, getTitleOptions, selectTitle } from './Titles.js';
 
 const FIXED_STEP = 1 / 60;
 const CHECKPOINT_KEY = 'hero-run-time-travel-save-v1';
@@ -109,6 +110,10 @@ export class AdventureGame {
       achievementsButton: document.querySelector('#achievements-button'),
       achievementsPanel: document.querySelector('#achievements-panel'),
       achievementsBack: document.querySelector('#achievements-back'),
+      titlesButton: document.querySelector('#titles-button'),
+      titlesPanel: document.querySelector('#titles-panel'),
+      titlesBack: document.querySelector('#titles-back'),
+      heroTitle: document.querySelector('#hero-title'),
       settingsPanel: document.querySelector('#settings-panel'),
       settingsBack: document.querySelector('#settings-back'),
       soundEnabled: document.querySelector('#sound-enabled'),
@@ -158,6 +163,8 @@ export class AdventureGame {
     this.onCloseTutorial = () => this.closeTutorial();
     this.onOpenAchievements = () => this.openAchievements();
     this.onCloseAchievements = () => this.closeAchievements();
+    this.onOpenTitles = () => this.openTitles();
+    this.onCloseTitles = () => this.closeTitles();
     this.onCloseSettings = () => this.closeSettings();
     this.onSoundEnabledChange = () => this.updateSettings({ soundEnabled: this.ui.soundEnabled.checked });
     this.onSoundVolumeChange = () => this.updateSettings({ volume: Number(this.ui.soundVolume.value) });
@@ -170,6 +177,8 @@ export class AdventureGame {
     this.ui.tutorialBack.addEventListener('click', this.onCloseTutorial);
     this.ui.achievementsButton.addEventListener('click', this.onOpenAchievements);
     this.ui.achievementsBack.addEventListener('click', this.onCloseAchievements);
+    this.ui.titlesButton.addEventListener('click', this.onOpenTitles);
+    this.ui.titlesBack.addEventListener('click', this.onCloseTitles);
     this.ui.settingsBack.addEventListener('click', this.onCloseSettings);
     this.ui.soundEnabled.addEventListener('change', this.onSoundEnabledChange);
     this.ui.soundVolume.addEventListener('input', this.onSoundVolumeChange);
@@ -242,6 +251,9 @@ export class AdventureGame {
 
   openSettings() {
     if (['running', 'paused', 'gameover'].includes(this.state)) return;
+    this.ui.titlesButton.classList.add('hidden');
+    this.ui.titlesPanel.classList.add('hidden');
+    this.ui.titlesBack.classList.add('hidden');
     this.ui.tutorialPanel.classList.add('hidden');
     this.ui.tutorialBack.classList.add('hidden');
     this.ui.message.classList.add('hidden');
@@ -270,6 +282,9 @@ export class AdventureGame {
 
   openAchievements() {
     if (['running', 'paused', 'gameover'].includes(this.state)) return;
+    this.ui.titlesButton.classList.add('hidden');
+    this.ui.titlesPanel.classList.add('hidden');
+    this.ui.titlesBack.classList.add('hidden');
     this.renderAchievements();
     this.ui.message.classList.add('hidden');
     this.ui.start.classList.add('hidden');
@@ -332,8 +347,81 @@ export class AdventureGame {
     this.showOverlay(this._overlayModel.title, this._overlayModel.subtitle, this._overlayModel.message, this._overlayModel.buttonText, this._overlayModel.status);
   }
 
+  openTitles() {
+    if (['running', 'paused', 'gameover'].includes(this.state)) return;
+    this.renderTitles();
+    this.ui.message.classList.add('hidden');
+    this.ui.start.classList.add('hidden');
+    this.ui.levelSelect.classList.add('hidden');
+    this.ui.levelSelectButton.classList.add('hidden');
+    this.ui.levelSelectBack.classList.add('hidden');
+    this.ui.settingsButton.classList.add('hidden');
+    this.ui.settingsPanel.classList.add('hidden');
+    this.ui.settingsBack.classList.add('hidden');
+    this.ui.tutorialButton.classList.add('hidden');
+    this.ui.tutorialPanel.classList.add('hidden');
+    this.ui.tutorialBack.classList.add('hidden');
+    this.ui.achievementsButton.classList.add('hidden');
+    this.ui.achievementsPanel.classList.add('hidden');
+    this.ui.achievementsBack.classList.add('hidden');
+    this.ui.titlesButton.classList.add('hidden');
+    this.ui.titlesPanel.classList.remove('hidden');
+    this.ui.titlesBack.classList.remove('hidden');
+    this.ui.title.textContent = 'REWARDS & TITLES';
+    const earned = getTitleOptions(this.progress).filter(item => item.unlocked).length;
+    this.ui.status.textContent = `${earned} OF 10 TITLES EARNED · SELECT A TITLE TO EQUIP`;
+  }
+
+  renderTitles() {
+    this.ui.titlesPanel.replaceChildren();
+    const equipped = this.progress.equippedTitle;
+    const currentTitle = getEquippedTitle(this.progress);
+    const none = document.createElement('button');
+    none.type = 'button';
+    none.className = `title-option${!currentTitle ? ' selected' : ''}`;
+    none.textContent = `NO TITLE${!currentTitle ? ' · EQUIPPED' : ''}`;
+    none.addEventListener('click', () => this.chooseTitle(null));
+    this.ui.titlesPanel.appendChild(none);
+    for (const item of getTitleOptions(this.progress)) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `title-option${item.unlocked ? ' earned' : ' locked'}${equipped === item.id && currentTitle ? ' selected' : ''}`;
+      button.disabled = !item.unlocked;
+      const name = document.createElement('strong');
+      name.textContent = item.name;
+      const detail = document.createElement('small');
+      detail.textContent = item.unlocked
+        ? `${item.achievement}${equipped === item.id && currentTitle ? ' · EQUIPPED' : ' · TAP TO EQUIP'}`
+        : `LOCKED · ${item.achievement}`;
+      button.append(name, detail);
+      if (item.unlocked) button.addEventListener('click', () => this.chooseTitle(item.id));
+      this.ui.titlesPanel.appendChild(button);
+    }
+  }
+
+  chooseTitle(titleId) {
+    const next = selectTitle(this.progress, titleId);
+    if (!next) return;
+    this.progress = next;
+    saveCampaignProgress(this.progress);
+    this.renderTitles();
+    this.updateHud();
+    const equipped = getEquippedTitle(this.progress);
+    this.ui.status.textContent = equipped ? `EQUIPPED · ${equipped.toUpperCase()}` : 'TITLE REMOVED · NO TITLE EQUIPPED';
+  }
+
+  closeTitles() {
+    if (!this._overlayModel) return;
+    this.ui.titlesPanel.classList.add('hidden');
+    this.ui.titlesBack.classList.add('hidden');
+    this.showOverlay(this._overlayModel.title, this._overlayModel.subtitle, this._overlayModel.message, this._overlayModel.buttonText, this._overlayModel.status);
+  }
+
   openTutorial() {
     if (['running', 'paused', 'gameover'].includes(this.state)) return;
+    this.ui.titlesButton.classList.add('hidden');
+    this.ui.titlesPanel.classList.add('hidden');
+    this.ui.titlesBack.classList.add('hidden');
     this.ui.message.classList.add('hidden');
     this.ui.start.classList.add('hidden');
     this.ui.levelSelect.classList.add('hidden');
@@ -376,7 +464,10 @@ export class AdventureGame {
     this.ui.achievementsPanel.classList.add('hidden');
     this.ui.achievementsBack.classList.add('hidden');
     const menuOnly = this.state === 'paused' || this.state === 'gameover';
+    this.ui.titlesPanel.classList.add('hidden');
+    this.ui.titlesBack.classList.add('hidden');
     this.ui.achievementsButton.classList.toggle('hidden', menuOnly);
+    this.ui.titlesButton.classList.toggle('hidden', menuOnly);
     this.ui.settingsButton.classList.toggle('hidden', menuOnly);
     this.ui.tutorialButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
     this.ui.levelSelectButton.classList.toggle('hidden', this.state === 'paused' || this.state === 'gameover');
@@ -388,6 +479,9 @@ export class AdventureGame {
 
   openLevelSelection() {
     if (this.state === 'paused' || this.state === 'gameover' || this.state === 'running') return;
+    this.ui.titlesButton.classList.add('hidden');
+    this.ui.titlesPanel.classList.add('hidden');
+    this.ui.titlesBack.classList.add('hidden');
     this.renderLevelSelection();
     this.ui.title.textContent = 'CHOOSE YOUR LEVEL';
     this.ui.message.classList.add('hidden');
@@ -530,6 +624,7 @@ export class AdventureGame {
     this.ui.levelName.textContent = `${info.world.toUpperCase()} · LEVEL ${this.levelNumber} / 40`;
     const benjiForm = this.hero.characterId === 'benji' ? this.hero.forms[this.hero.formIndex] : null;
     this.ui.heroName.textContent = benjiForm ? `BENJI · ${benjiForm.toUpperCase()}` : this.hero.characterId.toUpperCase();
+    this.ui.heroTitle.textContent = getEquippedTitle(this.progress) || 'NO TITLE';
     this.ui.heroSwitch.textContent = `HERO: ${this.hero.characterId.toUpperCase()}`;
     this.ui.healthFill.style.background = this.hero.health <= 30
       ? 'linear-gradient(90deg,#ff4d66,#ffad51)'
@@ -847,6 +942,8 @@ export class AdventureGame {
     this.ui.tutorialBack.removeEventListener('click', this.onCloseTutorial);
     this.ui.achievementsButton.removeEventListener('click', this.onOpenAchievements);
     this.ui.achievementsBack.removeEventListener('click', this.onCloseAchievements);
+    this.ui.titlesButton.removeEventListener('click', this.onOpenTitles);
+    this.ui.titlesBack.removeEventListener('click', this.onCloseTitles);
     this.ui.soundEnabled.removeEventListener('change', this.onSoundEnabledChange);
     this.ui.soundVolume.removeEventListener('input', this.onSoundVolumeChange);
     this.ui.graphicsQuality.removeEventListener('change', this.onGraphicsQualityChange);
