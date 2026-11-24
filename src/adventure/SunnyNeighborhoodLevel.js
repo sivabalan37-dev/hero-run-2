@@ -3,7 +3,7 @@ import { createEnemyState, stepEnemy } from './EnemyAI.js';
 import { initializeBoss, stepBoss } from './BossAI.js';
 import { getLevelInfo, WORLDS } from './LevelCatalog.js';
 import { getLevelDesign } from './LevelDesigns.js';
-import { getEnemyVisualState, getEnemyMotionState } from './EnemyEffects.js';
+import { getEnemyVisualState, getEnemyMotionState, shouldUpdateEnemyVisuals } from './EnemyEffects.js';
 import { getGadgetVisionVisualState } from './GadgetVisionEffects.js';
 import { getBossAttackVisualState } from './BossEffects.js';
 
@@ -547,8 +547,15 @@ export class SunnyNeighborhoodLevel {
         continue;
       }
 
-      const visual = getEnemyVisualState(enemy, this.elapsed + enemy.x * 0.07);
       enemy.group.position.x = enemy.x;
+      if (!shouldUpdateEnemyVisuals(enemy.x, heroBody.x)) {
+        // Keep distant enemy AI and world position current, but skip their off-screen animation work.
+        enemy.effectRing.visible = false;
+        if (enemy.bossAttackEffect) enemy.bossAttackEffect.visible = false;
+        continue;
+      }
+
+      const visual = getEnemyVisualState(enemy, this.elapsed + enemy.x * 0.07);
       enemy.group.position.y = visual.bob;
       enemy.group.scale.x = enemy.direction * visual.bodyScaleX;
       enemy.group.scale.y = visual.bodyScaleY;
