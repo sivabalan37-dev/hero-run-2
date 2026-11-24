@@ -50,7 +50,9 @@ Use [ANDROID_TESTING_GUIDE.md](ANDROID_TESTING_GUIDE.md) to record the phone/bro
 - [ ] Check sustained frame rate and memory use on a lower-powered phone.
 - [ ] Install the PWA, then verify it can relaunch offline after one successful online load.
 - [ ] Confirm the hosted build is served over HTTPS.
-- [ ] Verify Android packaging and APK installation if a native Android release is planned. The current project workflow builds a PWA only; no APK is available yet.
+- [ ] Run the Android debug APK workflow and confirm its artifact uploads successfully.
+- [ ] Install and test the debug APK on a physical Android device.
+- [ ] Configure private release signing and generate a production-signed APK/AAB. Never commit the keystore or passwords.
 
 ## Release claims
 
