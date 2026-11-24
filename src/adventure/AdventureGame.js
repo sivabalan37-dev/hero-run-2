@@ -857,7 +857,7 @@ export class AdventureGame {
         } else {
           this.specialTimer = getBenjiFormStats(benjiForm).specialCooldown;
           this.audio.power();
-          if (result.ready && result.ability !== 'star-burst') this.hero.triggerSpecialEffect(result.ability);
+          if (result.ready && result.ability !== 'star-burst') this.hero.triggerSpecialEffect(result.ability, body.facing);
           if (result.defeated > 0) this.coins += result.defeated * 2;
           const labels = { flame: 'BLAZE STRIKE', shock: 'SHOCK PULSE', stomp: 'TITAN STOMP' };
           this.toast(result.hits > 0 ? `${labels[result.ability]} · ${result.hits} HIT(S)` : `${labels[result.ability]} · NO TARGET`);
