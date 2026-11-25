@@ -115,10 +115,21 @@ export class ShinHero extends BaseHero {
     const blue = material('#397dcc', 0.38);
     const dark = material('#243044');
 
-    addBox(this.model, [0.72, 0.66, 0.42], [0, 1.18, 0], shirt);
-    addBox(this.model, [0.7, 0.34, 0.43], [0, 0.68, 0], shorts);
-    addSphere(this.model, 0.34, [0, 1.83, 0.01], skin, 18);
-    const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.355, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.58), hair);
+    const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.28, 0.18, 7, 18), shirt);
+    torso.position.set(0, 1.18, 0);
+    torso.scale.set(1.18, 1, 0.78);
+    torso.castShadow = true;
+    torso.receiveShadow = true;
+    this.model.add(torso);
+    const waist = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.33, 0.34, 18), shorts);
+    waist.position.set(0, 0.68, 0);
+    waist.castShadow = true;
+    waist.receiveShadow = true;
+    this.model.add(waist);
+    addSphere(this.model, 0.34, [0, 1.83, 0.01], skin, 26);
+    addSphere(this.model, 0.09, [-0.335, 1.82, 0.01], skin, 14);
+    addSphere(this.model, 0.09, [0.335, 1.82, 0.01], skin, 14);
+    const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.355, 24, 18, 0, Math.PI * 2, 0, Math.PI * 0.58), hair);
     hairCap.position.set(0, 1.96, -0.025);
     hairCap.castShadow = true;
     this.model.add(hairCap);
@@ -128,8 +139,15 @@ export class ShinHero extends BaseHero {
       spike.rotation.z = (i - 1) * -0.32;
       this.model.add(spike);
     }
-    addBox(this.model, [0.055, 0.07, 0.025], [0.13, 1.86, 0.326], dark, false);
-    addBox(this.model, [0.055, 0.07, 0.025], [-0.13, 1.86, 0.326], dark, false);
+    addSphere(this.model, 0.047, [0.13, 1.86, 0.326], dark, 12);
+    addSphere(this.model, 0.047, [-0.13, 1.86, 0.326], dark, 12);
+    const browMat = material('#34252a', 0.86);
+    addBox(this.model, [0.12, 0.025, 0.035], [0.13, 1.94, 0.326], browMat, false);
+    addBox(this.model, [0.12, 0.025, 0.035], [-0.13, 1.94, 0.326], browMat, false);
+    const smile = new THREE.Mesh(new THREE.TorusGeometry(0.065, 0.012, 6, 16, Math.PI), material('#8e4e45'));
+    smile.position.set(0, 1.72, 0.326);
+    smile.rotation.z = Math.PI;
+    this.model.add(smile);
     this.buildLimbs({ shirt, pants: skin, shoes: shoe, accent: blue });
   }
 
@@ -140,9 +158,17 @@ export class ShinHero extends BaseHero {
     this.rightLeg.position.set(0.2, 0.55, 0);
     this.model.add(this.leftLeg, this.rightLeg);
     for (const leg of [this.leftLeg, this.rightLeg]) {
-      addBox(leg, [0.22, 0.48, 0.24], [0, -0.18, 0], pants);
-      addBox(leg, [0.34, 0.18, 0.42], [0, -0.45, 0.08], shoes);
-      addBox(leg, [0.22, 0.055, 0.1], [0, -0.39, 0.27], accent, false);
+      const calf = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 0.25, 5, 12), pants);
+      calf.position.set(0, -0.18, 0);
+      calf.castShadow = true;
+      calf.receiveShadow = true;
+      leg.add(calf);
+      const sneaker = new THREE.Mesh(new THREE.SphereGeometry(0.19, 16, 12), shoes);
+      sneaker.position.set(0, -0.44, 0.09);
+      sneaker.scale.set(1, 0.52, 1.18);
+      sneaker.castShadow = true;
+      leg.add(sneaker);
+      addBox(leg, [0.2, 0.055, 0.1], [0, -0.39, 0.27], accent, false);
     }
     this.leftArm = new THREE.Group();
     this.rightArm = new THREE.Group();
@@ -150,8 +176,12 @@ export class ShinHero extends BaseHero {
     this.rightArm.position.set(0.43, 1.43, 0);
     this.model.add(this.leftArm, this.rightArm);
     for (const arm of [this.leftArm, this.rightArm]) {
-      addBox(arm, [0.2, 0.55, 0.22], [0, -0.22, 0], shirt);
-      addSphere(arm, 0.12, [0, -0.52, 0], material('#d9976a'), 10);
+      const sleeve = new THREE.Mesh(new THREE.CapsuleGeometry(0.105, 0.31, 5, 12), shirt);
+      sleeve.position.set(0, -0.22, 0);
+      sleeve.castShadow = true;
+      sleeve.receiveShadow = true;
+      arm.add(sleeve);
+      addSphere(arm, 0.12, [0, -0.52, 0], material('#d9976a'), 14);
     }
   }
 }
