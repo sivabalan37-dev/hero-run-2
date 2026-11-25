@@ -3,7 +3,7 @@ const STORAGE_KEY = 'hero-run-settings-v1';
 export const DEFAULT_SETTINGS = Object.freeze({
   soundEnabled: true,
   volume: 0.65,
-  graphicsQuality: 'medium',
+  graphicsQuality: 'high',
 });
 
 export function createSettingsState(value = {}) {
