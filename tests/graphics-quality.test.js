@@ -55,9 +55,9 @@ test('Auto quality stays within its mobile resolution range', () => {
 });
 
 test('Auto resolution lowers quickly under load and recovers gradually', () => {
-  assert.equal(adaptResolutionScale(0.9, 25), 0.84);
-  assert.equal(adaptResolutionScale(0.9, 20), 0.87);
-  assert.equal(adaptResolutionScale(0.9, 12), 0.92);
+  assert.ok(Math.abs(adaptResolutionScale(0.9, 25) - 0.84) < 1e-9);
+  assert.ok(Math.abs(adaptResolutionScale(0.9, 20) - 0.87) < 1e-9);
+  assert.ok(Math.abs(adaptResolutionScale(0.9, 12) - 0.92) < 1e-9);
   assert.equal(adaptResolutionScale(0.99, 12), 1);
   assert.equal(adaptResolutionScale(0.61, 30), 0.6);
 });
