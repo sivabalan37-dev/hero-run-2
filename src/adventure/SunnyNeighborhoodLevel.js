@@ -73,6 +73,85 @@ export class SunnyNeighborhoodLevel {
     this.buildGadgetVision();
   }
 
+  buildCinematicDepth(worldTheme, fogColor) {
+    const width = this.exitX + 104;
+    const centerX = this.exitX / 2;
+    const mountainTint = this.worldIndex === 0 ? new THREE.Color('#668da6') : new THREE.Color(worldTheme.accent).lerp(new THREE.Color(worldTheme.fog), 0.66);
+    const snowTint = this.worldIndex === 0 ? new THREE.Color('#e7f2f6') : new THREE.Color(worldTheme.sky).lerp(new THREE.Color('#ffffff'), 0.68);
+    const rockTint = this.worldIndex === 0 ? new THREE.Color('#657c85') : new THREE.Color(worldTheme.ground).lerp(mountainTint, 0.62);
+    const forestTint = this.worldIndex === 0 ? new THREE.Color('#315d55') : new THREE.Color(worldTheme.ground).lerp(new THREE.Color('#253c42'), 0.58);
+    // Deterministic ridged-noise terrain bands create far, middle and near mountain silhouettes.
+    const buildRidge = ({ z, baseY, peak, phase, tint, snowLine = 0.78 }) => {
+      const columns = 180, rows = 10, positions = [], colors = [], indices = [];
+      const low = tint.clone().lerp(rockTint, 0.36);
+      const high = tint.clone().lerp(snowTint, 0.72);
+      for (let row = 0; row <= rows; row++) {
+        const depthT = row / rows;
+        for (let column = 0; column <= columns; column++) {
+          const xT = column / columns, x = -width / 2 + xT * width;
+          const ridges = Math.abs(Math.sin(x * 0.075 + phase)) * 0.56 + Math.abs(Math.sin(x * 0.19 + phase * 1.7)) * 0.27 + Math.abs(Math.sin(x * 0.43 + phase * 0.63)) * 0.17;
+          const peakY = baseY + peak * (0.2 + ridges * (0.56 + 0.44 * Math.sin(x * 0.022 + phase * 0.4)));
+          const y = baseY - 2 + depthT * (peakY - baseY + 2);
+          positions.push(x, y, z + row * 0.12 + Math.sin(x * 0.035 + phase) * 0.75 * (1 - depthT));
+          const heightT = Math.max(0, Math.min(1, (y - baseY) / Math.max(1, peak)));
+          const color = low.clone().lerp(high, Math.pow(heightT, 1.35));
+          if (heightT > snowLine) color.lerp(snowTint, Math.min(0.88, (heightT - snowLine) * 4.2));
+          colors.push(color.r, color.g, color.b);
+          if (row < rows && column < columns) { const a = row * (columns + 1) + column, b = a + columns + 1; indices.push(a, b, a + 1, b, b + 1, a + 1); }
+        }
+      }
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      geometry.setIndex(indices); geometry.computeVertexNormals();
+      const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0, fog: true, side: THREE.DoubleSide });
+      const mesh = new THREE.Mesh(geometry, material); mesh.position.x = centerX; mesh.frustumCulled = false;
+      this.group.add(mesh); (this.cinematicDisposables ??= []).push(geometry, material);
+    };
+    buildRidge({ z: -43, baseY: -2.1, peak: 8.8, phase: 1.4, tint: mountainTint, snowLine: 0.78 });
+    buildRidge({ z: -35, baseY: -2.4, peak: 6.5, phase: 3.8, tint: mountainTint.clone().lerp(fogColor, 0.18), snowLine: 0.9 });
+    buildRidge({ z: -27, baseY: -2.8, peak: 4.8, phase: 5.6, tint: forestTint, snowLine: 1.1 });
+    // Instanced conifers keep the middle-distance forest dense at only two draw calls.
+    const trunkGeometry = new THREE.CylinderGeometry(0.075, 0.12, 1.25, 5);
+    const crownGeometry = new THREE.ConeGeometry(0.82, 2.7, 6, 2);
+    const trunkMaterial = new THREE.MeshStandardMaterial({ color: '#55483a', roughness: 1 });
+    const crownMaterial = new THREE.MeshStandardMaterial({ color: forestTint, roughness: 0.94 });
+    const treeCount = this.quality === 'low' ? 36 : this.quality === 'medium' ? 64 : 92;
+    const trunks = new THREE.InstancedMesh(trunkGeometry, trunkMaterial, treeCount);
+    const crowns = new THREE.InstancedMesh(crownGeometry, crownMaterial, treeCount);
+    const dummy = new THREE.Object3D(); let seed = 9127 + this.levelNumber * 37;
+    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    for (let i = 0; i < treeCount; i++) {
+      const x = -width * 0.48 + random() * width * 0.96, z = -12 - random() * 8;
+      const scale = 0.68 + random() * 1.15, y = -0.3 + random();
+      dummy.position.set(centerX + x, y + 0.62 * scale, z); dummy.scale.setScalar(scale); dummy.rotation.y = random() * Math.PI; dummy.updateMatrix(); trunks.setMatrixAt(i, dummy.matrix);
+      dummy.position.y += 1.25 * scale; dummy.updateMatrix(); crowns.setMatrixAt(i, dummy.matrix);
+    }
+    trunks.castShadow = crowns.castShadow = this.quality !== 'low'; trunks.receiveShadow = crowns.receiveShadow = true;
+    this.group.add(trunks, crowns); (this.cinematicDisposables ??= []).push(trunkGeometry, crownGeometry, trunkMaterial, crownMaterial);
+    // Foreground stones sit below the runner silhouette and provide a third visible depth plane.
+    const rockGeometry = new THREE.DodecahedronGeometry(0.34, 1);
+    const rockMaterial = new THREE.MeshStandardMaterial({ color: this.worldIndex === 0 ? '#777c75' : rockTint, roughness: 0.98, flatShading: true });
+    const rockCount = this.quality === 'low' ? 12 : 24, rocks = new THREE.InstancedMesh(rockGeometry, rockMaterial, rockCount);
+    for (let i = 0; i < rockCount; i++) {
+      const x = -width * 0.48 + random() * width * 0.96;
+      dummy.position.set(centerX + x, -0.28 + random() * 0.1, 1.9 + random() * 1.1);
+      dummy.scale.set(0.7 + random() * 1.8, 0.35 + random() * 0.6, 0.7 + random() * 1.3);
+      dummy.rotation.set(random() * 0.2, random() * Math.PI, random() * 0.2); dummy.updateMatrix(); rocks.setMatrixAt(i, dummy.matrix);
+    }
+    rocks.receiveShadow = true; this.group.add(rocks); (this.cinematicDisposables ??= []).push(rockGeometry, rockMaterial);
+    // Distant birds use one instanced mesh and a small per-frame flock drift.
+    const birdGeometry = new THREE.BufferGeometry();
+    birdGeometry.setAttribute('position', new THREE.Float32BufferAttribute([-0.32,0.08,0, 0,-0.02,0, 0.32,0.08,0, -0.32,0.08,0, 0,0.02,-0.04, 0.32,0.08,0], 3));
+    const birdMaterial = new THREE.MeshBasicMaterial({ color: '#344b5b', side: THREE.DoubleSide, fog: true });
+    const birds = new THREE.InstancedMesh(birdGeometry, birdMaterial, 11); this.birdMotion = [];
+    for (let i = 0; i < 11; i++) {
+      const x = centerX - width * 0.32 + random() * width * 0.64, y = 8 + random() * 5, z = -31 - random() * 4, scale = 0.55 + random() * 0.7;
+      dummy.position.set(x, y, z); dummy.scale.setScalar(scale); dummy.rotation.y = random() * 0.18; dummy.updateMatrix(); birds.setMatrixAt(i, dummy.matrix);
+      this.birdMotion.push({ x, y, z, phase: random() * Math.PI * 2, scale });
+    }
+    this.group.add(birds); this.birdsMesh = birds; (this.cinematicDisposables ??= []).push(birdGeometry, birdMaterial);
+  }
   buildEnvironment() {
     const rooftop = this.levelNumber === 7;
     const clocktower = this.levelNumber === 6;
@@ -108,7 +187,11 @@ export class SunnyNeighborhoodLevel {
     skyBackdrop.position.set(this.exitX / 2, 5, -30);
     skyBackdrop.renderOrder = -10;
     skyBackdrop.frustumCulled = false;
+    skyBackdrop.position.set(this.exitX / 2, 5, -68);
+    skyBackdrop.renderOrder = -10;
+    skyBackdrop.frustumCulled = false;
     this.group.add(skyBackdrop);
+    this.buildCinematicDepth(worldTheme, fogColor);
 
     const hemi = new THREE.HemisphereLight(rooftop ? '#ffe8c8' : clocktower ? '#e3e5ff' : riverside ? '#dff7ef' : festival ? '#ffe4cf' : dusk ? '#eadcff' : warm ? '#fff1dd' : '#e8faff', '#52627e', 1.8);
     this.group.add(hemi);
@@ -149,7 +232,7 @@ export class SunnyNeighborhoodLevel {
           j * 0.92, 0.08 + Math.sin(j * 1.2) * 0.16, 0, cloud, false);
         puff.scale.y = 0.64;
       }
-      cloud.position.set(-10 + i * ((this.exitX + 24) / 7), 7.5 + (i % 3) * 1.25, -13 - (i % 2) * 2);
+      cloud.position.set(-10 + i * ((this.exitX + 24) / 7), 7.5 + (i % 3) * 1.25, -24 - (i % 2) * 3);
       this.group.add(cloud);
       this.clouds.push({ group: cloud, baseX: cloud.position.x, phase: i * 0.8 });
     }
@@ -685,6 +768,15 @@ export class SunnyNeighborhoodLevel {
     for (const cloud of this.clouds ?? []) {
       cloud.group.position.x = cloud.baseX + Math.sin(this.elapsed * 0.12 + cloud.phase) * 0.48;
     }
+    if (this.birdsMesh && this.birdMotion) {
+      const bird = new THREE.Object3D();
+      this.birdMotion.forEach((item, index) => {
+        bird.position.set(item.x + Math.sin(this.elapsed * 0.18 + item.phase) * 1.2, item.y + Math.sin(this.elapsed * 0.7 + item.phase) * 0.18, item.z);
+        bird.scale.setScalar(item.scale); bird.rotation.y = Math.sin(this.elapsed * 0.32 + item.phase) * 0.16; bird.updateMatrix();
+        this.birdsMesh.setMatrixAt(index, bird.matrix);
+      });
+      this.birdsMesh.instanceMatrix.needsUpdate = true;
+    }
     if (this.gadgetScanTimer > 0) {
       this.gadgetScanTimer = Math.max(0, this.gadgetScanTimer - dt);
       const progress = 1 - this.gadgetScanTimer / 1.35;
@@ -751,6 +843,7 @@ export class SunnyNeighborhoodLevel {
   }
 
   destroy() {
+    for (const resource of this.cinematicDisposables ?? []) resource.dispose?.();
     this.scene.remove(this.group);
     this.group.traverse(object => {
       if (object.geometry) object.geometry.dispose();
