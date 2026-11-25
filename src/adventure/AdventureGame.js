@@ -45,8 +45,12 @@ export class AdventureGame {
     this.bossModes = new Map();
 
     this.scene = new THREE.Scene();
-    this.camera = new THREE.OrthographicCamera(-12, 12, 7, -7, 0.1, 140);
-    this.camera.position.set(-3.5, 3, 30);
+    // Match the old 14-unit orthographic framing at gameplay depth z=0.
+    const gameplayViewHeight = 14;
+    const cameraDistance = 30;
+    const gameplayFov = THREE.MathUtils.radToDeg(2 * Math.atan(gameplayViewHeight / (2 * cameraDistance)));
+    this.camera = new THREE.PerspectiveCamera(gameplayFov, 1, 0.1, 220);
+    this.camera.position.set(-3.5, 3, cameraDistance);
     this.camera.lookAt(-3.5, 3, 0);
 
     this.renderer = new THREE.WebGLRenderer({
@@ -194,12 +198,7 @@ export class AdventureGame {
   resize() {
     const width = Math.max(1, this.mount.clientWidth);
     const height = Math.max(1, this.mount.clientHeight);
-    const viewHeight = 14;
-    const halfWidth = viewHeight * (width / height) / 2;
-    this.camera.left = -halfWidth;
-    this.camera.right = halfWidth;
-    this.camera.top = viewHeight / 2;
-    this.camera.bottom = -viewHeight / 2;
+    this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
     this.renderer.setPixelRatio(this.getPixelRatio());
