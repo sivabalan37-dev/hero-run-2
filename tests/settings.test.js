@@ -22,6 +22,7 @@ test('settings use safe defaults and clamp invalid values', () => {
     graphicsQuality: 'high',
   });
   assert.equal(createSettingsState({ volume: -2 }).volume, 0);
+  assert.equal(createSettingsState({ graphicsQuality: 'auto' }).graphicsQuality, 'auto');
 });
 
 test('settings persist and reload from storage', () => {
