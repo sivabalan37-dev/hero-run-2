@@ -222,6 +222,8 @@ export class AdventureGame {
     this.renderer.shadowMap.enabled = preset.shadows;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.toneMappingExposure = preset.toneMappingExposure;
+    // Keep the cinematic screen-space finish off on Low/Medium to protect mobile fill rate.
+    this.mount.classList.toggle('cinematic-post', quality === 'high');
     this.level?.applyGraphicsQuality?.(quality);
     this.renderer.setPixelRatio(this.getPixelRatio());
   }
