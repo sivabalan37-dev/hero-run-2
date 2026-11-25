@@ -22,7 +22,7 @@ import { loadSettings, saveSettings } from './Settings.js';
 import { getAchievementProgress } from './Achievements.js';
 import { getEquippedTitle, getTitleRewards, selectAchievementTitle } from './Rewards.js';
 import { getCampaignSummary } from './CampaignSummary.js';
-import { getRenderPixelRatio, getGraphicsPreset } from './GraphicsQuality.js';
+import { adaptResolutionScale, getRenderPixelRatio, getGraphicsPreset } from './GraphicsQuality.js';
 
 import { readCheckpoint, writeCheckpoint } from './CheckpointSave.js';
 
@@ -33,6 +33,10 @@ export class AdventureGame {
     this.mount = mount;
     this.state = 'menu';
     this.accumulator = 0;
+    this.dynamicResolutionScale = 0.9;
+    this.autoFrameSampleMs = 0;
+    this.autoFrameSampleCount = 0;
+    this.autoResolutionTimer = 0;
     this.coins = 0;
     this.shards = 0;
     this.progress = loadCampaignProgress();
@@ -202,18 +206,22 @@ export class AdventureGame {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
     this.renderer.setPixelRatio(this.getPixelRatio());
+    this.renderer.setSize(Math.max(1, this.mount.clientWidth), Math.max(1, this.mount.clientHeight), false);
   }
 
   getPixelRatio() {
     const coarsePointer = typeof window.matchMedia === 'function'
       && window.matchMedia('(pointer: coarse)').matches;
-    return getRenderPixelRatio({
+    const baseRatio = getRenderPixelRatio({
       quality: this.settings.graphicsQuality,
       devicePixelRatio: window.devicePixelRatio || 1,
       coarsePointer,
       deviceMemory: navigator.deviceMemory,
       hardwareConcurrency: navigator.hardwareConcurrency,
     });
+    return this.settings.graphicsQuality === 'auto'
+      ? Math.max(0.6, Math.min(1, baseRatio * this.dynamicResolutionScale))
+      : baseRatio;
   }
 
   applyGraphicsSettings() {
@@ -223,7 +231,7 @@ export class AdventureGame {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.toneMappingExposure = preset.toneMappingExposure;
     // Keep the cinematic screen-space finish off on Low/Medium to protect mobile fill rate.
-    this.mount.classList.toggle('cinematic-post', quality === 'high');
+    this.mount.classList.toggle('cinematic-post', quality === 'high' || quality === 'medium');
     this.level?.applyGraphicsQuality?.(quality);
     this.renderer.setPixelRatio(this.getPixelRatio());
   }
@@ -938,6 +946,28 @@ export class AdventureGame {
     const targetX = Math.max(-4, Math.min(cameraMaxX, this.hero.body.x + 1.5));
     this.camera.position.x += (targetX - this.camera.position.x) * 0.09;
     this.camera.lookAt(this.camera.position.x, 3, 0);
+    if (this.settings.graphicsQuality === 'auto') {
+      this.autoFrameSampleMs += elapsed * 1000;
+      this.autoFrameSampleCount++;
+      this.autoResolutionTimer += elapsed;
+      if (this.autoResolutionTimer >= 0.5 && this.autoFrameSampleCount > 0) {
+        const averageFrameMs = this.autoFrameSampleMs / this.autoFrameSampleCount;
+        const nextScale = adaptResolutionScale(this.dynamicResolutionScale, averageFrameMs);
+        this.autoFrameSampleMs = 0;
+        this.autoFrameSampleCount = 0;
+        this.autoResolutionTimer = 0;
+        if (Math.abs(nextScale - this.dynamicResolutionScale) >= 0.015) {
+          this.dynamicResolutionScale = nextScale;
+          this.renderer.setPixelRatio(this.getPixelRatio());
+          this.renderer.setSize(Math.max(1, this.mount.clientWidth), Math.max(1, this.mount.clientHeight), false);
+        }
+      }
+    } else {
+      this.autoFrameSampleMs = 0;
+      this.autoFrameSampleCount = 0;
+      this.autoResolutionTimer = 0;
+      this.dynamicResolutionScale = 0.9;
+    }
     this.renderer.render(this.scene, this.camera);
   }
 
