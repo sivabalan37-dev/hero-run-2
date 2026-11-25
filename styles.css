@@ -558,3 +558,24 @@ h1 em { color: #ffd45a; font-style: normal; }
 .update-center button:disabled {
   opacity: .6;
 }
+
+
+/* Cinematic finishing: low-cost screen-space vignette, enabled on High only. */
+#game-canvas.cinematic-post::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 46%, transparent 48%, rgba(8, 18, 31, .22) 100%),
+    linear-gradient(180deg, rgba(255, 221, 164, .035), transparent 28%, transparent 74%, rgba(8, 19, 30, .08));
+  mix-blend-mode: multiply;
+}
+.collect-stat { display: inline-flex; align-items: center; gap: 5px; min-width: 38px; }
+.collect-stat svg { width: 17px; height: 17px; color: #ffd875; filter: drop-shadow(0 1px 3px rgba(0,0,0,.24)); }
+.shard-stat svg { color: #8de8ff; }
+.icon-button svg { display: block; width: 21px; height: 21px; margin: auto; }
+@media (max-width: 620px) {
+  .collect-stat svg { width: 15px; height: 15px; }
+}
