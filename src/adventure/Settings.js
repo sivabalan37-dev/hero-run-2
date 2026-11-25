@@ -13,7 +13,7 @@ export function createSettingsState(value = {}) {
       ? value.soundEnabled
       : DEFAULT_SETTINGS.soundEnabled,
     volume: Number.isFinite(volume) ? Math.max(0, Math.min(1, volume)) : DEFAULT_SETTINGS.volume,
-    graphicsQuality: ['low', 'medium', 'high'].includes(value?.graphicsQuality)
+    graphicsQuality: ['low', 'medium', 'high', 'auto'].includes(value?.graphicsQuality)
       ? value.graphicsQuality
       : DEFAULT_SETTINGS.graphicsQuality,
   };
