@@ -4,6 +4,16 @@ const QUALITY_PIXEL_RATIOS = Object.freeze({
   high: 2,
 });
 
+export const GRAPHICS_PRESETS = Object.freeze({
+  low: Object.freeze({ shadows: false, shadowMapSize: 512, shadowRadius: 2, toneMappingExposure: 1.08 }),
+  medium: Object.freeze({ shadows: true, shadowMapSize: 1024, shadowRadius: 3, toneMappingExposure: 1.12 }),
+  high: Object.freeze({ shadows: true, shadowMapSize: 2048, shadowRadius: 4, toneMappingExposure: 1.16 }),
+});
+
+export function getGraphicsPreset(quality = 'medium') {
+  return GRAPHICS_PRESETS[quality] ?? GRAPHICS_PRESETS.medium;
+}
+
 export function getRenderPixelRatio({
   quality = 'medium',
   devicePixelRatio = 1,
