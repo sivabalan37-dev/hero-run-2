@@ -22,7 +22,7 @@ import { loadSettings, saveSettings } from './Settings.js';
 import { getAchievementProgress } from './Achievements.js';
 import { getEquippedTitle, getTitleRewards, selectAchievementTitle } from './Rewards.js';
 import { getCampaignSummary } from './CampaignSummary.js';
-import { getRenderPixelRatio } from './GraphicsQuality.js';
+import { getRenderPixelRatio, getGraphicsPreset } from './GraphicsQuality.js';
 
 import { readCheckpoint, writeCheckpoint } from './CheckpointSave.js';
 
@@ -185,7 +185,10 @@ export class AdventureGame {
   }
 
   createLevel(levelNumber) {
-    return new SunnyNeighborhoodLevel(this.scene, { levelNumber });
+    return new SunnyNeighborhoodLevel(this.scene, {
+      levelNumber,
+      quality: this.settings.graphicsQuality,
+    });
   }
 
   resize() {
@@ -216,7 +219,11 @@ export class AdventureGame {
 
   applyGraphicsSettings() {
     const quality = this.settings.graphicsQuality;
-    this.renderer.shadowMap.enabled = quality !== 'low';
+    const preset = getGraphicsPreset(quality);
+    this.renderer.shadowMap.enabled = preset.shadows;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.toneMappingExposure = preset.toneMappingExposure;
+    this.level?.applyGraphicsQuality?.(quality);
     this.renderer.setPixelRatio(this.getPixelRatio());
   }
 
