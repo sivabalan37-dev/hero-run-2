@@ -152,6 +152,92 @@ export class SunnyNeighborhoodLevel {
     }
     this.group.add(birds); this.birdsMesh = birds; (this.cinematicDisposables ??= []).push(birdGeometry, birdMaterial);
   }
+  buildProceduralTerrain(worldTheme) {
+    const width = this.exitX + 88;
+    const centerX = this.exitX / 2;
+    const groundColor = new THREE.Color(worldTheme?.ground ?? '#6d9d67');
+    const meadowColor = groundColor.clone().lerp(new THREE.Color('#b3bd77'), 0.28);
+    const darkSoil = new THREE.Color('#574b3d');
+    const waterColor = this.worldIndex === 0 ? new THREE.Color('#4c9db1') : new THREE.Color(worldTheme?.accent ?? '#6daab5').lerp(new THREE.Color('#397c91'), 0.58);
+    // Rolling terrain is a visual-only backdrop behind the unchanged collision platforms.
+    const makeHill = (z, baseY, amplitude, phase, color) => {
+      const columns = 160, rows = 6, positions = [], colors = [], indices = [];
+      for (let row = 0; row <= rows; row++) {
+        const v = row / rows;
+        for (let column = 0; column <= columns; column++) {
+          const u = column / columns, x = -width / 2 + u * width;
+          const ridge = Math.sin(x * 0.045 + phase) * 0.42 + Math.sin(x * 0.11 + phase * 1.8) * 0.18 + Math.sin(x * 0.017 + phase) * 0.62;
+          const top = baseY + amplitude * ridge;
+          const y = top - v * 4.2;
+          positions.push(x + centerX, y, z + v * 0.04);
+          const tint = color.clone().lerp(darkSoil, Math.pow(v, 1.6) * 0.7);
+          colors.push(tint.r, tint.g, tint.b);
+          if (row < rows && column < columns) { const a = row * (columns + 1) + column, b = a + columns + 1; indices.push(a, b, a + 1, b, b + 1, a + 1); }
+        }
+      }
+      const geometry = new THREE.BufferGeometry(); geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3)); geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3)); geometry.setIndex(indices); geometry.computeVertexNormals();
+      const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0, side: THREE.DoubleSide });
+      const hill = new THREE.Mesh(geometry, material); hill.frustumCulled = false; this.group.add(hill);
+      (this.cinematicDisposables ??= []).push(geometry, material);
+    };
+    makeHill(-8.2, -0.35, 1.05, 0.4, meadowColor);
+    makeHill(-6.2, -1.05, 0.58, 2.1, groundColor.clone().lerp(new THREE.Color('#314e43'), 0.35));
+    // A low-poly procedural normal map gives the stream moving surface detail without external assets.
+    const normalSize = 64, normalPixels = new Uint8Array(normalSize * normalSize * 4);
+    for (let y = 0; y < normalSize; y++) for (let x = 0; x < normalSize; x++) {
+      const wave = Math.sin(x * 0.42 + Math.sin(y * 0.18) * 2) * 0.12 + Math.cos(y * 0.31) * 0.08;
+      const offset = (y * normalSize + x) * 4;
+      normalPixels[offset] = Math.round(128 + wave * 255); normalPixels[offset + 1] = Math.round(128 + Math.cos(x * 0.24) * 16); normalPixels[offset + 2] = 250; normalPixels[offset + 3] = 255;
+    }
+    const waterNormal = new THREE.DataTexture(normalPixels, normalSize, normalSize, THREE.RGBAFormat); waterNormal.wrapS = waterNormal.wrapT = THREE.RepeatWrapping; waterNormal.repeat.set(width / 7, 1.5); waterNormal.needsUpdate = true;
+    const waterMaterial = new THREE.MeshStandardMaterial({ color: waterColor, roughness: 0.22, metalness: 0.16, transparent: true, opacity: 0.88, normalMap: waterNormal, normalScale: new THREE.Vector2(0.38, 0.24), side: THREE.DoubleSide });
+    const waterGeometry = new THREE.PlaneGeometry(width * 0.92, 1.15, 120, 4);
+    const water = new THREE.Mesh(waterGeometry, waterMaterial); water.position.set(centerX, -1.55, -9.1); water.frustumCulled = false; this.group.add(water);
+    this.waterMesh = water; this.waterNormal = waterNormal;
+    (this.cinematicDisposables ??= []).push(waterGeometry, waterMaterial, waterNormal);
+    // Soft gravel banks and pebble beds frame the water, safely behind the playable plane.
+    const bankGeometry = new THREE.BoxGeometry(width * 0.94, 0.18, 0.42);
+    const bankMaterial = new THREE.MeshStandardMaterial({ color: '#8d8066', roughness: 1 });
+    for (const y of [-2.16, -0.94]) { const bank = new THREE.Mesh(bankGeometry, bankMaterial); bank.position.set(centerX, y, -8.85); this.group.add(bank); }
+    (this.cinematicDisposables ??= []).push(bankGeometry, bankMaterial);
+    // Instanced grass, reeds and flowers: one draw call per plant family, with deterministic placement.
+    let seed = 6113 + this.levelNumber * 101;
+    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    const bladeGeometry = new THREE.ConeGeometry(0.075, 0.58, 4, 1);
+    const grassMaterial = new THREE.MeshStandardMaterial({ color: meadowColor.clone().lerp(new THREE.Color('#315f3d'), 0.35), roughness: 0.96 });
+    const grassCount = this.quality === 'low' ? 38 : this.quality === 'medium' ? 72 : 108;
+    const grass = new THREE.InstancedMesh(bladeGeometry, grassMaterial, grassCount);
+    const dummy = new THREE.Object3D();
+    for (let i = 0; i < grassCount; i++) {
+      const x = centerX - width * 0.47 + random() * width * 0.94;
+      dummy.position.set(x, -0.56 + random() * 0.32, -4.5 - random() * 2.8);
+      dummy.scale.set(0.55 + random() * 1.1, 0.5 + random() * 1.1, 0.6 + random() * 0.8);
+      dummy.rotation.z = (random() - 0.5) * 0.65; dummy.rotation.y = random() * Math.PI; dummy.updateMatrix(); grass.setMatrixAt(i, dummy.matrix);
+    }
+    grass.castShadow = this.quality === 'high'; this.group.add(grass);
+    const flowerGeometry = new THREE.SphereGeometry(0.12, 7, 5);
+    const flowerMaterials = ['#f7e6a2', '#f3a7a4', '#e9eef1', '#d6a6e8'].map(color => new THREE.MeshStandardMaterial({ color, roughness: 0.7 }));
+    const flowers = flowerMaterials.map(material => new THREE.InstancedMesh(flowerGeometry, material, this.quality === 'low' ? 5 : 12));
+    flowers.forEach((instanced, flowerIndex) => {
+      const count = instanced.count;
+      for (let i = 0; i < count; i++) {
+        const x = centerX - width * 0.46 + random() * width * 0.92;
+        dummy.position.set(x, -0.28 + random() * 0.22, -4.15 - random() * 2.1);
+        const scale = 0.65 + random() * 0.75; dummy.scale.setScalar(scale); dummy.updateMatrix(); instanced.setMatrixAt(i, dummy.matrix);
+      }
+      this.group.add(instanced);
+    });
+    const reedGeometry = new THREE.ConeGeometry(0.055, 0.85, 4);
+    const reedMaterial = new THREE.MeshStandardMaterial({ color: '#718e5b', roughness: 0.94 });
+    const reeds = new THREE.InstancedMesh(reedGeometry, reedMaterial, this.quality === 'low' ? 10 : 22);
+    for (let i = 0; i < reeds.count; i++) {
+      dummy.position.set(centerX - width * 0.44 + random() * width * 0.88, -0.65 + random() * 0.28, -8.25 + (random() - 0.5) * 0.45);
+      dummy.scale.set(0.7 + random() * 0.6, 0.65 + random() * 0.8, 0.7 + random() * 0.6); dummy.rotation.z = (random() - 0.5) * 0.35; dummy.updateMatrix(); reeds.setMatrixAt(i, dummy.matrix);
+    }
+    this.group.add(grass, reeds);
+    (this.cinematicDisposables ??= []).push(bladeGeometry, grassMaterial, flowerGeometry, ...flowerMaterials, reedGeometry, reedMaterial);
+    this.flowerInstances = flowers; this.grassInstances = grass; this.reedInstances = reeds;
+  }
   buildEnvironment() {
     const rooftop = this.levelNumber === 7;
     const clocktower = this.levelNumber === 6;
@@ -192,6 +278,7 @@ export class SunnyNeighborhoodLevel {
     skyBackdrop.frustumCulled = false;
     this.group.add(skyBackdrop);
     this.buildCinematicDepth(worldTheme, fogColor);
+    this.buildProceduralTerrain(worldTheme);
 
     const hemi = new THREE.HemisphereLight(rooftop ? '#ffe8c8' : clocktower ? '#e3e5ff' : riverside ? '#dff7ef' : festival ? '#ffe4cf' : dusk ? '#eadcff' : warm ? '#fff1dd' : '#e8faff', '#52627e', 1.8);
     this.group.add(hemi);
@@ -765,6 +852,7 @@ export class SunnyNeighborhoodLevel {
 
   update(dt, heroBody = { x: -100, y: 0 }) {
     this.elapsed += dt;
+    if (this.waterNormal) this.waterNormal.offset.x = (this.elapsed * 0.018) % 1;
     for (const cloud of this.clouds ?? []) {
       cloud.group.position.x = cloud.baseX + Math.sin(this.elapsed * 0.12 + cloud.phase) * 0.48;
     }
