@@ -208,6 +208,15 @@ export class NobiHero extends BaseHero {
     addBox(this.model, [0.82, 0.82, 0.48], [0, 1.2, 0], hoodie);
     addBox(this.model, [0.34, 0.18, 0.12], [0, 1.65, 0.27], hoodDark);
     addSphere(this.model, 0.34, [0, 1.91, 0.02], skin, 18);
+    // Small eye highlights and cheek shading add expression without changing Nobi's silhouette.
+    const eyeWhite = material('#f5f7f2', 0.32);
+    const pupil = material('#17253b', 0.22, 0.08);
+    for (const x of [-0.105, 0.105]) {
+      addSphere(this.model, 0.055, [x, 1.91, 0.326], eyeWhite, 12);
+      addSphere(this.model, 0.027, [x, 1.91, 0.37], pupil, 10);
+      addSphere(this.model, 0.009, [x - 0.008, 1.93, 0.392], material('#ffffff', 0.18), 8);
+    }
+    addSphere(this.model, 0.035, [0, 1.83, 0.34], material('#c77f61'), 10);
     addSphere(this.model, 0.35, [0, 2.02, -0.06], hair, 18).scale.set(1, 0.68, 1);
     // Round glasses with two dark frames and bright lenses.
     const frame = material('#182b47', 0.3, 0.45);
@@ -268,7 +277,20 @@ export class BenjiHero extends BaseHero {
     this.formGlow = material('#b7ef75', 0.3, 0.45);
     addBox(this.model, [0.84, 0.82, 0.48], [0, 1.2, 0], this.jacketMaterial);
     addBox(this.model, [0.22, 0.68, 0.08], [0, 1.17, 0.27], material('#e7e8e1', 0.68));
+    const jacketTrim = material('#d7e4c8', 0.62, 0.08);
+    addBox(this.model, [0.045, 0.58, 0.035], [-0.29, 1.22, 0.25], jacketTrim, false);
+    addBox(this.model, [0.045, 0.58, 0.035], [0.29, 1.22, 0.25], jacketTrim, false);
+    for (let i = 0; i < 3; i++) addSphere(this.model, 0.025, [0, 1.38 - i * 0.17, 0.335], this.watchMaterial, 8);
     addSphere(this.model, 0.34, [0, 1.92, 0], skin, 18);
+    // Facial detail is layered onto the existing Benji design; body and hitbox remain untouched.
+    const benjiEye = material('#f8f5e9', 0.28);
+    const benjiPupil = material('#252b35', 0.2);
+    for (const x of [-0.12, 0.12]) {
+      addSphere(this.model, 0.052, [x, 1.92, 0.314], benjiEye, 12);
+      addSphere(this.model, 0.027, [x, 1.92, 0.357], benjiPupil, 10);
+      addBox(this.model, [0.11, 0.022, 0.025], [x, 1.995, 0.31], hair, false);
+    }
+    addSphere(this.model, 0.032, [0, 1.83, 0.33], material('#b97855'), 10);
     addSphere(this.model, 0.35, [0, 2.04, -0.08], hair, 16).scale.set(1, 0.62, 1);
     this.leftLeg = new THREE.Group();
     this.rightLeg = new THREE.Group();
