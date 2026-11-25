@@ -6,11 +6,36 @@ import { getLevelDesign } from './LevelDesigns.js';
 import { getEnemyVisualState, getEnemyMotionState, shouldUpdateEnemyVisuals } from './EnemyEffects.js';
 import { getGadgetVisionVisualState } from './GadgetVisionEffects.js';
 import { getBossAttackVisualState } from './BossEffects.js';
+import { getGraphicsPreset } from './GraphicsQuality.js';
 
 const standard = (color, roughness = 0.78, metalness = 0) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness });
 const glow = (color) =>
   new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 1.5, roughness: 0.28 });
+
+function makeSkyGradientTexture(topColor, horizonColor, lowerColor) {
+  const height = 128;
+  const pixels = new Uint8Array(height * 4);
+  for (let y = 0; y < height; y++) {
+    const t = y / (height - 1);
+    const color = t < 0.48
+      ? lowerColor.clone().lerp(horizonColor, t / 0.48)
+      : horizonColor.clone().lerp(topColor, (t - 0.48) / 0.52);
+    const hex = color.getHex();
+    const offset = y * 4;
+    pixels[offset] = (hex >> 16) & 255;
+    pixels[offset + 1] = (hex >> 8) & 255;
+    pixels[offset + 2] = hex & 255;
+    pixels[offset + 3] = 255;
+  }
+  const texture = new THREE.DataTexture(pixels, 1, height, THREE.RGBAFormat);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearFilter;
+  texture.generateMipmaps = false;
+  texture.needsUpdate = true;
+  return texture;
+}
 
 function mesh(geometry, material, x, y, z, parent, castShadow = true) {
   const object = new THREE.Mesh(geometry, material);
@@ -26,6 +51,7 @@ export class SunnyNeighborhoodLevel {
     this.scene = scene;
     this.options = options;
     this.levelNumber = Number.isInteger(options.levelNumber) && options.levelNumber >= 1 && options.levelNumber <= 40 ? options.levelNumber : 1;
+    this.quality = ['low', 'medium', 'high'].includes(options.quality) ? options.quality : 'medium';
     this.info = getLevelInfo(this.levelNumber);
     this.worldIndex = WORLDS.findIndex(world => this.levelNumber >= world.firstLevel && this.levelNumber <= world.lastLevel);
     this.isBossLevel = this.info.isBossLevel;
@@ -64,33 +90,68 @@ export class SunnyNeighborhoodLevel {
     const worldTheme = worldPalettes[this.worldIndex];
     const sky = new THREE.Color(this.worldIndex === 0 ? (rooftop ? '#e4a56f' : clocktower ? '#7c8fbd' : riverside ? '#8aaec8' : festival ? '#efa9a0' : dusk ? '#9e9bd8' : warm ? '#f6c98b' : '#8bdcff') : worldTheme.sky);
     this.scene.background = sky;
-    this.scene.fog = new THREE.Fog(this.worldIndex === 0 ? (rooftop ? '#f2c49a' : clocktower ? '#aeb4d0' : riverside ? '#b6d3d7' : festival ? '#f4c0a8' : dusk ? '#c6b4e2' : warm ? '#f8dfb4' : '#a6e8ff') : worldTheme.fog, 38, 105);
+    const fogColor = new THREE.Color(this.worldIndex === 0 ? (rooftop ? '#f2c49a' : clocktower ? '#aeb4d0' : riverside ? '#b6d3d7' : festival ? '#f4c0a8' : dusk ? '#c6b4e2' : warm ? '#f8dfb4' : '#a6e8ff') : worldTheme.fog);
+    this.scene.fog = new THREE.Fog(fogColor, 38, 112);
+
+    // A colour-graded sky gives the side-scrolling world a soft horizon instead of a flat blue fill.
+    const lowerSky = fogColor.clone().lerp(new THREE.Color('#ffffff'), 0.22);
+    const skyBackdrop = new THREE.Mesh(
+      new THREE.PlaneGeometry(Math.max(100, this.exitX + 76), 82),
+      new THREE.MeshBasicMaterial({
+        map: makeSkyGradientTexture(sky, fogColor, lowerSky),
+        depthWrite: false,
+        fog: false,
+        toneMapped: false,
+        side: THREE.DoubleSide,
+      }),
+    );
+    skyBackdrop.position.set(this.exitX / 2, 5, -30);
+    skyBackdrop.renderOrder = -10;
+    skyBackdrop.frustumCulled = false;
+    this.group.add(skyBackdrop);
+
     const hemi = new THREE.HemisphereLight(rooftop ? '#ffe8c8' : clocktower ? '#e3e5ff' : riverside ? '#dff7ef' : festival ? '#ffe4cf' : dusk ? '#eadcff' : warm ? '#fff1dd' : '#e8faff', '#52627e', 1.8);
     this.group.add(hemi);
-    const sun = new THREE.DirectionalLight(rooftop ? '#ffbd83' : clocktower ? '#d9d0ff' : riverside ? '#ffe0b0' : festival ? '#ffd18b' : dusk ? '#ffc7a4' : warm ? '#ffdda5' : '#fff1cf', 2.6);
+    const fill = new THREE.DirectionalLight('#c5e4ff', 0.42);
+    fill.position.set(13, 9, -16);
+    this.group.add(fill);
+    const sun = new THREE.DirectionalLight(rooftop ? '#ffbd83' : clocktower ? '#d9d0ff' : riverside ? '#ffe0b0' : festival ? '#ffd18b' : dusk ? '#ffc7a4' : warm ? '#ffdda5' : '#fff1cf', 2.8);
     sun.position.set(-12, 22, 18);
     sun.castShadow = true;
-    sun.shadow.mapSize.set(1024, 1024);
+    const shadowPreset = getGraphicsPreset(this.quality);
+    sun.shadow.mapSize.set(shadowPreset.shadowMapSize, shadowPreset.shadowMapSize);
     sun.shadow.camera.left = -28;
     sun.shadow.camera.right = 28;
     sun.shadow.camera.top = 24;
     sun.shadow.camera.bottom = -12;
-    sun.shadow.normalBias = 0.04;
+    sun.shadow.camera.near = 0.1;
+    sun.shadow.camera.far = 96;
+    sun.shadow.bias = -0.00012;
+    sun.shadow.normalBias = 0.028;
+    sun.shadow.radius = shadowPreset.shadowRadius;
+    this.sunLight = sun;
     this.group.add(sun);
 
     const sunDisk = mesh(new THREE.SphereGeometry(2.2, 18, 12), glow(dusk ? '#ffb18c' : '#ffe8a1'), -11, 10, -13, this.group, false);
     sunDisk.scale.set(1.2, 1, 0.35);
 
-    const cloudMat = standard('#ffffff');
+    const cloudMat = standard('#ffffff', 0.96);
+    const cloudShade = new THREE.MeshStandardMaterial({ color: '#d7e8f3', roughness: 1, transparent: true, opacity: 0.42, depthWrite: false });
+    this.clouds = [];
     for (let i = 0; i < 8; i++) {
       const cloud = new THREE.Group();
-      for (let j = 0; j < 3; j++) {
-        const puff = mesh(new THREE.SphereGeometry(0.8 + (j % 2) * 0.15, 10, 8), cloudMat,
-          j * 1.05, Math.sin(j) * 0.14, 0, cloud, false);
-        puff.scale.y = 0.62;
+      for (let j = 0; j < 5; j++) {
+        const radius = 0.82 + (j % 3) * 0.17;
+        const shade = mesh(new THREE.SphereGeometry(radius, 16, 12), cloudShade,
+          j * 0.92, -0.16 + Math.sin(j) * 0.1, -0.08, cloud, false);
+        shade.scale.y = 0.48;
+        const puff = mesh(new THREE.SphereGeometry(radius, 18, 14), cloudMat,
+          j * 0.92, 0.08 + Math.sin(j * 1.2) * 0.16, 0, cloud, false);
+        puff.scale.y = 0.64;
       }
-      cloud.position.set(-10 + i * ((this.exitX + 24) / 7), 7.5 + (i % 3) * 1.25, -9);
+      cloud.position.set(-10 + i * ((this.exitX + 24) / 7), 7.5 + (i % 3) * 1.25, -13 - (i % 2) * 2);
       this.group.add(cloud);
+      this.clouds.push({ group: cloud, baseX: cloud.position.x, phase: i * 0.8 });
     }
 
     const houseColors = this.levelNumber === 7
@@ -109,28 +170,76 @@ export class SunnyNeighborhoodLevel {
     for (let i = 0; i < 5; i++) {
       const x = -12 + i * ((this.exitX + 24) / 4);
       const house = new THREE.Group();
-      const wallMat = standard(houseColors[i % houseColors.length]);
-      mesh(new THREE.BoxGeometry(5.2, 3.2, 2.2), wallMat, 0, 1.6, 0, house);
-      const roof = mesh(new THREE.ConeGeometry(3.9, 2.1, 4), standard('#b85b4b'), 0, 4.25, 0, house);
-      roof.rotation.y = Math.PI / 4;
-      mesh(new THREE.BoxGeometry(0.95, 1.8, 0.12), standard('#76513c'), 0, 0.9, 1.16, house);
-      for (const wx of [-1.45, 1.45]) {
-        mesh(new THREE.BoxGeometry(0.72, 0.75, 0.13), standard('#8de1f4'), wx, 1.95, 1.16, house, false);
+      const wallMat = standard(houseColors[i % houseColors.length], 0.88);
+      const plasterTrim = standard('#f4e3c7', 0.72);
+      const stoneBase = standard('#746e70', 0.92);
+      const roofMat = standard(i % 2 ? '#a94e45' : '#b85b4b', 0.72);
+      const darkWood = standard('#684431', 0.88);
+      const glassMat = new THREE.MeshStandardMaterial({
+        color: '#9de8ff', emissive: '#2c7188', emissiveIntensity: 0.22,
+        roughness: 0.2, metalness: 0.12,
+      });
+
+      mesh(new THREE.BoxGeometry(5.5, 0.34, 2.42), stoneBase, 0, 0.16, 0, house);
+      mesh(new THREE.BoxGeometry(5.28, 2.96, 2.28), wallMat, 0, 1.78, 0, house);
+      mesh(new THREE.BoxGeometry(5.42, 0.13, 2.38), plasterTrim, 0, 0.43, 0, house);
+      mesh(new THREE.BoxGeometry(5.48, 0.12, 2.42), plasterTrim, 0, 3.22, 0, house);
+      for (const side of [-1, 1]) {
+        mesh(new THREE.BoxGeometry(0.16, 2.75, 0.16), plasterTrim, side * 2.48, 1.82, 1.16, house);
       }
+
+      const roof = mesh(new THREE.ConeGeometry(3.9, 2.1, 4), roofMat, 0, 4.25, 0, house);
+      roof.rotation.y = Math.PI / 4;
+      mesh(new THREE.BoxGeometry(5.2, 0.16, 2.5), darkWood, 0, 3.27, 0, house);
+      mesh(new THREE.BoxGeometry(0.72, 1.75, 0.78), standard('#8b7465'), -1.72, 4.08, -0.15, house);
+      mesh(new THREE.BoxGeometry(0.82, 0.12, 0.88), plasterTrim, -1.72, 4.98, -0.15, house);
+
+      // Framed windows with glass, crossbars, shutters and projecting sills.
+      for (const wx of [-1.45, 1.45]) {
+        mesh(new THREE.BoxGeometry(1.02, 1.02, 0.16), darkWood, wx, 2.0, 1.2, house);
+        mesh(new THREE.BoxGeometry(0.78, 0.78, 0.06), glassMat, wx, 2.0, 1.31, house, false);
+        mesh(new THREE.BoxGeometry(0.075, 0.82, 0.06), plasterTrim, wx, 2.0, 1.35, house, false);
+        mesh(new THREE.BoxGeometry(0.82, 0.075, 0.06), plasterTrim, wx, 2.0, 1.35, house, false);
+        mesh(new THREE.BoxGeometry(1.12, 0.13, 0.28), plasterTrim, wx, 1.44, 1.22, house);
+        for (const shutterSide of [-1, 1]) {
+          mesh(new THREE.BoxGeometry(0.13, 0.88, 0.14), roofMat, wx + shutterSide * 0.58, 2.0, 1.18, house);
+        }
+      }
+
+      // A recessed front door with a raised panel and brass handle.
+      mesh(new THREE.BoxGeometry(1.24, 2.12, 0.18), plasterTrim, 0, 1.22, 1.2, house);
+      mesh(new THREE.BoxGeometry(0.94, 1.82, 0.08), darkWood, 0, 1.2, 1.33, house);
+      mesh(new THREE.BoxGeometry(0.62, 0.66, 0.045), standard('#82583e'), 0, 1.55, 1.39, house);
+      mesh(new THREE.SphereGeometry(0.075, 14, 10), standard('#f4cb69', 0.28, 0.7), 0.32, 1.15, 1.42, house, false);
+      mesh(new THREE.BoxGeometry(1.55, 0.16, 0.62), stoneBase, 0, 0.08, 1.45, house);
+
       house.position.set(x, 0, -6.5);
       this.group.add(house);
     }
 
     if (this.worldIndex > 0) this.buildWorldLandmarks(worldTheme);
 
-    const treeTrunk = standard(this.worldIndex === 0 ? '#87553b' : worldTheme.accent);
-    const treeLeaves = [standard('#42a65e'), standard('#78bd58'), standard('#2f8f5a')];
+    const treeTrunk = standard(this.worldIndex === 0 ? '#87553b' : worldTheme.accent, 0.92);
+    const treeLeaves = [standard('#42a65e', 0.94), standard('#78bd58', 0.94), standard('#2f8f5a', 0.94)];
     for (let i = 0; i < 18; i++) {
       const x = -13 + i * ((this.exitX + 26) / 17);
-      mesh(new THREE.CylinderGeometry(0.16, 0.22, 1.4, 7), treeTrunk, x, 0.65, -3.9, this.group);
-      mesh(new THREE.IcosahedronGeometry(0.95 + (i % 3) * 0.12, 1), treeLeaves[i % 3],
-        x, 1.85, -3.9, this.group);
+      mesh(new THREE.CylinderGeometry(0.16, 0.22, 1.55, 12), treeTrunk, x, 0.72, -3.9, this.group);
+      for (const [side, height, depth] of [[-1, 1.43, -0.12], [1, 1.48, 0.08]]) {
+        const branch = mesh(new THREE.CylinderGeometry(0.055, 0.085, 0.78, 8), treeTrunk,
+          x + side * 0.3, height, -3.9 + depth, this.group);
+        branch.rotation.z = side * -0.68;
+      }
+      const crownScale = 0.95 + (i % 3) * 0.12;
+      const crown = mesh(new THREE.SphereGeometry(crownScale, 20, 16), treeLeaves[i % 3],
+        x, 1.94, -3.9, this.group);
+      crown.scale.set(1.08, 0.95, 0.92);
+      for (const [side, height, depth] of [[-0.58, 1.76, 0.0], [0.58, 1.78, -0.04], [0, 2.48, -0.03]]) {
+        const leaf = mesh(new THREE.SphereGeometry(0.58 + (i % 2) * 0.05, 16, 12),
+          treeLeaves[(i + 1) % 3], x + side, height, -3.9 + depth, this.group);
+        leaf.scale.set(1.04, 0.95, 0.9);
+      }
     }
+    this.buildGardenDetails();
 
     if (this.levelNumber === 6) {
       const stone = standard('#5d6488', 0.72, 0.12);
@@ -176,6 +285,53 @@ export class SunnyNeighborhoodLevel {
         banner.rotation.z = -0.12;
       }
     }
+  }
+
+  buildGardenDetails() {
+    if (this.worldIndex !== 0) return;
+    const stemMat = standard('#347d45', 0.92);
+    const leafMat = standard('#56a84e', 0.9);
+    const petalMats = ['#ffda77', '#fff1df', '#ff8e9b', '#bca5ff'].map(color => standard(color, 0.72));
+    const flowerCenter = standard('#f4b744', 0.55, 0.08);
+    const stoneMat = standard('#9da7a4', 0.98);
+    const count = Math.min(36, Math.max(24, Math.ceil(this.exitX * 0.58)));
+    for (let i = 0; i < count; i++) {
+      const x = -11 + i * ((this.exitX + 22) / Math.max(1, count - 1));
+      const plant = new THREE.Group();
+      mesh(new THREE.CylinderGeometry(0.025, 0.04, 0.3, 7), stemMat, 0, 0.16, 0, plant, false);
+      for (const side of [-1, 1]) {
+        const leaf = mesh(new THREE.SphereGeometry(0.12, 10, 8), leafMat,
+          side * 0.09, 0.13, 0, plant, false);
+        leaf.scale.set(1.35, 0.42, 0.65);
+        leaf.rotation.z = side * -0.35;
+      }
+      const petalMat = petalMats[i % petalMats.length];
+      for (let petal = 0; petal < 5; petal++) {
+        const angle = petal / 5 * Math.PI * 2;
+        const bloom = mesh(new THREE.SphereGeometry(0.075, 9, 7), petalMat,
+          Math.cos(angle) * 0.11, 0.34 + Math.sin(angle) * 0.06, Math.sin(angle) * 0.08,
+          plant, false);
+        bloom.scale.set(1, 0.72, 0.72);
+      }
+      mesh(new THREE.SphereGeometry(0.065, 10, 8), flowerCenter, 0, 0.34, 0.08, plant, false);
+      plant.position.set(x, 0.04, i % 2 === 0 ? 1.02 : -1.02);
+      this.group.add(plant);
+
+      if (i % 3 === 0) {
+        const stone = mesh(new THREE.DodecahedronGeometry(0.2 + (i % 2) * 0.045, 1),
+          stoneMat, x + 0.48, 0.13, i % 2 === 0 ? 1.13 : -1.13, this.group, false);
+        stone.scale.set(1.35, 0.62, 0.86);
+      }
+    }
+  }
+
+  applyGraphicsQuality(quality) {
+    this.quality = ['low', 'medium', 'high'].includes(quality) ? quality : 'medium';
+    if (!this.sunLight) return;
+    const preset = getGraphicsPreset(this.quality);
+    this.sunLight.shadow.mapSize.set(preset.shadowMapSize, preset.shadowMapSize);
+    this.sunLight.shadow.radius = preset.shadowRadius;
+    this.sunLight.shadow.needsUpdate = true;
   }
 
   buildWorldLandmarks(theme) {
@@ -526,6 +682,9 @@ export class SunnyNeighborhoodLevel {
 
   update(dt, heroBody = { x: -100, y: 0 }) {
     this.elapsed += dt;
+    for (const cloud of this.clouds ?? []) {
+      cloud.group.position.x = cloud.baseX + Math.sin(this.elapsed * 0.12 + cloud.phase) * 0.48;
+    }
     if (this.gadgetScanTimer > 0) {
       this.gadgetScanTimer = Math.max(0, this.gadgetScanTimer - dt);
       const progress = 1 - this.gadgetScanTimer / 1.35;
