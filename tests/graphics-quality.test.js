@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getRenderPixelRatio, getGraphicsPreset } from '../src/adventure/GraphicsQuality.js';
+import { adaptResolutionScale, getRenderPixelRatio, getGraphicsPreset } from '../src/adventure/GraphicsQuality.js';
 
 test('desktop quality presets respect the display pixel ratio', () => {
   assert.equal(getRenderPixelRatio({ quality: 'low', devicePixelRatio: 2 }), 1);
@@ -46,4 +46,18 @@ test('graphics presets scale shadows and exposure with selected quality', () => 
   assert.equal(getGraphicsPreset('high').shadowMapSize, 2048);
   assert.ok(getGraphicsPreset('high').toneMappingExposure > getGraphicsPreset('medium').toneMappingExposure);
   assert.deepEqual(getGraphicsPreset('unknown'), getGraphicsPreset('medium'));
+});
+
+test('Auto quality stays within its mobile resolution range', () => {
+  assert.equal(getRenderPixelRatio({ quality: 'auto', devicePixelRatio: 3 }), 1);
+  assert.equal(getRenderPixelRatio({ quality: 'auto', devicePixelRatio: 0.5 }), 0.6);
+  assert.equal(getGraphicsPreset('auto').shadows, true);
+});
+
+test('Auto resolution lowers quickly under load and recovers gradually', () => {
+  assert.equal(adaptResolutionScale(0.9, 25), 0.84);
+  assert.equal(adaptResolutionScale(0.9, 20), 0.87);
+  assert.equal(adaptResolutionScale(0.9, 12), 0.92);
+  assert.equal(adaptResolutionScale(0.99, 12), 1);
+  assert.equal(adaptResolutionScale(0.61, 30), 0.6);
 });
