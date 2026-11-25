@@ -697,6 +697,28 @@ export class SunnyNeighborhoodLevel {
       let chargerRing = null;
       const bodyMat = isBoss ? standard(this.worldIndex === 0 ? '#d95c56' : this.worldIndex === 1 ? '#5e6f96' : this.worldIndex === 2 ? '#6d9a52' : this.worldIndex === 3 ? '#6c59c4' : '#b58ad5', 0.38, 0.35) : enemyMat;
       mesh(new THREE.SphereGeometry(isBoss ? 1.15 : enemyType === 'drone-scout' ? 0.48 : 0.55, 16, 12), bodyMat, 0, isBoss ? 1.1 : enemyType === 'drone-scout' ? 1.05 : 0.62, 0, group);
+      // Layered faceplate, paired optics and brow give every robot a readable focal point.
+      const faceY = isBoss ? 1.18 : enemyType === 'drone-scout' ? 1.05 : 0.64;
+      const faceZ = isBoss ? 0.94 : enemyType === 'drone-scout' ? 0.39 : 0.48;
+      const faceScale = isBoss ? 1.0 : 0.48;
+      const facePlate = mesh(new THREE.SphereGeometry(0.48, 16, 10), standard(isBoss ? '#303d52' : '#34465e', 0.34, 0.42), 0, faceY, faceZ, group, false);
+      facePlate.scale.set(1.28 * faceScale, 0.78 * faceScale, 0.24 * faceScale);
+      const opticMat = glow(isBoss ? '#fff0a8' : this.worldIndex === 3 ? '#9af6ff' : '#ffdf8a');
+      const opticLens = standard('#d9f4ff', 0.16, 0.32);
+      for (const side of [-1, 1]) {
+        const eyeX = side * (isBoss ? 0.34 : 0.17);
+        const eyeY = faceY + (isBoss ? 0.07 : 0.035);
+        const eyeZ = faceZ + (isBoss ? 0.22 : 0.11);
+        const socket = mesh(new THREE.SphereGeometry(isBoss ? 0.19 : 0.095, 12, 8), standard('#172538', 0.28, 0.5), eyeX, eyeY, eyeZ, group, false);
+        socket.scale.z = 0.42;
+        const lens = mesh(new THREE.SphereGeometry(isBoss ? 0.125 : 0.061, 12, 8), opticMat, eyeX, eyeY, eyeZ + 0.045, group, false);
+        lens.scale.z = 0.42;
+        mesh(new THREE.SphereGeometry(isBoss ? 0.035 : 0.018, 8, 6), opticLens, eyeX - 0.035, eyeY + 0.045, eyeZ + 0.085, group, false);
+        const brow = mesh(new THREE.BoxGeometry(isBoss ? 0.36 : 0.2, isBoss ? 0.075 : 0.045, 0.09), bodyMat, eyeX, eyeY + (isBoss ? 0.19 : 0.105), faceZ + (isBoss ? 0.18 : 0.095), group, false);
+        brow.rotation.z = side * -0.12;
+      }
+      const mouth = mesh(new THREE.BoxGeometry(isBoss ? 0.42 : 0.22, isBoss ? 0.07 : 0.04, 0.06), standard('#172536', 0.5, 0.22), 0, faceY - (isBoss ? 0.23 : 0.12), faceZ + (isBoss ? 0.2 : 0.1), group, false);
+      for (let vent = -1; vent <= 1; vent++) mesh(new THREE.BoxGeometry(isBoss ? 0.07 : 0.035, isBoss ? 0.11 : 0.055, 0.025), standard('#9aabb8', 0.62, 0.28), vent * (isBoss ? 0.12 : 0.06), faceY - (isBoss ? 0.24 : 0.125), faceZ + (isBoss ? 0.235 : 0.125), group, false);
       if (isBoss) {
         mesh(new THREE.TorusGeometry(1.05, 0.13, 8, 24), standard(['#ffd166','#ffe08a','#e9c46a','#55e6ff','#f4d58d'][this.worldIndex], 0.3, 0.55), 0, 1.1, 0.12, group, false);
         group.scale.setScalar(1.65);
