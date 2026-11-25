@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { CharacterAnimationController } from './CharacterAnimationController.js';
 import { createBody } from './PlatformerPhysics.js';
 import { getAttackPose } from './HeroAnimation.js';
 import { getBenjiFlameOffset, getBenjiSpecialVisualState } from './BenjiSpecialEffects.js';
@@ -41,6 +42,8 @@ class BaseHero {
     scene.add(this.group);
     this.model = new THREE.Group();
     this.group.add(this.model);
+    this.animationController = null;
+    this.animatedModel = null;
     this.buildModel();
     this.syncVisual();
   }
@@ -80,7 +83,22 @@ class BaseHero {
     const crouchScale = this.body.crouching ? 0.72 : 1;
     this.model.scale.set(this.body.facing * this.visualScale, this.visualScale * crouchScale, this.visualScale);
     this.model.visible = this.invulnerable <= 0 || Math.floor(this.invulnerable * 14) % 2 === 0;
+    this.animationController?.update(dt);
     this.syncVisual();
+  }
+
+  attachAnimationSet(gltf, { scale = 1, replaceProcedural = true } = {}) {
+    if (!gltf?.scene?.isObject3D || !Array.isArray(gltf.animations) || gltf.animations.length === 0) {
+      throw new TypeError('A GLTF scene with animation clips is required.');
+    }
+    this.animationController?.dispose();
+    if (this.animatedModel) this.group.remove(this.animatedModel);
+    this.animatedModel = gltf.scene;
+    this.animatedModel.scale.setScalar(Number.isFinite(scale) && scale > 0 ? scale : 1);
+    this.group.add(this.animatedModel);
+    this.animationController = new CharacterAnimationController(this.animatedModel, gltf.animations);
+    if (replaceProcedural) this.model.visible = false;
+    return this.animationController.getClipNames();
   }
 
   syncVisual() {
@@ -89,6 +107,7 @@ class BaseHero {
   }
 
   destroy() {
+    this.animationController?.dispose();
     this.scene.remove(this.group);
     this.group.traverse(object => {
       if (object.geometry) object.geometry.dispose();
