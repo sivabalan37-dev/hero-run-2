@@ -10,7 +10,7 @@ test('settings use safe defaults and clamp invalid values', () => {
   assert.deepEqual(createSettingsState(), {
     soundEnabled: true,
     volume: 0.65,
-    graphicsQuality: 'medium',
+    graphicsQuality: 'high',
   });
   assert.deepEqual(createSettingsState({
     soundEnabled: false,
@@ -19,7 +19,7 @@ test('settings use safe defaults and clamp invalid values', () => {
   }), {
     soundEnabled: false,
     volume: 1,
-    graphicsQuality: 'medium',
+    graphicsQuality: 'high',
   });
   assert.equal(createSettingsState({ volume: -2 }).volume, 0);
 });
@@ -44,7 +44,7 @@ test('settings persist and reload from storage', () => {
 
 test('corrupt or unavailable settings storage falls back safely', () => {
   const corrupt = { getItem() { return '{bad json'; } };
-  assert.equal(loadSettings(corrupt).graphicsQuality, 'medium');
+  assert.equal(loadSettings(corrupt).graphicsQuality, 'high');
   const blocked = {
     getItem() { throw new Error('blocked'); },
     setItem() { throw new Error('blocked'); },
