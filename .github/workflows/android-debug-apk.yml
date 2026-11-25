@@ -51,6 +51,24 @@ jobs:
         run: npx cap add android
       - name: Sync web assets into Android project
         run: npx cap sync android
+      - name: Set Android game orientation to landscape
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          tree = ET.parse(manifest)
+          root = tree.getroot()
+          android_ns = "{http://schemas.android.com/apk/res/android}"
+          for activity in root.findall("application/activity"):
+              if activity.get(android_ns + "name", "").endswith("MainActivity"):
+                  activity.set(android_ns + "screenOrientation", "sensorLandscape")
+                  break
+          else:
+              raise SystemExit("Capacitor MainActivity not found in AndroidManifest.xml")
+          ET.register_namespace("android", "http://schemas.android.com/apk/res/android")
+          tree.write(manifest, encoding="utf-8", xml_declaration=True)
+          PY
       - name: Build installable debug APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
